@@ -1,179 +1,162 @@
-import { CurriculumData, InstitutionResult, CategoryScore } from "./types";
+import { UserProfile, InstitutionScore } from "./types";
 
-const cap = Math.min;
+export const calculateScores = (data: UserProfile): InstitutionScore[] => {
 
-function calcUnicamp(d: CurriculumData): InstitutionResult {
-  const pub = cap(15, d.artigos_pub_high_impact * 10 + d.artigos_pub_mid_impact * 10 + d.artigos_pub_low_impact * 5 + d.artigos_nacionais * 5);
-  const ic = cap(20, d.ic_com_bolsa * 20 + d.ic_sem_bolsa * 10);
-  const mon = d.monitoria_semestres > 2 ? 5 : d.monitoria_semestres > 0 ? 2 : 0;
-  const ligas = cap(5, d.diretor_ligas * 5 + d.membro_liga * 2);
-  const vol = d.voluntariado_horas >= 96 ? 5 : d.voluntariado_horas >= 48 ? 2 : 0;
-  const cursos = cap(5, d.cursos_suporte * 2);
-  const formacao = (d.internato_hospital_ensino ? 10 : 0) + (d.doutorado_concluido ? 15 : d.mestrado_concluido ? 10 : 0);
+  const unicamp = () => {
+    const pubs = Math.min(15, (data.artigos_high_impact * 10) + (data.artigos_mid_impact * 10) + (data.artigos_low_impact * 5) + (data.artigos_nacionais * 5));
+    const ic = Math.min(20, (data.ic_com_bolsa * 20) + (data.ic_sem_bolsa * 10));
+    const monitoria = data.monitoria_semestres > 2 ? 5 : (data.monitoria_semestres > 0 ? 2 : 0);
+    const ligas = Math.min(5, (data.diretoria_ligas * 5) + (data.membro_liga_anos * 2));
+    const voluntariado = data.voluntariado_horas >= 96 ? 5 : (data.voluntariado_horas >= 48 ? 2 : 0);
+    const cursos = Math.min(5, data.cursos_suporte * 2);
+    const formacao = (data.internato_hospital_ensino ? 10 : 0) + (data.doutorado ? 15 : (data.mestrado ? 10 : 0));
+    return Math.min(100, pubs + ic + monitoria + ligas + voluntariado + cursos + formacao);
+  };
 
-  const cats: CategoryScore[] = [
-    { label: "Publicações", score: pub, max: 15 },
-    { label: "Iniciação Científica", score: ic, max: 20 },
-    { label: "Monitoria", score: mon, max: 5 },
-    { label: "Ligas Acadêmicas", score: ligas, max: 5 },
-    { label: "Voluntariado", score: vol, max: 5 },
-    { label: "Cursos Extras", score: cursos, max: 5 },
-    { label: "Formação/Outros", score: formacao, max: 25 },
-  ];
-  const total = cats.reduce((s, c) => s + c.score, 0);
-  return { name: "UNICAMP", total, maxTotal: 80, categories: cats, isDecimal: false };
-}
+  const usp_sp = () => {
+    const pubs = Math.min(10, (data.artigos_high_impact * 10) + (data.artigos_mid_impact * 10) + (data.artigos_low_impact * 10) + (data.artigos_nacionais * 5));
+    const ic = Math.min(12, (data.ic_com_bolsa * 2) + (data.ic_sem_bolsa * 1));
+    const monitoria = data.monitoria_semestres > 2 ? 3 : (data.monitoria_semestres > 0 ? 1 : 0);
+    const ligas = Math.min(8, (data.diretoria_ligas * 5) + (data.representante_turma_anos * 3));
+    const extensao = Math.min(2, data.extensao_semestres * 1);
+    const cursos = Math.min(4, data.cursos_suporte * 2);
+    return Math.min(100, pubs + ic + monitoria + ligas + extensao + cursos);
+  };
 
-function calcUSP(d: CurriculumData): InstitutionResult {
-  const allPub = d.artigos_pub_high_impact + d.artigos_pub_mid_impact + d.artigos_pub_low_impact + d.artigos_nacionais;
-  const pub = cap(10, allPub * 10);
-  const ic = cap(12, d.ic_com_bolsa * 2 + d.ic_sem_bolsa * 1);
-  const mon = d.monitoria_semestres > 2 ? 3 : d.monitoria_semestres > 0 ? 1 : 0;
-  const ligas = cap(8, d.diretor_ligas * 5 + d.representante_turma * 3);
-  const vol = cap(2, d.extensao_semestres * 1);
-  const cursos = cap(4, d.cursos_suporte * 2);
+  const psu_mg = () => {
+    const pubs = Math.min(2.0, (data.artigos_high_impact * 0.7) + (data.artigos_mid_impact * 0.7) + (data.artigos_low_impact * 0.7) + (data.artigos_nacionais * 0.7));
+    const ic = Math.min(2.0, (data.ic_com_bolsa * 0.5) + (data.ic_sem_bolsa * 0.3));
+    const monitoria = data.monitoria_semestres >= 1 ? 1.0 : 0;
+    const ligas_ext = Math.min(4.0, (data.membro_liga_anos * 0.8) + (data.diretoria_ligas * 0.3) + (data.extensao_semestres * 0.7));
+    const estagio = data.estagio_extracurricular_horas >= 180 ? 1.0 : (data.estagio_extracurricular_horas >= 90 ? 0.5 : 0);
+    const idiomas = Math.min(2.5, (data.ingles_fluente ? 1.5 : 0) + (data.cursos_suporte * 0.7));
+    const historico = data.media_geral >= 85 ? 1.5 : (data.media_geral >= 80 ? 1.0 : 0.5);
+    return Math.min(10.0, pubs + ic + monitoria + ligas_ext + estagio + idiomas + historico);
+  };
 
-  const cats: CategoryScore[] = [
-    { label: "Publicações", score: pub, max: 10 },
-    { label: "Iniciação Científica", score: ic, max: 12 },
-    { label: "Monitoria", score: mon, max: 3 },
-    { label: "Ligas Acadêmicas", score: ligas, max: 8 },
-    { label: "Voluntariado", score: vol, max: 2 },
-    { label: "Cursos Extras", score: cursos, max: 4 },
-  ];
-  const total = cats.reduce((s, c) => s + c.score, 0);
-  return { name: "USP-SP", total, maxTotal: 39, categories: cats, isDecimal: false };
-}
+  const ses_pe = () => {
+    const pubs = Math.min(10, ((data.artigos_high_impact + data.artigos_mid_impact + data.artigos_low_impact + data.artigos_nacionais) * 5) + (data.apresentacao_congresso * 2.5));
+    const ic = Math.min(15, (data.ic_com_bolsa + data.ic_sem_bolsa) * 5);
+    const monitoria = Math.min(15, data.monitoria_semestres * 5);
+    const extensao = Math.min(20, (data.extensao_semestres * 5) + (data.projeto_rondon ? 10 : 0));
+    let historico = 10;
+    if (data.media_geral >= 85) historico = 30;
+    else if (data.media_geral >= 80) historico = 25;
+    else if (data.media_geral >= 75) historico = 20;
+    else if (data.media_geral >= 70) historico = 15;
+    return Math.min(100, pubs + ic + monitoria + extensao + historico);
+  };
 
-function calcPSUMG(d: CurriculumData): InstitutionResult {
-  const allPub = d.artigos_pub_high_impact + d.artigos_pub_mid_impact + d.artigos_pub_low_impact + d.artigos_nacionais;
-  const pub = cap(2.0, allPub * 0.7);
-  const ic = cap(2.0, d.ic_com_bolsa * 0.5 + d.ic_sem_bolsa * 0.3);
-  const mon = d.monitoria_semestres >= 1 ? 1.0 : 0;
-  const ligas = cap(4.0, d.membro_liga * 0.8 + d.diretor_ligas * 0.3 + d.extensao_semestres * 0.7);
-  const estagio = d.estagio_extracurricular >= 180 ? 1.0 : d.estagio_extracurricular >= 90 ? 0.5 : 0;
-  const idiomas = cap(2.5, (d.ingles_fluente ? 1.5 : 0) + d.cursos_suporte * 0.7);
-  const historico = d.media_geral_notas >= 85 ? 1.5 : d.media_geral_notas >= 80 ? 1.0 : 0.5;
+  const einstein = () => {
+    const pubs = Math.min(70, 
+      (data.artigos_high_impact * 35) + 
+      (data.artigos_mid_impact * 15) + 
+      (data.artigos_low_impact * 5) + 
+      (data.artigos_nacionais * 2)
+    );
+    let ic_pontos = 0;
+    if (data.ic_horas_totais >= 400) ic_pontos = 30;
+    else if (data.ic_horas_totais >= 300) ic_pontos = 25;
+    else if (data.ic_horas_totais >= 200) ic_pontos = 20;
+    else if (data.ic_horas_totais >= 100) ic_pontos = 15;
+    else if (data.ic_horas_totais > 0) ic_pontos = 5;
+    const pos = data.doutorado ? 30 : (data.mestrado ? 25 : 0);
+    return Math.min(100, pubs + ic_pontos + pos);
+  };
 
-  const cats: CategoryScore[] = [
-    { label: "Publicações", score: pub, max: 2.0 },
-    { label: "Iniciação Científica", score: ic, max: 2.0 },
-    { label: "Monitoria", score: mon, max: 1.0 },
-    { label: "Ligas/Extensão", score: ligas, max: 4.0 },
-    { label: "Estágio", score: estagio, max: 1.0 },
-    { label: "Idiomas/Cursos", score: idiomas, max: 2.5 },
-    { label: "Histórico", score: historico, max: 1.5 },
-  ];
-  const total = cap(10, cats.reduce((s, c) => s + c.score, 0));
-  return { name: "PSU-MG", total, maxTotal: 10, categories: cats, isDecimal: true };
-}
+  const ses_df = () => {
+    const pubs = Math.min(1.0, ((data.artigos_high_impact + data.artigos_mid_impact + data.artigos_low_impact) * 0.5) + (data.apresentacao_congresso * 0.2));
+    const ic = Math.min(1.0, (data.ic_com_bolsa + data.ic_sem_bolsa) * 0.5);
+    const monitoria = Math.min(1.0, data.monitoria_semestres * 0.5);
+    const extensao = Math.min(1.0, data.extensao_semestres * 0.5);
+    const social = Math.min(2.0, (data.projeto_rondon ? 1.0 : 0) + (Math.floor(data.trabalho_sus_meses / 5) * 0.5));
+    const historico = data.media_geral >= 80 ? 0.5 : 0;
+    const eventos = Math.min(1.0, (data.ouvinte_congresso * 0.1) + (data.cursos_suporte * 0.1));
+    return Math.min(10.0, pubs + ic + monitoria + extensao + social + historico + eventos);
+  };
 
-function calcFMABC(d: CurriculumData): InstitutionResult {
-  const allPub = d.artigos_pub_high_impact + d.artigos_pub_mid_impact + d.artigos_pub_low_impact + d.artigos_nacionais;
-  const cientifica = (allPub >= 2 ? 1.0 : allPub > 0 ? 0.5 : 0) +
-    (d.apresentacao_congresso >= 2 ? 1.0 : d.apresentacao_congresso > 0 ? 0.5 : 0) +
-    (d.ouvinte_congresso >= 4 ? 0.5 : d.ouvinte_congresso > 0 ? 0.25 : 0);
-  const icScore = (d.ic_com_bolsa + d.ic_sem_bolsa) >= 1 ? 1.0 : 0;
-  const item3 = cap(4.0, cientifica + icScore);
-  const item2 = cap(1.5, d.monitoria_semestres * 0.5);
-  const extra = (d.testes_progresso >= 4 ? 1.0 : d.testes_progresso > 0 ? 0.5 : 0) +
-    (d.estagio_extracurricular > 120 ? 1.0 : 0) +
-    (d.membro_liga > 0 ? 0.5 : 0) +
-    (d.projeto_rondon ? 0.5 : 0) +
-    (d.representante_turma > 0 ? 0.5 : 0) +
-    (d.cursos_suporte > 0 ? 0.5 : 0);
-  const item1 = cap(4.0, extra);
-  const item4 = d.ingles_fluente ? 0.5 : 0;
+  const fmabc = () => {
+    const total_artigos = data.artigos_high_impact + data.artigos_mid_impact + data.artigos_low_impact + data.artigos_nacionais;
+    const p_artigos = total_artigos >= 2 ? 1.0 : (total_artigos === 1 ? 0.5 : 0);
+    const p_apres = data.apresentacao_congresso >= 2 ? 1.0 : (data.apresentacao_congresso === 1 ? 0.5 : 0);
+    const p_organizador = data.organizador_evento >= 1 ? 0.5 : 0;
+    const p_ouvinte = data.ouvinte_congresso >= 4 ? 0.5 : (data.ouvinte_congresso >= 1 ? 0.25 : 0);
+    const p_ic = (data.ic_com_bolsa + data.ic_sem_bolsa) >= 1 ? 1.0 : 0;
+    const bloco_cientifico = Math.min(4.0, p_artigos + p_apres + p_organizador + p_ouvinte + p_ic);
 
-  const cats: CategoryScore[] = [
-    { label: "Produção Científica", score: item3, max: 4.0 },
-    { label: "Monitoria", score: item2, max: 1.5 },
-    { label: "Extracurricular", score: item1, max: 4.0 },
-    { label: "Inglês", score: item4, max: 0.5 },
-  ];
-  const total = cap(10, cats.reduce((s, c) => s + c.score, 0));
-  return { name: "FMABC", total, maxTotal: 10, categories: cats, isDecimal: true };
-}
+    const anos_mon = Math.floor(data.monitoria_semestres / 2);
+    const sem_mon = data.monitoria_semestres % 2;
+    const bloco_monitoria = Math.min(1.5, (anos_mon * 1.0) + (sem_mon * 0.5));
 
-function calcSESPE(d: CurriculumData): InstitutionResult {
-  const allPub = d.artigos_pub_high_impact + d.artigos_pub_mid_impact + d.artigos_pub_low_impact + d.artigos_nacionais;
-  const pub = cap(10, allPub * 3 + d.capitulos_livro * 2);
-  const ic = cap(10, d.ic_com_bolsa * 5 + d.ic_sem_bolsa * 3);
-  const mon = cap(5, d.monitoria_semestres * 2);
-  const ligas = cap(5, d.diretor_ligas * 3 + d.membro_liga * 1);
-  const vol = cap(5, d.voluntariado_horas >= 100 ? 5 : d.voluntariado_horas >= 50 ? 3 : 0);
-  const cursos = cap(10, d.cursos_suporte * 3 + (d.ingles_fluente ? 4 : 0));
-  const formacao = (d.doutorado_concluido ? 10 : d.mestrado_concluido ? 5 : 0);
+    const p_teste = data.teste_progresso >= 4 ? 1.0 : (data.teste_progresso >= 1 ? 0.5 : 0);
+    const p_estagio = data.estagio_extracurricular_horas >= 120 ? 1.0 : 0;
+    const p_ligas = (data.diretoria_ligas + data.membro_liga_anos) >= 1 ? 0.5 : 0;
+    const p_social = (data.projeto_rondon || data.voluntariado_horas > 0) ? 0.5 : 0;
+    const p_rep = data.representante_turma_anos >= 1 ? 0.5 : 0;
+    const p_acls = data.cursos_suporte >= 1 ? 0.5 : 0;
+    const bloco_extra = Math.min(4.0, p_teste + p_estagio + p_ligas + p_social + p_rep + p_acls);
 
-  const cats: CategoryScore[] = [
-    { label: "Publicações", score: pub, max: 10 },
-    { label: "Iniciação Científica", score: ic, max: 10 },
-    { label: "Monitoria", score: mon, max: 5 },
-    { label: "Ligas Acadêmicas", score: ligas, max: 5 },
-    { label: "Voluntariado", score: vol, max: 5 },
-    { label: "Cursos/Idiomas", score: cursos, max: 10 },
-    { label: "Formação", score: formacao, max: 10 },
-  ];
-  const total = cats.reduce((s, c) => s + c.score, 0);
-  return { name: "SES-PE", total, maxTotal: 55, categories: cats, isDecimal: false };
-}
+    const bloco_idioma = data.ingles_fluente ? 0.5 : 0;
 
-function calcSESDF(d: CurriculumData): InstitutionResult {
-  const allPub = d.artigos_pub_high_impact + d.artigos_pub_mid_impact + d.artigos_pub_low_impact + d.artigos_nacionais;
-  const pub = cap(10, allPub * 2 + d.capitulos_livro * 1);
-  const ic = cap(10, d.ic_com_bolsa * 5 + d.ic_sem_bolsa * 3);
-  const mon = cap(5, d.monitoria_semestres * 2);
-  const ligas = cap(5, d.diretor_ligas * 3 + d.membro_liga * 1);
-  const vol = d.voluntariado_horas >= 100 ? 5 : d.voluntariado_horas >= 50 ? 3 : 0;
-  const cursos = cap(5, d.cursos_suporte * 2);
-  const formacao = (d.doutorado_concluido ? 10 : d.mestrado_concluido ? 5 : 0) + (d.tempo_trabalho_sus >= 12 ? 5 : d.tempo_trabalho_sus >= 6 ? 3 : 0);
+    return Math.min(10.0, bloco_cientifico + bloco_monitoria + bloco_extra + bloco_idioma);
+  };
 
-  const cats: CategoryScore[] = [
-    { label: "Publicações", score: pub, max: 10 },
-    { label: "Iniciação Científica", score: ic, max: 10 },
-    { label: "Monitoria", score: mon, max: 5 },
-    { label: "Ligas Acadêmicas", score: ligas, max: 5 },
-    { label: "Voluntariado", score: vol, max: 5 },
-    { label: "Cursos Extras", score: cursos, max: 5 },
-    { label: "Formação/Outros", score: formacao, max: 15 },
-  ];
-  const total = cats.reduce((s, c) => s + c.score, 0);
-  return { name: "SES-DF", total, maxTotal: 55, categories: cats, isDecimal: false };
-}
+  const scmsp = () => {
+    const formacao = (data.ranking_ruf_top35 ? 20 : 5) + (data.internato_hospital_ensino ? 10 : 0);
+    const pubs = Math.min(10, ((data.artigos_high_impact + data.artigos_mid_impact + data.artigos_low_impact) * 10));
+    const ic = data.ic_com_bolsa > 0 ? 10 : 0;
+    const monitoria = data.monitoria_semestres > 0 ? 10 : 0;
+    const ligas = (data.diretoria_ligas + data.membro_liga_anos) > 0 ? 10 : 0;
+    const voluntariado = data.voluntariado_horas > 0 ? 5 : 0;
+    const idiomas = (data.ingles_fluente ? 10 : 0);
+    return Math.min(100, formacao + pubs + ic + monitoria + ligas + voluntariado + idiomas);
+  };
 
-function calcEinstein(d: CurriculumData): InstitutionResult {
-  const allPub = d.artigos_pub_high_impact + d.artigos_pub_mid_impact + d.artigos_pub_low_impact + d.artigos_nacionais;
-  const pub = cap(15, d.artigos_pub_high_impact * 5 + d.artigos_pub_mid_impact * 3 + d.artigos_pub_low_impact * 2 + d.artigos_nacionais * 1);
-  const ic = cap(10, d.ic_com_bolsa * 5 + d.ic_sem_bolsa * 3);
-  const mon = cap(5, d.monitoria_semestres * 2);
-  const ligas = cap(5, d.diretor_ligas * 3 + d.membro_liga * 1);
-  const vol = cap(5, d.voluntariado_horas >= 96 ? 5 : d.voluntariado_horas >= 48 ? 3 : 0);
-  const cursos = cap(5, d.cursos_suporte * 2);
-  const formacao = (d.doutorado_concluido ? 10 : d.mestrado_concluido ? 5 : 0) +
-    (d.ingles_fluente ? 5 : 0) +
-    (d.ranking_ruf_top35 ? 5 : 0);
+  const scm_bh = () => {
+    const total_artigos = data.artigos_high_impact + data.artigos_mid_impact + data.artigos_low_impact + data.artigos_nacionais;
+    const pubs = Math.min(2.0, (total_artigos * 0.5) + (data.apresentacao_congresso * 0.25));
+    const ic = Math.min(2.0, (data.ic_com_bolsa * 0.5) + (data.ic_sem_bolsa * 0.25));
+    const monitoria = data.monitoria_semestres >= 1 ? 1.0 : 0;
+    const extensao = Math.min(4.0, (data.extensao_semestres * 0.5) + (data.membro_liga_anos * 0.5));
+    const eventos = Math.min(1.0, data.ouvinte_congresso * 0.5);
+    const historico = data.media_geral >= 80 ? 1.0 : 0;
+    return Math.min(10.0, pubs + ic + monitoria + extensao + eventos + historico);
+  };
 
-  const cats: CategoryScore[] = [
-    { label: "Publicações", score: pub, max: 15 },
-    { label: "Iniciação Científica", score: ic, max: 10 },
-    { label: "Monitoria", score: mon, max: 5 },
-    { label: "Ligas Acadêmicas", score: ligas, max: 5 },
-    { label: "Voluntariado", score: vol, max: 5 },
-    { label: "Cursos Extras", score: cursos, max: 5 },
-    { label: "Formação/Outros", score: formacao, max: 20 },
-  ];
-  const total = cats.reduce((s, c) => s + c.score, 0);
-  return { name: "EINSTEIN", total, maxTotal: 65, categories: cats, isDecimal: false };
-}
+  const usp_rp = () => {
+    const total_artigos = data.artigos_high_impact + data.artigos_mid_impact + data.artigos_low_impact + data.artigos_nacionais;
+    const pts_artigos = total_artigos * 1.0;
+    const pts_apres = data.apresentacao_congresso * 0.5;
+    const pts_ic = (data.ic_com_bolsa + data.ic_sem_bolsa) * 0.7;
+    const bloco_cientifico = Math.min(3.0, pts_artigos + pts_apres + pts_ic);
+    const monitoria = Math.min(1.5, data.monitoria_semestres * 0.5);
+    const ligas_rep = Math.min(2.0, data.membro_liga_anos * 0.5) + Math.min(2.0, data.representante_turma_anos * 0.5);
+    const voluntariado = data.voluntariado_horas >= 120 ? 0.5 : 0;
+    const formacao = data.internato_hospital_ensino ? 1.0 : 0;
+    return Math.min(10.0, bloco_cientifico + monitoria + ligas_rep + voluntariado + formacao);
+  };
 
-export function calculateAll(d: CurriculumData): InstitutionResult[] {
+  const ufpa = () => {
+    const total_artigos = data.artigos_high_impact + data.artigos_mid_impact + data.artigos_low_impact + data.artigos_nacionais;
+    const pubs = Math.min(30, total_artigos * 10) + Math.min(20, data.apresentacao_congresso * 10);
+    const ic = Math.min(21, (data.ic_com_bolsa * 6) + (data.ic_sem_bolsa * 5));
+    const monitoria = Math.min(9, data.monitoria_semestres * 9);
+    const extensao = Math.min(21, data.extensao_semestres * 6);
+    const idiomas = Math.min(10, (data.ingles_fluente ? 5 : 0) + (data.ouvinte_congresso * 1));
+    return Math.min(100, pubs + ic + monitoria + extensao + idiomas);
+  };
+
   return [
-    calcUnicamp(d),
-    calcUSP(d),
-    calcPSUMG(d),
-    calcFMABC(d),
-    calcSESPE(d),
-    calcSESDF(d),
-    calcEinstein(d),
+    { name: "UNICAMP", score: unicamp(), base: 100 },
+    { name: "USP-SP", score: usp_sp(), base: 100 },
+    { name: "PSU-MG", score: psu_mg(), base: 10 },
+    { name: "FMABC", score: fmabc(), base: 10 },
+    { name: "SES-PE", score: ses_pe(), base: 100 },
+    { name: "SES-DF", score: ses_df(), base: 10 },
+    { name: "EINSTEIN", score: einstein(), base: 100 },
+    { name: "SCMSP", score: scmsp(), base: 100 },
+    { name: "SCM-BH", score: scm_bh(), base: 10 },
+    { name: "USP-RP", score: usp_rp(), base: 10 },
+    { name: "UFPA", score: ufpa(), base: 100 },
   ];
-}
+};

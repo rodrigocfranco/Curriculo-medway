@@ -1,20 +1,14 @@
-import { InstitutionResult } from "@/lib/types";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { ChevronDown } from "lucide-react";
+import { InstitutionScore } from "@/lib/types";
 
 interface Props {
-  result: InstitutionResult;
+  result: InstitutionScore;
 }
 
 export default function InstitutionCard({ result }: Props) {
-  const pct = result.maxTotal > 0 ? (result.total / result.maxTotal) * 100 : 0;
-  const display = result.isDecimal ? result.total.toFixed(1) : Math.round(result.total);
-  const maxDisplay = result.isDecimal ? result.maxTotal.toFixed(1) : result.maxTotal;
+  const pct = result.base > 0 ? (result.score / result.base) * 100 : 0;
+  const isDecimal = result.base <= 10;
+  const display = isDecimal ? result.score.toFixed(1) : Math.round(result.score);
+  const maxDisplay = isDecimal ? result.base.toFixed(1) : result.base;
 
   return (
     <div className="score-card">
@@ -31,38 +25,7 @@ export default function InstitutionCard({ result }: Props) {
           style={{ width: `${Math.min(pct, 100)}%` }}
         />
       </div>
-      <p className="text-xs text-muted-foreground mb-3 text-right mono-score">{pct.toFixed(0)}%</p>
-
-      <Accordion type="single" collapsible>
-        <AccordionItem value="details" className="border-none">
-          <AccordionTrigger className="py-1 text-sm text-muted-foreground hover:no-underline hover:text-foreground">
-            Ver detalhes
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-2 pt-2">
-              {result.categories.map((cat) => {
-                const catPct = cat.max > 0 ? (cat.score / cat.max) * 100 : 0;
-                return (
-                  <div key={cat.label}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-muted-foreground">{cat.label}</span>
-                      <span className="mono-score text-foreground">
-                        {result.isDecimal ? cat.score.toFixed(1) : cat.score}/{result.isDecimal ? cat.max.toFixed(1) : cat.max}
-                      </span>
-                    </div>
-                    <div className="score-bar-track !h-1.5">
-                      <div
-                        className="score-bar-fill !h-1.5"
-                        style={{ width: `${Math.min(catPct, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      <p className="text-xs text-muted-foreground mb-1 text-right mono-score">{pct.toFixed(0)}%</p>
     </div>
   );
 }

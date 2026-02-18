@@ -1,8 +1,8 @@
-import { InstitutionResult } from "@/lib/types";
+import { InstitutionScore } from "@/lib/types";
 import InstitutionCard from "./InstitutionCard";
 
 interface Props {
-  results: InstitutionResult[];
+  results: InstitutionScore[];
 }
 
 export default function ResultsDashboard({ results }: Props) {
