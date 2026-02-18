@@ -17,8 +17,8 @@ export default function Index() {
             <Stethoscope className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-foreground leading-tight">Calculadora de Currículo</h1>
-            <p className="text-xs text-muted-foreground">Residência Médica</p>
+            <h1 className="text-lg font-bold text-foreground leading-tight">ALOFT</h1>
+            <p className="text-xs text-muted-foreground">Calculadora Beta de Curriculos para Residência Médica</p>
           </div>
         </div>
       </header>
@@ -30,7 +30,7 @@ export default function Index() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3 space-y-4">
-            <h2 className="text-lg font-bold text-foreground">Seus Dados</h2>
+            <h2 className="text-lg font-bold text-foreground">ALOFT - Vault (Seus Dados)</h2>
             <CurriculumForm data={data} onChange={setData} />
           </div>
 
@@ -41,6 +41,6 @@ export default function Index() {
           </div>
         </div>
       </main>
-    </div>
-  );
+    </div>);
+
 }
