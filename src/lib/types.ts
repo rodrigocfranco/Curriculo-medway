@@ -39,10 +39,17 @@ export interface UserProfile {
   doutorado: boolean;
 }
 
+export interface ScoreBreakdown {
+  label: string;
+  score: number;
+  max: number;
+}
+
 export interface InstitutionScore {
   name: string;
   score: number;
   base: number;
+  breakdown: ScoreBreakdown[];
 }
 
 export const defaultProfile: UserProfile = {
