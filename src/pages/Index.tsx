@@ -2,13 +2,21 @@ import { useState, useMemo } from "react";
 import { UserProfile, defaultProfile } from "@/lib/types";
 import { calculateScores } from "@/lib/calculations";
 import CurriculumForm from "@/components/CurriculumForm";
-import ResultsDashboard from "@/components/ResultsDashboard";
-import { Rocket, RotateCcw } from "lucide-react";
+import DiagnosticDashboard from "@/components/DiagnosticDashboard";
+import LeadGateModal from "@/components/LeadGateModal";
+import { Rocket, RotateCcw, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Index() {
   const [data, setData] = useState<UserProfile>(defaultProfile);
+  const [showModal, setShowModal] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const results = useMemo(() => calculateScores(data), [data]);
+
+  const handleReset = () => {
+    setData(defaultProfile);
+    setShowResults(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -19,9 +27,9 @@ export default function Index() {
           </div>
           <div className="flex-1">
             <h1 className="text-lg font-bold text-foreground leading-tight">ALOFT</h1>
-            <p className="text-xs text-muted-foreground">Calculadora Beta de Curriculos para Residência Médica</p>
+            <p className="text-xs text-muted-foreground">Diagnóstico Curricular para Residência Médica</p>
           </div>
-          <Button variant="ghost" size="sm" onClick={() => setData(defaultProfile)} className="text-muted-foreground">
+          <Button variant="ghost" size="sm" onClick={handleReset} className="text-muted-foreground">
             <RotateCcw className="h-4 w-4 mr-1" />
             Limpar
           </Button>
@@ -29,23 +37,51 @@ export default function Index() {
       </header>
 
       <main className="container py-6 space-y-8">
-        <div className="lg:hidden">
-          <ResultsDashboard results={results} />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3 space-y-4">
-            <h2 className="text-lg font-bold text-foreground">ALOFT - Vault (Seus Dados)</h2>
-            <CurriculumForm data={data} onChange={setData} />
-          </div>
-
-          <div className="hidden lg:block lg:col-span-2">
-            <div className="sticky top-20">
-              <ResultsDashboard results={results} />
+        {!showResults ? (
+          <>
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-foreground">Preencha Seu Currículo</h2>
+              <p className="text-sm text-muted-foreground">
+                Informe seus dados acadêmicos para gerar um diagnóstico detalhado com ranking, tabelas e recomendações personalizadas.
+              </p>
+              <CurriculumForm data={data} onChange={setData} />
             </div>
-          </div>
-        </div>
-      </main>
-    </div>);
 
+            <div className="flex justify-center pt-4 pb-8">
+              <Button
+                size="lg"
+                className="h-14 px-8 text-base font-semibold gap-2 shadow-lg"
+                onClick={() => setShowModal(true)}
+              >
+                <Rocket className="h-5 w-5" />
+                Gerar Meu Diagnóstico
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <DiagnosticDashboard results={results} data={data} />
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 pb-8">
+              <Button variant="outline" onClick={handleReset} className="gap-2">
+                <RotateCcw className="h-4 w-4" />
+                Refazer Diagnóstico
+              </Button>
+            </div>
+          </>
+        )}
+      </main>
+
+      <LeadGateModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={() => {
+          setShowModal(false);
+          setShowResults(true);
+        }}
+        results={results}
+      />
+    </div>
+  );
 }
