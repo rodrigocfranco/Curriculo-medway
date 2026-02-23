@@ -249,5 +249,80 @@ export const calculateScores = (data: UserProfile): InstitutionScore[] => {
     };
   };
 
-  return [unicamp(), usp_sp(), psu_mg(), fmabc(), einstein(), scmsp(), ses_pe(), ses_df()];
+  // --- 9. SCM-BH (Santa Casa BH - Base 10.0) ---
+  const scm_bh = (): InstitutionScore => {
+    const total_artigos = val(data.artigos_high_impact) + val(data.artigos_mid_impact) + val(data.artigos_low_impact) + val(data.artigos_nacionais);
+    const pubs = Math.min(2.0, (total_artigos * 0.5) + (val(data.apresentacao_congresso) * 0.25));
+    const ic = Math.min(2.0, (val(data.ic_com_bolsa) * 0.5) + (val(data.ic_sem_bolsa) * 0.25));
+    const monitoria = val(data.monitoria_semestres) >= 1 ? 1.0 : 0;
+    const extensao = Math.min(4.0, (val(data.extensao_semestres) * 0.5) + (val(data.membro_liga_anos) * 0.5));
+    const eventos = Math.min(1.0, val(data.ouvinte_congresso) * 0.5);
+    const historico = (data.media_geral !== null && val(data.media_geral) >= 80) ? 1.0 : 0;
+
+    return {
+      name: "SCM-BH",
+      score: Math.min(10.0, pubs + ic + monitoria + extensao + eventos + historico),
+      base: 10,
+      details: [
+        { label: "Produção Científica", value: pubs, max: 2.0, rule: "Artigos (0.5 cada) | Apresentações (0.25 cada)" },
+        { label: "Iniciação Científica", value: ic, max: 2.0, rule: "Com bolsa (0.5/ano) | Sem bolsa (0.25/ano)" },
+        { label: "Monitoria", value: monitoria, max: 1.0, rule: "Mínimo de 1 semestre concluído (1.0 pt)" },
+        { label: "Extensão e Ligas", value: extensao, max: 4.0, rule: "Projeto Extensão (0.5/sem) | Liga (0.5/ano)" },
+        { label: "Participação em Eventos", value: eventos, max: 1.0, rule: "Ouvinte em Congresso (0.5 por evento)" },
+        { label: "Histórico Escolar", value: historico, max: 1.0, rule: "Média Global >= 80% (1.0 pt)" },
+      ]
+    };
+  };
+
+  // --- 10. USP-RP (Ribeirão Preto - Base 10.0) ---
+  const usp_rp = (): InstitutionScore => {
+    const total_artigos = val(data.artigos_high_impact) + val(data.artigos_mid_impact) + val(data.artigos_low_impact) + val(data.artigos_nacionais);
+    const pts_artigos = total_artigos * 1.0;
+    const pts_apres = val(data.apresentacao_congresso) * 0.5;
+    const pts_ic = (val(data.ic_com_bolsa) + val(data.ic_sem_bolsa)) * 0.7;
+    const bloco_cientifico = Math.min(3.0, pts_artigos + pts_apres + pts_ic);
+
+    const monitoria = Math.min(1.5, val(data.monitoria_semestres) * 0.5);
+    const ligas_rep = Math.min(2.0, val(data.membro_liga_anos) * 0.5) + Math.min(2.0, val(data.representante_turma_anos) * 0.5);
+    const voluntariado = val(data.voluntariado_horas) >= 120 ? 0.5 : 0;
+    const formacao = data.internato_hospital_ensino ? 1.0 : 0;
+
+    return {
+      name: "USP-RP",
+      score: Math.min(10.0, bloco_cientifico + monitoria + ligas_rep + voluntariado + formacao),
+      base: 10,
+      details: [
+        { label: "1. Produção e Iniciação Científica", value: bloco_cientifico, max: 3.0, rule: "Artigo (1.0) | Apresentação (0.5) | IC (0.7/ano)" },
+        { label: "2. Programas de Monitoria", value: monitoria, max: 1.5, rule: "0.5 pt por semestre de monitoria" },
+        { label: "3. Representação e Ligas", value: ligas_rep, max: 4.0, rule: "Membro Liga (Max 2.0 - 0.5/ano) | Rep (Max 2.0 - 0.5/ano)" },
+        { label: "4. Voluntariado", value: voluntariado, max: 0.5, rule: "Carga horária mínima de 120h (0.5 pt)" },
+        { label: "5. Formação / Hospital de Ensino", value: formacao, max: 1.0, rule: "Internato em Hospital Próprio/Conveniado (1.0 pt)" },
+      ]
+    };
+  };
+
+  // --- 11. UFPA (Base 100) ---
+  const ufpa = (): InstitutionScore => {
+    const total_artigos = val(data.artigos_high_impact) + val(data.artigos_mid_impact) + val(data.artigos_low_impact) + val(data.artigos_nacionais);
+    const pubs = Math.min(30, total_artigos * 10) + Math.min(20, val(data.apresentacao_congresso) * 10);
+    const ic = Math.min(21, (val(data.ic_com_bolsa) * 6) + (val(data.ic_sem_bolsa) * 5));
+    const monitoria = Math.min(9, val(data.monitoria_semestres) * 9);
+    const extensao = Math.min(21, val(data.extensao_semestres) * 6);
+    const idiomas = Math.min(10, (data.ingles_fluente ? 5 : 0) + (val(data.ouvinte_congresso) * 1));
+
+    return {
+      name: "UFPA",
+      score: Math.min(100, pubs + ic + monitoria + extensao + idiomas),
+      base: 100,
+      details: [
+        { label: "Trabalhos Científicos e Publicações", value: pubs, max: 50, rule: "Artigo (10 pts, Max 30) | Apresentação (10 pts, Max 20)" },
+        { label: "Pesquisa / Iniciação Científica", value: ic, max: 21, rule: "Com bolsa (6 pts/projeto) | Sem bolsa (5 pts/projeto)" },
+        { label: "Monitoria Oficial", value: monitoria, max: 9, rule: "9 pts por semestre de monitoria (Teto 9)" },
+        { label: "Extensão Universitária", value: extensao, max: 21, rule: "6 pts por semestre de extensão" },
+        { label: "Idiomas e Participação em Eventos", value: idiomas, max: 10, rule: "Inglês Fluente (5 pts) | Ouvinte em Congresso (1 pt/evento)" },
+      ]
+    };
+  };
+
+  return [unicamp(), usp_sp(), psu_mg(), fmabc(), einstein(), scmsp(), ses_pe(), ses_df(), scm_bh(), usp_rp(), ufpa()];
 };
