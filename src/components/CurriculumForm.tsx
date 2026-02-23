@@ -17,7 +17,7 @@ interface Props {
 }
 
 function NumberField({ label, value, onChange, min = 0, max, step = 1 }: {
-  label: string; value: number; onChange: (v: number) => void; min?: number; max?: number; step?: number;
+  label: string; value: number | null; onChange: (v: number | null) => void; min?: number; max?: number; step?: number;
 }) {
   return (
     <div className="space-y-1.5">
@@ -27,9 +27,12 @@ function NumberField({ label, value, onChange, min = 0, max, step = 1 }: {
         min={min}
         max={max}
         step={step}
-        value={value || ""}
+        value={value === null ? "" : value}
         placeholder="0"
-        onChange={(e) => onChange(Number(e.target.value) || 0)}
+        onChange={(e) => {
+          const raw = e.target.value;
+          onChange(raw === "" ? null : Number(raw));
+        }}
         className="h-10"
       />
     </div>

@@ -1,83 +1,84 @@
 export interface UserProfile {
   // Publicações
-  artigos_high_impact: number;
-  artigos_mid_impact: number;
-  artigos_low_impact: number;
-  artigos_nacionais: number;
-  capitulos_livro: number;
+  artigos_high_impact: number | null;
+  artigos_mid_impact: number | null;
+  artigos_low_impact: number | null;
+  artigos_nacionais: number | null;
+  capitulos_livro: number | null;
 
   // Acadêmico
-  ic_com_bolsa: number;
-  ic_sem_bolsa: number;
-  ic_horas_totais: number;
-  monitoria_semestres: number;
-  extensao_semestres: number;
+  ic_com_bolsa: number | null;
+  ic_sem_bolsa: number | null;
+  ic_horas_totais: number | null;
+  monitoria_semestres: number | null;
+  extensao_semestres: number | null;
 
   // Prática / Social
-  voluntariado_horas: number;
-  estagio_extracurricular_horas: number;
-  trabalho_sus_meses: number;
+  voluntariado_horas: number | null;
+  estagio_extracurricular_horas: number | null;
+  trabalho_sus_meses: number | null;
   projeto_rondon: boolean;
   internato_hospital_ensino: boolean;
 
   // Liderança / Eventos
-  diretoria_ligas: number;
-  membro_liga_anos: number;
-  representante_turma_anos: number;
-  cursos_suporte: number;
-  apresentacao_congresso: number;
-  ouvinte_congresso: number;
-  organizador_evento: number;
-  teste_progresso: number;
+  diretoria_ligas: number | null;
+  membro_liga_anos: number | null;
+  representante_turma_anos: number | null;
+  cursos_suporte: number | null;
+  apresentacao_congresso: number | null;
+  ouvinte_congresso: number | null;
+  organizador_evento: number | null;
+  teste_progresso: number | null;
 
   // Perfil
   ingles_fluente: boolean;
-  media_geral: number;
+  media_geral: number | null;
   conceito_historico: 'A' | 'B' | 'C' | null;
   ranking_ruf_top35: boolean;
   mestrado: boolean;
   doutorado: boolean;
 }
 
-export interface ScoreBreakdown {
+export interface DetailItem {
   label: string;
-  score: number;
+  value: number;
   max: number;
+  rule?: string;
 }
 
 export interface InstitutionScore {
   name: string;
   score: number;
   base: number;
-  breakdown: ScoreBreakdown[];
+  details: DetailItem[];
 }
 
 export const defaultProfile: UserProfile = {
-  artigos_high_impact: 0,
-  artigos_mid_impact: 0,
-  artigos_low_impact: 0,
-  artigos_nacionais: 0,
-  capitulos_livro: 0,
-  ic_com_bolsa: 0,
-  ic_sem_bolsa: 0,
-  ic_horas_totais: 0,
-  monitoria_semestres: 0,
-  extensao_semestres: 0,
-  voluntariado_horas: 0,
-  estagio_extracurricular_horas: 0,
-  trabalho_sus_meses: 0,
+  artigos_high_impact: null,
+  artigos_mid_impact: null,
+  artigos_low_impact: null,
+  artigos_nacionais: null,
+  capitulos_livro: null,
+  ic_com_bolsa: null,
+  ic_sem_bolsa: null,
+  ic_horas_totais: null,
+  monitoria_semestres: null,
+  extensao_semestres: null,
+  voluntariado_horas: null,
+  estagio_extracurricular_horas: null,
+  trabalho_sus_meses: null,
   projeto_rondon: false,
   internato_hospital_ensino: false,
-  diretoria_ligas: 0,
-  membro_liga_anos: 0,
-  representante_turma_anos: 0,
-  cursos_suporte: 0,
-  apresentacao_congresso: 0,
-  ouvinte_congresso: 0,
-  organizador_evento: 0,
-  teste_progresso: 0,
+  diretoria_ligas: null,
+  membro_liga_anos: null,
+  representante_turma_anos: null,
+  cursos_suporte: null,
+  apresentacao_congresso: null,
+  ouvinte_congresso: null,
+  organizador_evento: null,
+  teste_progresso: null,
   ingles_fluente: false,
-  media_geral: 0,
+  media_geral: null,
   conceito_historico: null,
   ranking_ruf_top35: false,
   mestrado: false,
