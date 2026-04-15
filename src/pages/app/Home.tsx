@@ -21,8 +21,11 @@ const AppHome = () => {
   }, [loading, user, recoveryMode, navigate]);
 
   const handleSignOut = async () => {
-    await signOut();
+    // Navega imediatamente para evitar flash de UI autenticada entre o
+    // resolve do signOut e o listener SIGNED_OUT (que limpa user/profile do
+    // contexto). signOut continua em background; "/" é público.
     navigate("/", { replace: true });
+    await signOut();
   };
 
   if (loading || !user) return <div className="p-8">Carregando…</div>;

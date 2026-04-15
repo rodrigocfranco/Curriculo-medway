@@ -16,15 +16,26 @@ const AdminHome = () => {
     }
     if (recoveryMode) {
       navigate("/reset-password", { replace: true });
+      return;
     }
-  }, [loading, user, recoveryMode, navigate]);
+    // Role-gate: student que digite /admin na URL é redirecionado para /app.
+    // ProtectedRoute completo (rota-level) virá na Story 1.8.
+    if (profile && profile.role !== "admin") {
+      navigate("/app", { replace: true });
+    }
+  }, [loading, user, profile, recoveryMode, navigate]);
 
   const handleSignOut = async () => {
-    await signOut();
+    // Navega antes do await para evitar flash de UI autenticada (ver AppHome).
     navigate("/", { replace: true });
+    await signOut();
   };
 
-  if (loading || !user) return <div className="p-8">Carregando…</div>;
+  // Esconde conteúdo de admin enquanto profile carrega ou se role não for admin
+  // (evita flash de UI sensível antes do redirect do useEffect rodar).
+  if (loading || !user || !profile || profile.role !== "admin") {
+    return <div className="p-8">Carregando…</div>;
+  }
 
   return (
     <main className="mx-auto max-w-3xl p-8">

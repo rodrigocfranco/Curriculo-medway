@@ -1,6 +1,6 @@
 # Story 1.6: Login e logout com AuthContext
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -510,3 +510,30 @@ claude-opus-4-6 (1M context)
 |------------|--------|--------------------------------------------------------------------------------|----------|
 | 2026-04-14 | 0.1    | Story criada via bmad-create-story (context engine)                            | Rcfranco |
 | 2026-04-14 | 1.0    | Implementação completa (tasks 1–10): login/logout/AuthContext + stubs + testes | Dev      |
+
+### Review Findings (code review 2026-04-14)
+
+#### Decision Needed
+
+- [x] [Review][Decision] Gate de role no `/admin` — implementar agora ou aguardar Story 1.8? — `AdminHome` só checa `user` truthy; um usuário com role `student` que digite `/admin` na URL renderiza a página de admin (titulo "Admin", `profile?.name`). Spec defere `ProtectedRoute` para 1.8, mas role-gate é distinto e barato (um `if (profile?.role !== "admin") navigate("/app")`). [src/pages/admin/Home.tsx]
+- [x] [Review][Decision] Código da Story 1.7 (`useRequestPasswordReset`, `useResetPassword`, `mapResetPasswordError`, `ResetPasswordError`, `recoveryMode` no context, handler `PASSWORD_RECOVERY`) está misturado nesta entrega — manter (scope creep aceito) ou reverter para a Story 1.7? [src/lib/queries/auth.ts, src/contexts/AuthContext.tsx]
+
+#### Patch
+
+- [x] [Review][Patch] `getSession()` sem `.catch` — rejeição (rede, storage corrompido) deixa `sessionLoading=true` para sempre, app trava em "Carregando…" sem recuperação [src/contexts/AuthContext.tsx]
+- [x] [Review][Patch] Erro/`null` do `useCurrentProfile` rebaixa silenciosamente admin → `/app` — em `Login.tsx` (redirect-se-já-logado) e `LoginForm.onSuccess` (mesmo caminho) admin com falha de fetch profile cai em `/app` em vez de `/admin`; tratar `profileQuery.isError` ou aguardar profile carregado antes de decidir [src/pages/auth/Login.tsx, src/components/features/auth/LoginForm.tsx]
+- [x] [Review][Patch] `TOKEN_REFRESHED` com `nextSession=null` zera `user` mid-sessão sem limpar `["profile"]` — defesa do branch `default` trata refresh-failure como SIGNED_OUT parcial; tratar `null` session como `SIGNED_OUT` completo (limpar profile cache também) [src/contexts/AuthContext.tsx]
+- [x] [Review][Patch] `.single()` no profile-fetch do `LoginForm.onSuccess` toasta "Conta sem perfil" mas **não** desloga — usuário fica autenticado no `AuthContext`, e o `useEffect` redirect do `Login.tsx` o joga em `/app` apesar do toast. Deslogar (`supabase.auth.signOut`) ou usar `maybeSingle` + signOut explícito no fail [src/components/features/auth/LoginForm.tsx]
+- [x] [Review][Patch] Loop potencial `/login` ↔ `/app` quando `profile=null` e `loading=false` — `Login.tsx` redireciona para `/app` por ter `user`; `AppHome` futuro guard (ou se profile-required) chuta de volta para `/login`. Adicionar guard "profile carregado" antes de redirecionar [src/pages/auth/Login.tsx, src/pages/app/Home.tsx]
+- [x] [Review][Patch] `signOut` resolve antes do listener `SIGNED_OUT` rodar — `navigate("/")` pode disparar com `user`/`profile` ainda no estado, causando flash de UI autenticada em rotas gated. Mover `navigate` para dentro do listener OU aguardar próximo tick [src/pages/app/Home.tsx, src/pages/admin/Home.tsx]
+- [x] [Review][Patch] Branch `default` do `onAuthStateChange` (incl. `INITIAL_SESSION`) seta `session/user` mas não flipa `sessionLoading=false` nem é coberto por testes — `INITIAL_SESSION` corre paralelo a `getSession()` e, se este falhar (combinar com patch 1), `sessionLoading` continua true [src/contexts/AuthContext.tsx]
+- [x] [Review][Patch] `recoveryMode` é resetado por `TOKEN_REFRESHED` enquanto user está em `/reset-password` — após ~60s o auto-refresh do Supabase derruba o flag e o gate de proteção do flow de recovery quebra. Não tocar `recoveryMode` em `TOKEN_REFRESHED`/`USER_UPDATED` [src/contexts/AuthContext.tsx]
+- [x] [Review][Patch] `useCallback(signOut, [logoutMutation])` regenera referência a cada render — `logoutMutation` muda identidade sempre, então o `value` do `useMemo` churneia e todos os consumers de `useAuth()` re-renderizam por toda mudança no provider. Memoizar via `mutateAsync` direto ou `useEvent`-like ref [src/contexts/AuthContext.tsx]
+
+#### Defer (pre-existente ou planejado)
+
+- [x] [Review][Defer] `removeQueries({queryKey:["profile"]})` só limpa profile; outras queries user-scoped vão vazar entre usuários. Hoje só existe `["profile"]`, mas plantar `queryClient.clear()` em SIGNED_OUT antes de Epic 2 introduzir mais caches — diferido [src/contexts/AuthContext.tsx]
+- [x] [Review][Defer] SSG: `/login` flasha o formulário para usuário já autenticado em hard-refresh (effect só roda client-side) — adicionar skeleton "Verificando sessão…" — diferido (UX polish) [src/pages/auth/Login.tsx]
+- [x] [Review][Defer] `useCurrentProfile` sem `AbortSignal` — race em troca rápida de usuário (raro hoje sem multi-user no mesmo tab) — diferido [src/lib/queries/auth.ts]
+- [x] [Review][Defer] Sem `ErrorBoundary` global; `profileQuery.isError` ignorado em todo o app — endereçado parcialmente por `retry: 1` (Story 1.6 Task 7.2); fechamento completo na Story 1.11 — diferido [src/contexts/AuthContext.tsx, src/App.tsx]
+- [x] [Review][Defer] Header da página `/login` usa texto "Medway" em vez de `<img src="/logo.svg">` previsto na spec Task 5.1 — provavelmente porque o asset não existe; trocar quando logo.svg for adicionado — diferido [src/pages/auth/Login.tsx]

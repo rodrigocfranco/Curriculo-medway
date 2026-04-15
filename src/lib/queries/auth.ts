@@ -269,29 +269,81 @@ export function mapResetPasswordError(
   );
 }
 
+export type RequestPasswordResetErrorKind = "rate_limit" | "network" | "unknown";
+
+export class RequestPasswordResetError extends Error {
+  kind: RequestPasswordResetErrorKind;
+  constructor(message: string, kind: RequestPasswordResetErrorKind) {
+    super(message);
+    this.name = "RequestPasswordResetError";
+    this.kind = kind;
+  }
+}
+
 // Defense-in-depth: Supabase 2.x default já retorna { error: null } para email
-// inexistente, mas neutralizamos caso uma futura versão escape essa mensagem.
+// inexistente, mas neutralizamos caso uma futura versão escape essa mensagem ou
+// emita variantes (email_address_invalid para domínios rejeitados, validation_failed
+// em lookups server-side). Evita oráculo de enumeração via toast genérico.
 function isNeutralizableError(error: AuthError | Error): boolean {
   const message = error.message ?? "";
   return (
     hasCode(error, "user_not_found") ||
-    message.includes("User not found")
+    hasCode(error, "email_address_invalid") ||
+    hasCode(error, "validation_failed") ||
+    message.includes("User not found") ||
+    message.includes("Email address") // cobre "Email address ... is invalid"
+  );
+}
+
+function mapRequestPasswordResetError(
+  error: AuthError | Error,
+): RequestPasswordResetError {
+  if (isNetworkError(error)) {
+    return new RequestPasswordResetError(
+      "Sem conexão com o servidor. Verifique sua internet e tente novamente.",
+      "network",
+    );
+  }
+  const message = error.message ?? "";
+  if (
+    hasCode(error, "over_request_rate_limit") ||
+    hasCode(error, "over_email_send_rate_limit") ||
+    message.toLowerCase().includes("rate limit") ||
+    message.toLowerCase().includes("for security purposes")
+  ) {
+    return new RequestPasswordResetError(
+      "Muitas tentativas — aguarde alguns minutos",
+      "rate_limit",
+    );
+  }
+  return new RequestPasswordResetError(
+    "Não foi possível enviar agora. Tente novamente.",
+    "unknown",
   );
 }
 
 export function useRequestPasswordReset(): UseMutationResult<
   void,
-  Error,
+  RequestPasswordResetError,
   { email: string }
 > {
-  return useMutation<void, Error, { email: string }>({
+  return useMutation<void, RequestPasswordResetError, { email: string }>({
     mutationFn: async ({ email }) => {
       const redirectTo = `${window.location.origin}/reset-password`;
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo,
-      });
+      let result: Awaited<
+        ReturnType<typeof supabase.auth.resetPasswordForEmail>
+      >;
+      try {
+        result = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo,
+        });
+      } catch (thrown) {
+        // fetch failure / TypeError / AbortError — classifica antes de propagar.
+        throw mapRequestPasswordResetError(thrown as Error);
+      }
+      const { error } = result;
       if (error && !isNeutralizableError(error)) {
-        throw error;
+        throw mapRequestPasswordResetError(error);
       }
     },
   });

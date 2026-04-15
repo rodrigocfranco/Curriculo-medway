@@ -43,7 +43,13 @@ export function LoginForm() {
           .eq("id", user.id)
           .single();
         if (error || !prof) {
+          // Conta autenticada sem profile (trigger falhou, RLS bloqueou, etc.):
+          // deslogar para evitar estado órfão (user truthy + profile null) que faria
+          // o redirect-se-já-logado de Login.tsx jogar o usuário em /app mesmo assim.
+          await supabase.auth.signOut({ scope: "local" });
           toast.error("Conta sem perfil. Contate suporte.");
+          form.setValue("password", "");
+          form.setFocus("password");
           return;
         }
         navigate(prof.role === "admin" ? "/admin" : "/app", { replace: true });

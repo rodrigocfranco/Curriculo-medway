@@ -101,7 +101,7 @@ describe("useSignup mutation", () => {
     const call = signUpMock.mock.calls[0][0];
     expect(call.email).toBe(signupValues.email);
     expect(call.password).toBe(signupValues.password);
-    expect(call.options.data).toEqual({
+    expect(call.options.data).toMatchObject({
       name: signupValues.name,
       phone: signupValues.phone,
       state: signupValues.state,
@@ -109,6 +109,11 @@ describe("useSignup mutation", () => {
       graduation_year: signupValues.graduation_year,
       specialty_interest: signupValues.specialty_interest,
     });
+    // LGPD audit trail (ver Decision D3).
+    expect(call.options.data.lgpd_accepted_at).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+    );
+    expect(call.options.data.lgpd_version).toBe("1.0");
     expect(result.current.data?.user.id).toBe("u1");
   });
 
@@ -313,7 +318,7 @@ describe("useRequestPasswordReset mutation", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 
-  it("propaga erro de rate limit", async () => {
+  it("mapeia rate limit para RequestPasswordResetError.kind='rate_limit'", async () => {
     resetPasswordForEmailMock.mockResolvedValueOnce({
       error: { message: "rate limit exceeded", name: "AuthApiError" },
     });
@@ -323,7 +328,39 @@ describe("useRequestPasswordReset mutation", () => {
     });
     result.current.mutate({ email: "lucas@example.com" });
     await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(result.current.error?.message).toContain("rate limit");
+    expect(result.current.error?.kind).toBe("rate_limit");
+    expect(result.current.error?.message).toBe(
+      "Muitas tentativas — aguarde alguns minutos",
+    );
+  });
+
+  it("mapeia falha de rede (TypeError) para kind='network'", async () => {
+    resetPasswordForEmailMock.mockRejectedValueOnce(
+      new TypeError("Failed to fetch"),
+    );
+
+    const { result } = renderHook(() => useRequestPasswordReset(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({ email: "lucas@example.com" });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.kind).toBe("network");
+  });
+
+  it("neutraliza email_address_invalid (defense-in-depth anti-enumeração)", async () => {
+    resetPasswordForEmailMock.mockResolvedValueOnce({
+      error: {
+        code: "email_address_invalid",
+        message: "Email address is invalid",
+        name: "AuthApiError",
+      },
+    });
+
+    const { result } = renderHook(() => useRequestPasswordReset(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({ email: "weird@nope" });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 });
 

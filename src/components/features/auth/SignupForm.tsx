@@ -61,6 +61,10 @@ export function SignupForm() {
   // defaultValues usa Partial para evitar casts inseguros em campos obrigatórios
   // (state/specialty enums, graduation_year number, lgpd_accepted literal(true)).
   // Zod rejeita os undefined no submit — que é exatamente o comportamento desejado.
+  // mode: "onSubmit" evita flashear erros enquanto o usuário digita;
+  // reValidateMode: "onChange" re-roda a validação após o primeiro submit.
+  // O CTA usa presença-de-campos como proxy de validade (AC1 — "validação falha"
+  // = qualquer required vazio); o Zod ainda re-valida o schema completo no submit.
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupFormSchema),
     mode: "onSubmit",
@@ -75,10 +79,23 @@ export function SignupForm() {
     } as Partial<SignupFormValues> as SignupFormValues,
   });
 
-  const lgpdAccepted = form.watch("lgpd_accepted") === true;
-  const password = form.watch("password");
-  const confirmPassword = form.watch("confirmPassword");
-  const isInvalid = !form.formState.isValid;
+  const values = form.watch();
+  const lgpdAccepted = values.lgpd_accepted === true;
+  const password = values.password;
+  const confirmPassword = values.confirmPassword;
+  // AC1 — "validação falha" = algum required vazio. Zod ainda re-valida no submit.
+  const hasAllRequired = Boolean(
+    values.name &&
+      values.email &&
+      values.phone &&
+      values.state &&
+      values.university &&
+      values.graduation_year &&
+      values.specialty_interest &&
+      values.password &&
+      values.confirmPassword,
+  );
+  const isInvalid = !hasAllRequired;
 
   // Revalida confirmPassword sempre que password muda depois (refine cross-field
   // do Zod não re-dispara automaticamente quando o outro campo é editado).
@@ -208,7 +225,12 @@ export function SignupForm() {
             control={form.control}
             name="university"
             render={({ field }) => {
-              const normalized = universityQuery.trim();
+              // Remove zero-width chars e colapsa whitespace antes de validar
+              // tamanho / usar como valor persistido.
+              const normalized = universityQuery
+                .replace(/[\u200B-\u200D\uFEFF]/g, "")
+                .replace(/\s+/g, " ")
+                .trim();
               return (
                 <FormItem className="flex flex-col">
                   <FormLabel>Faculdade</FormLabel>
@@ -353,6 +375,7 @@ export function SignupForm() {
                     autoComplete="new-password"
                     aria-describedby="password-hint"
                     placeholder="Mínimo 8 caracteres"
+                    maxLength={72}
                     {...field}
                   />
                 </FormControl>
@@ -360,7 +383,7 @@ export function SignupForm() {
                   id="password-hint"
                   className="text-xs text-muted-foreground"
                 >
-                  Use pelo menos 8 caracteres.
+                  Entre 8 e 72 caracteres.
                 </p>
                 <FormMessage className={warningMessageClass} />
               </FormItem>
@@ -378,6 +401,7 @@ export function SignupForm() {
                     type="password"
                     autoComplete="new-password"
                     placeholder="Repita a senha"
+                    maxLength={72}
                     {...field}
                   />
                 </FormControl>
@@ -431,7 +455,8 @@ export function SignupForm() {
           type="submit"
           size="lg"
           className="w-full"
-          disabled={!lgpdAccepted || mutation.isPending}
+          disabled={!lgpdAccepted || isInvalid || mutation.isPending}
+          aria-disabled={!lgpdAccepted || isInvalid || mutation.isPending}
         >
           {mutation.isPending ? (
             <>
@@ -440,6 +465,13 @@ export function SignupForm() {
             </>
           ) : (
             "Criar minha conta"
+          )}
+          {(!lgpdAccepted || isInvalid) && !mutation.isPending && (
+            <span className="sr-only">
+              {!lgpdAccepted
+                ? "Marque o aceite dos termos para habilitar"
+                : "Preencha todos os campos obrigatórios para habilitar"}
+            </span>
           )}
         </Button>
       </form>

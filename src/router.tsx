@@ -34,6 +34,20 @@ export const routes: RouteRecord[] = [
           import("./pages/auth/Login").then((m) => ({ Component: m.default })),
       },
       {
+        path: "forgot-password",
+        lazy: () =>
+          import("./pages/auth/ForgotPassword").then((m) => ({
+            Component: m.default,
+          })),
+      },
+      {
+        path: "reset-password",
+        lazy: () =>
+          import("./pages/auth/ResetPassword").then((m) => ({
+            Component: m.default,
+          })),
+      },
+      {
         path: "app",
         lazy: () =>
           import("./pages/app/Home").then((m) => ({ Component: m.default })),

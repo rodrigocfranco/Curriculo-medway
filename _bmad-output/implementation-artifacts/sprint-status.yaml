@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-14
-last_updated: 2026-04-14 (story 1.6 implementada → review; login/logout + AuthContext + useAuth + stubs /app e /admin; 68 testes passam, lint 7 warnings baseline, build SSG OK)
+last_updated: 2026-04-14 (story 1.6 review aprovada & patches aplicados → done; 10 patches aplicados, 5 deferreds, 111 testes passam, build SSG OK)
 project: curriculo-medway
 project_key: NOKEY
 tracking_system: file-system
@@ -48,12 +48,12 @@ development_status:
   1-2-design-system-medway: done
   1-3-schema-profiles-trigger-rls: done
   1-4-landing-page-publica-ssg: done
-  1-5-cadastro-publico-signup-lgpd: review
-  1-6-login-logout-authcontext: review
-  1-7-recuperacao-de-senha: ready-for-dev
-  1-8-protectedroute-appshell-adminshell: backlog
-  1-9-schema-motor-regras-seeds-instituicoes: backlog
-  1-10-schema-curriculo-scores-bucket-editais: backlog
+  1-5-cadastro-publico-signup-lgpd: done
+  1-6-login-logout-authcontext: done
+  1-7-recuperacao-de-senha: done
+  1-8-protectedroute-appshell-adminshell: ready-for-dev
+  1-9-schema-motor-regras-seeds-instituicoes: ready-for-dev
+  1-10-schema-curriculo-scores-bucket-editais: ready-for-dev
   1-11-ci-cd-completo: backlog
   epic-1-retrospective: optional
 

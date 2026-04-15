@@ -1,13 +1,32 @@
 # Deferred Work
 
+## Deferred from: code review of story 1-7-recuperacao-de-senha (2026-04-14)
+
+- `src/lib/schemas/reset-password.ts` — `.max(72)` conta caracteres JS (UTF-16 code units), não bytes; bcrypt limit é 72 bytes. Mantido consistente com `signup.ts` por design (spec Task 1.2). Revisitar junto com a regra de senha global.
+- `src/lib/queries/auth.ts` (useSignup) — `LGPD_TERMS_VERSION` é referenciado em `mutationFn` antes da sua declaração `export const` no módulo; funciona por hoisting de closure, mas é frágil. Código de Story 1.5 (`done`). Refatorar junto com rework futuro de `auth.ts`.
+- `src/lib/queries/auth.ts` (useResetPassword.onSuccess) — sem `queryClient.invalidateQueries(["profile", userId])` pós-reset. Risco baixo pois `signOut` limpa sessão; revisitar se surgir bug de cache.
+- `src/lib/queries/auth.ts` (useLogout) — `mutationFn` sempre resolve (swallow + console.error); declaração `useMutation<void, Error, void>` sugere erros propagáveis que nunca ocorrem. Código Story 1.6.
+- `src/pages/auth/ResetPassword.tsx` + `ResetPasswordForm.tsx` — comportamento cross-tab: recovery link aberto em tab B muda senha do user corrente em tab A; `signOut({ scope: "local" })` pode propagar SIGNED_OUT indesejado para tab A. Fora do escopo MVP; revisitar em AccountSettings (Story 5.2).
+- `src/components/features/auth/ResetPasswordForm.tsx` — back-button após sucesso pode reabrir `/reset-password` sem sessão e exibir toast "Link inválido" pós-success. `navigate({ replace: true })` mitiga parcialmente; edge raro.
+
+## Deferred from: story 1-7-recuperacao-de-senha (2026-04-14)
+
+- `supabase/config.toml:150-160` — Redirect URLs de produção (Vercel/Netlify) precisam ser adicionadas em Supabase Dashboard → Authentication → URL Configuration → Redirect URLs antes do primeiro deploy. Task da Story 1.11 (CI/CD).
+- Custom email template de recuperação (Supabase Dashboard → Authentication → Email Templates) — MVP usa template default em inglês; pt-BR custom diferido para Story 5.1 ou polimento pós-MVP.
+- Rate limit custom para password reset — Supabase default 4/hora; ajuste via `supabase/config.toml` quando feedback indicar necessidade. Não alterar no MVP.
+- `src/contexts/AuthContext.tsx` — Flag `recoveryMode` não sobrevive a F5 (reload em `/reset-password` perde o flag). Supabase mantém sessão temporária, então o formulário continua funcional — aceitável MVP. Revisitar se houver queixa de UX.
+- Pós-reset usa `signOut({ scope: "local" })` — revoga só device atual. Alternativa `global` para "suspeita de invasão" fica para toggle em AccountSettings (Story 5.2).
+- Sem teste E2E automatizado do fluxo completo email → link → reset. Requer SMTP mock + integração Inbucket (fora do escopo Vitest unit). Smoke manual (Task 9.5 d, h) cobre. Candidato a cobrir em Playwright quando bmad-testarch configurar.
+- `isNeutralizableError` em `src/lib/queries/auth.ts` é defense-in-depth contra mudanças futuras de mensagem do Supabase. Revisar se a lib for atualizada (hoje 2.x estável).
+
 ## Deferred from: code review of story 1-5-cadastro-publico-signup-lgpd (2026-04-14)
 
 - `src/lib/supabase.ts` — Proxy lazy-init acessa `import.meta.env.VITE_SUPABASE_URL` a cada uso; em SSG/pré-render sem env pode lançar erro tardio e opaco. Mover validação para módulo top-level com throw explícito (Story 1.11 CI/CD).
-- `src/router.tsx` — Rota `/login` ausente; link "Entrar" em `Signup.tsx:1212` leva a NotFound. Resolver na Story 1.6 (Login/AuthContext).
-- `src/lib/queries/auth.ts:46-52` — `useSignup.onSuccess` não invoca `AuthContext.setUser` nem invalida cache da session. TODO explícito marcado para Story 1.6.
-- `src/components/features/auth/SignupForm.tsx:395-412` — Links `/termos` e `/privacidade` abrem 404 até que Story 5.1 adicione as páginas institucionais.
-- `src/lib/schemas/signup.test.ts` — Ausente cobertura de emails com alias `+`, IDN (`münchen.de`), trailing dot. Follow-up de testes quando a política de email for fechada (ver decision D7).
-- `src/components/features/auth/SignupForm.tsx:160` — Backspace em máscara de telefone reaplica `formatPhone` em cada onChange, perdendo posição do cursor. Polish UX cosmético, não-bloqueador MVP.
+- `src/components/features/auth/SignupForm.tsx` (links LGPD) — Links `/termos` e `/privacidade` abrem `NotFound` até que Story 5.1 adicione as páginas institucionais.
+- `src/lib/schemas/signup.test.ts` — Cobertura de emails com alias `+`, IDN (`münchen.de`), trailing dot não incluída (Decision D7 fechou em "exigir TLD via regex"; casos exóticos viram follow-up quando UX der feedback).
+- `src/components/features/auth/SignupForm.tsx` (máscara telefone) — Backspace em máscara reaplica `formatPhone` em cada onChange, perdendo posição do cursor. Polish UX cosmético, não-bloqueador MVP.
+- `supabase/migrations/0001_profiles.sql` (trigger `handle_new_user`) — Se trigger falhar (constraint/rede), `supabase.auth.signUp` retorna sucesso e deixa usuário órfão em `auth.users` sem linha em `profiles`. Requer decisão arquitetural: (a) retry + cleanup client-side, (b) Edge Function de signup com transação, ou (c) observabilidade + reconciliação (Story 1.11). Escalate antes de Story 2.
+- `src/lib/queries/auth.ts` (LGPD audit trail) — Hoje persistido em `auth.users.raw_user_meta_data` via `options.data.lgpd_accepted_at` + `lgpd_version`. Promover para colunas dedicadas em `public.profiles` fica para Story 5.x (AccountSettings/compliance).
 - `supabase/migrations/0001_profiles.sql` (trigger `handle_new_user`) — Se trigger falhar (constraint/rede), `supabase.auth.signUp` retorna sucesso e deixa usuário órfão em `auth.users` sem linha em `profiles`. Requer decisão arquitetural: (a) retry + cleanup client-side, (b) Edge Function de signup com transação, ou (c) observabilidade + reconciliação (Story 1.11). Escalate antes de Story 2.
 
 ## Deferred from: code review of story 1-3-schema-profiles-trigger-rls (2026-04-14)
@@ -76,3 +95,11 @@
 - Cross-tab sync via `onAuthStateChange` funciona out-of-the-box (storage events), mas sem teste automatizado — difícil reproduzir em Vitest. Smoke manual valida (Task 9.5.g).
 - `dist/app.html`, `dist/admin.html`, `dist/login.html` são gerados pelo `vite-react-ssg` — conteúdo é fallback "Carregando…" seguido de hidratação client-side. Não vaza PII (sem user autenticado no SSR). Se virar ruído de SEO/crawler, configurar `crawl: false` na Story 1.11 junto com `/signup`.
 - Baseline de warnings de lint permanece em 7 (todos em `src/components/ui/*`). Um `eslint-disable-next-line react-refresh/only-export-components` foi adicionado em `src/contexts/AuthContext.tsx` para o `AuthContext` value; `useAuth` está isolado em `src/contexts/useAuth.ts` para evitar o warning no hook. Alternativa: extrair o Context para arquivo próprio se a convenção for rígida.
+
+## Deferred from: code review of story-1.6 (2026-04-14)
+
+- `removeQueries({queryKey:["profile"]})` em SIGNED_OUT só limpa profile. Hoje único cache user-scoped, mas antes de Epic 2 introduzir queries de currículo/scores, trocar por `queryClient.clear()` (ou estratégia de prefixo) para evitar leak entre usuários. [src/contexts/AuthContext.tsx]
+- `/login` flasha o LoginForm para usuário já autenticado em hard-refresh (SSG render + effect só client). Adicionar skeleton "Verificando sessão…" enquanto `loading=true`. [src/pages/auth/Login.tsx]
+- `useCurrentProfile` sem `AbortSignal` — race silencioso em troca rápida de usuário; raro hoje, mitigar quando multi-tab/multi-user comum. [src/lib/queries/auth.ts]
+- ErrorBoundary global ausente; `profileQuery.isError` nunca consultado. Mitigado parcialmente por `retry: 1` (Task 7.2). Fechamento completo previsto na Story 1.11. [src/contexts/AuthContext.tsx, src/App.tsx]
+- Header `/login` mostra texto "Medway" em vez de `<img src="/logo.svg" />` (spec Task 5.1). Trocar quando o asset for adicionado. [src/pages/auth/Login.tsx]

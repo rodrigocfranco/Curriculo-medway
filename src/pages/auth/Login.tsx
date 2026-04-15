@@ -4,14 +4,22 @@ import { LoginForm } from "@/components/features/auth/LoginForm";
 import { useAuth } from "@/contexts/useAuth";
 
 const Login = () => {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (loading) return;
     if (!user) return;
-    navigate(profile?.role === "admin" ? "/admin" : "/app", { replace: true });
-  }, [loading, user, profile, navigate]);
+    if (!profile) {
+      // user truthy + profile null + loading false = órfão (RLS denial / sem
+      // row em profiles). Não redirecionar para /app sem role definida (admin
+      // seria rebaixado para /app silenciosamente). Deslogar para forçar
+      // re-login limpo; loop /login ↔ /app fica fechado.
+      void signOut();
+      return;
+    }
+    navigate(profile.role === "admin" ? "/admin" : "/app", { replace: true });
+  }, [loading, user, profile, navigate, signOut]);
 
   return (
     <main className="min-h-screen bg-background font-sans text-foreground">
