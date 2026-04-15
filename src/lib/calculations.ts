@@ -1,6 +1,7 @@
 import { UserProfile, InstitutionScore, DetailItem } from "./types";
 
 export const calculateScores = (data: UserProfile): InstitutionScore[] => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- helper legado preservado at\u00e9 Story 1.9 (migra\u00e7\u00e3o para seeds SQL).
   const val = (v: any) => Number(v) || 0;
 
   // --- 1. UNICAMP (Base 100) ---

@@ -1,0 +1,43 @@
+// Lista inicial curada das ~40 principais faculdades de medicina do Brasil.
+// Expansão via Story 1.9 (seeds) ou admin pós-MVP. Combobox com entrada livre:
+// university é `text` em profiles (não FK), então o usuário pode digitar fora da lista.
+export const UNIVERSITIES = [
+  "FCMSCSP - Faculdade de Ciências Médicas da Santa Casa de São Paulo",
+  "FMUSP-RP - USP Ribeirão Preto",
+  "PUC-RJ",
+  "PUC-RS",
+  "PUC-SP",
+  "SCM-BH - Santa Casa de Belo Horizonte",
+  "SCM-SP - Santa Casa de São Paulo",
+  "UEL - Universidade Estadual de Londrina",
+  "UERJ - Universidade do Estado do Rio de Janeiro",
+  "UFAL - Universidade Federal de Alagoas",
+  "UFBA - Universidade Federal da Bahia",
+  "UFC - Universidade Federal do Ceará",
+  "UFES - Universidade Federal do Espírito Santo",
+  "UFF - Universidade Federal Fluminense",
+  "UFG - Universidade Federal de Goiás",
+  "UFMA - Universidade Federal do Maranhão",
+  "UFMG - Universidade Federal de Minas Gerais",
+  "UFMS - Universidade Federal de Mato Grosso do Sul",
+  "UFMT - Universidade Federal de Mato Grosso",
+  "UFPA - Universidade Federal do Pará",
+  "UFPB - Universidade Federal da Paraíba",
+  "UFPE - Universidade Federal de Pernambuco",
+  "UFPI - Universidade Federal do Piauí",
+  "UFPR - Universidade Federal do Paraná",
+  "UFRGS - Universidade Federal do Rio Grande do Sul",
+  "UFRJ - Universidade Federal do Rio de Janeiro",
+  "UFRN - Universidade Federal do Rio Grande do Norte",
+  "UFSC - Universidade Federal de Santa Catarina",
+  "UFSCAR - Universidade Federal de São Carlos",
+  "UFSM - Universidade Federal de Santa Maria",
+  "UFU - Universidade Federal de Uberlândia",
+  "UNB - Universidade de Brasília",
+  "UNESP - Universidade Estadual Paulista",
+  "UNICAMP - Universidade Estadual de Campinas",
+  "UNIFESP - Universidade Federal de São Paulo",
+  "USP-SP - Universidade de São Paulo",
+] as const;
+
+export type University = (typeof UNIVERSITIES)[number];

@@ -11,6 +11,16 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+
+# npm lockfile — projeto usa Bun (bun.lockb)
+package-lock.json
+
+# Supabase local stack
+supabase/.branches/
+supabase/.temp/
+supabase/volumes/
+supabase/.env
 
 # Editor directories and files
 .vscode/*

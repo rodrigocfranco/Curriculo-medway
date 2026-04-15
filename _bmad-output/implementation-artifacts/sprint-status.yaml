@@ -1,0 +1,106 @@
+# generated: 2026-04-14
+# last_updated: 2026-04-14
+# Note: 2026-04-14 — Story 1.5 started (in-progress); signup público + 7 campos + LGPD + trigger handle_new_user.
+# project: curriculo-medway
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-04-14
+last_updated: 2026-04-14 (story 1.6 implementada → review; login/logout + AuthContext + useAuth + stubs /app e /admin; 68 testes passam, lint 7 warnings baseline, build SSG OK)
+project: curriculo-medway
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  epic-1: in-progress
+  1-1-integracao-supabase-cliente-singleton-limpeza-lovable: done
+  1-2-design-system-medway: done
+  1-3-schema-profiles-trigger-rls: done
+  1-4-landing-page-publica-ssg: done
+  1-5-cadastro-publico-signup-lgpd: review
+  1-6-login-logout-authcontext: review
+  1-7-recuperacao-de-senha: ready-for-dev
+  1-8-protectedroute-appshell-adminshell: backlog
+  1-9-schema-motor-regras-seeds-instituicoes: backlog
+  1-10-schema-curriculo-scores-bucket-editais: backlog
+  1-11-ci-cd-completo: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-queries-schemas-curriculo: backlog
+  2-2-formulario-curriculo-accordion: backlog
+  2-3-autosave-silencioso-indicator: backlog
+  2-4-resumo-do-curriculo: backlog
+  2-5-db-function-calculate-scores-trigger: backlog
+  2-6-queries-schemas-scoring: backlog
+  2-7-dashboard-grid-scorecard-narrativebanner: backlog
+  2-8-specialtyselector-inline-recalculo: backlog
+  2-9-detalhe-instituicao-scorehero-gapanalysis: backlog
+  2-10-disclaimerbanner-link-edital: backlog
+  2-11-transicao-fade-slide-skeleton: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-adminshell-navegacao-guard: backlog
+  3-2-crud-instituicoes: backlog
+  3-3-upload-pdf-edital: backlog
+  3-4-crud-regras-adminruleeditor: backlog
+  3-5-impactpreviewdialog-preview-alunos: backlog
+  3-6-log-historico-alteracoes-regras: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-pagina-leads-metricas-header: backlog
+  4-2-leadtable-paginacao-server-side: backlog
+  4-3-filtros-server-side-chips-url-params: backlog
+  4-4-drawer-detalhe-lead: backlog
+  4-5-edge-export-leads-csv: backlog
+  4-6-edge-export-leads-hubspot: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-paginas-termos-politica-privacidade: backlog
+  5-2-accountsettings-fluxo-exclusao: backlog
+  5-3-edge-delete-account-cascade: backlog
+  5-4-views-materializadas-anonimizadas-benchmarks: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-hero-redesign-dois-ctas-microcopy: backlog
+  6-2-secao-como-funciona-tres-passos: backlog
+  6-3-secao-preview-dashboard-screenshots: backlog
+  6-4-social-proof-numeros-depoimentos: backlog
+  6-5-faq-quebra-objecoes: backlog
+  6-6-footer-institucional: backlog
+  epic-6-retrospective: optional

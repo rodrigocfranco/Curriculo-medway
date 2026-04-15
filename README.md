@@ -1,73 +1,53 @@
-# Welcome to your Lovable project
+# curriculo-medway
 
-## Project info
+Projeto curriculo-medway: avaliação de perfil de candidatos a residência médica e matching com instituições.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack
 
-## How can I edit this code?
+- Vite 5 + React 18 + TypeScript estrito
+- Tailwind CSS + shadcn/ui
+- React Query, react-hook-form, zod
+- Vitest (testes)
+- Supabase (backend — cliente singleton em `src/lib/supabase.ts`)
+- Bun (gerenciador de pacotes — `bun.lockb`)
 
-There are several ways of editing your application.
+## Setup local
 
-**Use Lovable**
+Pré-requisitos:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- [Bun](https://bun.sh) (`curl -fsSL https://bun.sh/install | bash`)
+- [Supabase CLI](https://supabase.com/docs/guides/cli) (`brew install supabase/tap/supabase`)
+- Docker Desktop rodando (necessário para `supabase start`)
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Passos:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# 1. Instalar dependências
+bun install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# 2. Subir a stack Supabase local (Postgres + Studio + Auth)
+supabase start
 
-# Step 3: Install the necessary dependencies.
-npm i
+# 3. Copiar o template de env e preencher a anon key
+cp .env.example .env.local
+# Pegue VITE_SUPABASE_ANON_KEY do output de `supabase status` e cole no .env.local
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# 4. Rodar o dev server
+bun dev
 ```
 
-**Edit a file directly in GitHub**
+Dev server em `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Visite `/design-system` em dev para ver os tokens e primitives aplicados.
 
-**Use GitHub Codespaces**
+Para regenerar types após editar migrations: `supabase gen types typescript --local > src/lib/database.types.ts`.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Scripts
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- `bun dev` — Vite dev server
+- `bun run build` — build de produção
+- `bun run lint` — ESLint
+- `bun run test` — Vitest (run once)
+- `bun run test:watch` — Vitest watch mode
+- `supabase start` / `supabase stop` — stack local
+- `supabase status` — URLs e chaves locais
