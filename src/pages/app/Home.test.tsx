@@ -1,67 +1,35 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const navigateMock = vi.fn();
 const useAuthMock = vi.fn();
-const signOutMock = vi.fn();
 
 vi.mock("@/contexts/useAuth", () => ({
   useAuth: () => useAuthMock(),
 }));
 
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual<typeof import("react-router-dom")>(
-    "react-router-dom",
-  );
-  return { ...actual, useNavigate: () => navigateMock };
-});
-
 import AppHome from "./Home";
 
 beforeEach(() => {
-  navigateMock.mockReset();
   useAuthMock.mockReset();
-  signOutMock.mockReset();
 });
 
-describe("AppHome stub", () => {
-  it("redireciona para /login quando user é null", () => {
+describe("AppHome", () => {
+  it("renderiza saudação com profile.name e role", () => {
     useAuthMock.mockReturnValue({
-      user: null,
-      profile: null,
-      loading: false,
-      session: null,
-      signOut: signOutMock,
+      user: { id: "u1", email: "lucas@medway.com" },
+      profile: { name: "Lucas Silva", role: "student" },
     });
-    render(
-      <MemoryRouter>
-        <AppHome />
-      </MemoryRouter>,
-    );
-    expect(navigateMock).toHaveBeenCalledWith("/login", { replace: true });
+    render(<AppHome />);
+    expect(screen.getByText(/Olá, Lucas Silva/)).toBeInTheDocument();
+    expect(screen.getByText(/student/)).toBeInTheDocument();
   });
 
-  it("mostra CTA Sair e clicar invoca signOut + navigate('/')", async () => {
-    signOutMock.mockResolvedValueOnce(undefined);
+  it("fallback para user.email quando profile.name vazio", () => {
     useAuthMock.mockReturnValue({
-      user: { id: "u1", email: "lucas@example.com" },
-      profile: { name: "Lucas", role: "student" },
-      loading: false,
-      session: { access_token: "t" },
-      signOut: signOutMock,
+      user: { id: "u1", email: "lucas@medway.com" },
+      profile: { name: null, role: "student" },
     });
-    render(
-      <MemoryRouter>
-        <AppHome />
-      </MemoryRouter>,
-    );
-    const btn = screen.getByRole("button", { name: "Sair" });
-    fireEvent.click(btn);
-    await waitFor(() => expect(signOutMock).toHaveBeenCalledTimes(1));
-    await waitFor(() =>
-      expect(navigateMock).toHaveBeenCalledWith("/", { replace: true }),
-    );
-    expect(screen.getByText(/Olá, Lucas/)).toBeInTheDocument();
+    render(<AppHome />);
+    expect(screen.getByText(/Olá, lucas@medway.com/)).toBeInTheDocument();
   });
 });
