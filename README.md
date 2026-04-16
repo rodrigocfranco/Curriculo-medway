@@ -51,3 +51,4 @@ Para regenerar types após editar migrations: `supabase gen types typescript --l
 - `bun run test:watch` — Vitest watch mode
 - `supabase start` / `supabase stop` — stack local
 - `supabase status` — URLs e chaves locais
+<!-- CI smoke test -->
