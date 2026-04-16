@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +15,12 @@ if (shouldSkipSSG) {
 }
 
 describe.skipIf(shouldSkipSSG)("SSG output", () => {
-  const html = readFileSync(distIndex, "utf-8");
+  let html: string;
+
+  beforeAll(() => {
+    html = readFileSync(distIndex, "utf-8");
+  });
+
   it("contém headline pré-renderizado", () => {
     expect(html).toMatch(/Descubra como está seu currículo/);
   });
