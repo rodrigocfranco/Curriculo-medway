@@ -1,6 +1,6 @@
 # Story 1.9: Schema do motor de regras + seeds das 11 instituições
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -45,16 +45,16 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — Criar migration `0002_rules_engine.sql` com schema + RLS** (AC: #1, #2)
-  - [ ] 1.1 Gerar arquivo: `supabase migration new rules_engine` → renomear para `supabase/migrations/0002_rules_engine.sql` (prefixo numérico sequencial — padrão estabelecido na Story 1.3; ver [architecture.md#Implementation Handoff (linhas 759-768)](../planning-artifacts/architecture.md) "Migration 2: motor de regras").
-  - [ ] 1.2 Cabeçalho da migration:
+- [x] **Task 1 — Criar migration `0002_rules_engine.sql` com schema + RLS** (AC: #1, #2)
+  - [x] 1.1 Gerar arquivo: `supabase migration new rules_engine` → renomear para `supabase/migrations/0002_rules_engine.sql` (prefixo numérico sequencial — padrão estabelecido na Story 1.3; ver [architecture.md#Implementation Handoff (linhas 759-768)](../planning-artifacts/architecture.md) "Migration 2: motor de regras").
+  - [x] 1.2 Cabeçalho da migration:
     ```sql
     -- 0002_rules_engine.sql
     -- Story 1.9: institutions + specialties + scoring_rules + RLS
     -- Depends on: 0001_profiles.sql (is_admin, set_updated_at)
     ```
     **Não** redeclarar `pgcrypto` — já criada em 0001. `gen_random_uuid()` continua disponível.
-  - [ ] 1.3 Criar as 3 tabelas **na ordem** `institutions → specialties → scoring_rules` (FKs dependem dessa ordem):
+  - [x] 1.3 Criar as 3 tabelas **na ordem** `institutions → specialties → scoring_rules` (FKs dependem dessa ordem):
     ```sql
     create table public.institutions (
       id uuid primary key default gen_random_uuid(),
@@ -95,7 +95,7 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
     - `scoring_rules.institution_id ON DELETE CASCADE` — deletar instituição remove suas regras (comportamento de admin CRUD da Story 3.2).
     - Constraint composta `(institution_id, specialty_id, field_key)` UNIQUE — base do upsert idempotente (AC4). Em Postgres, `NULL` compara como distinto em UNIQUE por default (tratar na sub-nota abaixo).
     - **Cuidado com UNIQUE + NULLs:** Postgres 15+ trata `NULL` como distinto em UNIQUE, então `(inst_A, NULL, 'artigos_high_impact')` e outro idêntico **não** colidem. Para o MVP (todas as regras têm `specialty_id NULL`), isso **ainda funciona para upsert** porque o ON CONFLICT do seed usa `(institution_id, field_key) WHERE specialty_id IS NULL` via índice parcial — ver Task 1.4.
-  - [ ] 1.4 Índices — o UNIQUE composto já cria índice, mas para o path `specialty_id IS NULL` (maioria das queries do MVP) e para o upsert idempotente:
+  - [x] 1.4 Índices — o UNIQUE composto já cria índice, mas para o path `specialty_id IS NULL` (maioria das queries do MVP) e para o upsert idempotente:
     ```sql
     -- Lookup by institution (cache scoring por aluno em Story 2.5)
     create index idx_scoring_rules_institution_id on public.scoring_rules (institution_id);
@@ -110,7 +110,7 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
       where specialty_id is null;
     ```
     **Decisão:** índice parcial UNIQUE é o padrão idiomático Postgres para "UNIQUE com NULL tratado como valor único". Ver decisão em [§ Decisões técnicas específicas](#decisoes-tecnicas-especificas).
-  - [ ] 1.5 Triggers `updated_at` (reutilizar `public.set_updated_at()` criada em 0001):
+  - [x] 1.5 Triggers `updated_at` (reutilizar `public.set_updated_at()` criada em 0001):
     ```sql
     create trigger trg_institutions_set_updated_at
       before update on public.institutions
@@ -121,7 +121,7 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
       for each row execute function public.set_updated_at();
     ```
     **Não** criar trigger em `specialties` — a tabela só tem `created_at` (imutável após insert conforme AC1).
-  - [ ] 1.6 RLS + policies (padrão "read-public, write-admin"):
+  - [x] 1.6 RLS + policies (padrão "read-public, write-admin"):
     ```sql
     alter table public.institutions enable row level security;
     alter table public.institutions force row level security;
@@ -172,15 +172,15 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
     - `force row level security` obrigatório — sem ele, o dono da tabela (`postgres` em CI) bypassa policies e o teste dá falso-verde.
     - **Não** criar policy de INSERT para anon — seeds rodam como `postgres`/`service_role` que **têm** `force row level security` bypass via `security definer` no seed wrapper (se necessário) OU rodam antes da RLS ser aplicada. **Estratégia real:** `supabase db reset` roda migrations + seeds em sequência; seeds são executados como `postgres` após `enable rls + force rls` — então **o seed precisa ser executado como `security definer` function ou com `set local row_security = off`**. Ver Task 2.3.
 
-- [ ] **Task 2 — Criar seed idempotente `supabase/seeds/rules_engine.sql`** (AC: #3, #4)
-  - [ ] 2.1 Ativar leitura de seeds em `supabase/config.toml` — atualmente `[db.seed]` aponta para `./seed.sql` apenas. Alterar para:
+- [x] **Task 2 — Criar seed idempotente `supabase/seeds/rules_engine.sql`** (AC: #3, #4)
+  - [x] 2.1 Ativar leitura de seeds em `supabase/config.toml` — atualmente `[db.seed]` aponta para `./seed.sql` apenas. Alterar para:
     ```toml
     [db.seed]
     enabled = true
     sql_paths = ["./seeds/*.sql"]
     ```
     **Por que**: epic AC3 especifica caminho `supabase/seeds/rules_engine.sql`; o glob `./seeds/*.sql` permite múltiplos seeds (Story 1.10 adicionará `curriculum_fields.sql`). Ordenação é alfabética, então `curriculum_fields.sql` < `rules_engine.sql` — sem dependência cruzada entre eles, ordem não importa. `./seed.sql` não é usado pelo projeto.
-  - [ ] 2.2 Extrair as 11 instituições **verbatim** de [src/lib/calculations.ts (linhas 1-329)](../../src/lib/calculations.ts):
+  - [x] 2.2 Extrair as 11 instituições **verbatim** de [src/lib/calculations.ts (linhas 1-329)](../../src/lib/calculations.ts):
 
     | # | `name` | `short_name` | `state` | `base` | Observação |
     |---|--------|--------------|---------|--------|------------|
@@ -197,7 +197,7 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
     | 11 | UFPA | UFPA | PA | 100 | — |
 
     **⚠ DIVERGÊNCIA vs. texto do epic:** o epic menciona "USP-SP, USP-RP, UNIFESP, UNICAMP, UFMG, UFRJ, SCM-BH, UFPA + demais do protótipo" — essa lista **não** corresponde ao conteúdo real de `calculations.ts`. A fonte-da-verdade é o **código existente**; `UNIFESP/UFMG/UFRJ` **não** estão implementadas e serão adicionadas como regra admin futura (Epic 3). O AC3 diz "extraído de `src/lib/calculations.ts`" — portanto carregar exatamente as 11 listadas acima.
-  - [ ] 2.3 Estratégia do seed para conviver com RLS forçada:
+  - [x] 2.3 Estratégia do seed para conviver com RLS forçada:
     ```sql
     -- supabase/seeds/rules_engine.sql
     -- Executado como role `postgres` via supabase db reset.
@@ -229,7 +229,7 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
     - `set local row_security = off` é o flag Postgres que bypassa RLS **para a transação corrente**, quando executado por role com privilégio `BYPASSRLS` (o `postgres` do `supabase db reset` tem). Alternativa `security definer function` é mais verbosa para apenas carregar seeds.
     - `on conflict (name) do update set ...` é o padrão de upsert — idempotente por AC4. `do nothing` também seria aceitável, mas `do update` permite re-seed após edição manual de `short_name/state` em dev.
     - **Não** incluir `id uuid` nas INSERTs — deixar o DEFAULT gerar. Para referenciar IDs nas `scoring_rules` inserts abaixo, usar subquery `(select id from public.institutions where name = 'UNICAMP')` — ver Task 2.4.
-  - [ ] 2.4 Inserir `scoring_rules` extraídas do `calculations.ts`. Para cada uma das 11 instituições, extrair **cada bloco/card** do array `details` como uma regra separada. Exemplo canônico (UNICAMP):
+  - [x] 2.4 Inserir `scoring_rules` extraídas do `calculations.ts`. Para cada uma das 11 instituições, extrair **cada bloco/card** do array `details` como uma regra separada. Exemplo canônico (UNICAMP):
 
     ```sql
     -- UNICAMP (base 100) — 9 regras
@@ -275,7 +275,7 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
 
     **Total esperado:** ~70 regras (somatório das `details[].length` das 11 instituições — contar exatamente ao implementar; a Task 2.5 confere).
 
-  - [ ] 2.5 Após INSERT de todas as 11 instituições, validar contagem:
+  - [x] 2.5 Após INSERT de todas as 11 instituições, validar contagem:
     ```sql
     -- Dentro da transação do seed (comentado — só para sanity durante dev)
     -- select count(*) from public.institutions; -- expect 11
@@ -287,10 +287,10 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
     ```
     Manter comentado no seed final (sanity só em dev; validação formal nos testes pgTAP da Task 3).
 
-  - [ ] 2.6 **NÃO** popular `specialties` — `calculations.ts` não varia por especialidade. Tabela fica vazia e regras usam `specialty_id = NULL` (default). Epic 3 (AdminRuleEditor) será o primeiro a inserir especialidades quando regra variável por especialidade for publicada.
+  - [x] 2.6 **NÃO** popular `specialties` — `calculations.ts` não varia por especialidade. Tabela fica vazia e regras usam `specialty_id = NULL` (default). Epic 3 (AdminRuleEditor) será o primeiro a inserir especialidades quando regra variável por especialidade for publicada.
 
-- [ ] **Task 3 — Testes pgTAP `0002_rules_engine.test.sql`** (AC: #1, #2, #3, #4)
-  - [ ] 3.1 Criar `supabase/tests/0002_rules_engine.test.sql` com plano mínimo (ajustar plan ao nº real de asserts):
+- [x] **Task 3 — Testes pgTAP `0002_rules_engine.test.sql`** (AC: #1, #2, #3, #4)
+  - [x] 3.1 Criar `supabase/tests/0002_rules_engine.test.sql` com plano mínimo (ajustar plan ao nº real de asserts):
     ```sql
     begin;
     select plan(20);
@@ -393,31 +393,60 @@ Copiados verbatim de [epics.md#Story 1.9 (_bmad-output/planning-artifacts/epics.
     ```
     **Ajustar `plan(N)` ao número final de asserts.** Rodar `supabase test db` — **deve** passar 100%.
 
-  - [ ] 3.2 Se pgTAP não rodar (regressão de `supabase start`), fallback aceitável: script `supabase/tests/smoke-rules-engine.sh` com `supabase db execute --local` + asserts via `test $ == 11 || exit 1`. Documentar escolha em Completion Notes. Padrão herdado da Story 1.3.
+  - [x] 3.2 Se pgTAP não rodar (regressão de `supabase start`), fallback aceitável: script `supabase/tests/smoke-rules-engine.sh` com `supabase db execute --local` + asserts via `test $ == 11 || exit 1`. Documentar escolha em Completion Notes. Padrão herdado da Story 1.3.
 
-- [ ] **Task 4 — Regenerar `src/lib/database.types.ts`** (AC: #1, #2)
-  - [ ] 4.1 Com migration + seed aplicados, rodar:
+- [x] **Task 4 — Regenerar `src/lib/database.types.ts`** (AC: #1, #2)
+  - [x] 4.1 Com migration + seed aplicados, rodar:
     ```bash
     supabase gen types typescript --local > src/lib/database.types.ts
     ```
     Preservar o comentário-marca no topo (`// GERADO — não editar manualmente...`). O output vai incluir `Database['public']['Tables']['institutions' | 'specialties' | 'scoring_rules']` Row/Insert/Update tipados.
-  - [ ] 4.2 Validar que tipos novos compilam consumidores:
+  - [x] 4.2 Validar que tipos novos compilam consumidores:
     - `src/lib/supabase.ts` (genérico `<Database>`) — sem mudança.
     - Nenhum consumer ainda toca `scoring_rules` — tipos ficam prontos para Stories 2.5/2.6.
-  - [ ] 4.3 **NÃO** migrar `src/lib/calculations.ts` agora — o arquivo continua intacto e é o fallback do cliente até a Story 2.5 (`calculate_scores` database function) substituí-lo. Seguir ordem do PRD.
+  - [x] 4.3 **NÃO** migrar `src/lib/calculations.ts` agora — o arquivo continua intacto e é o fallback do cliente até a Story 2.5 (`calculate_scores` database function) substituí-lo. Seguir ordem do PRD.
 
-- [ ] **Task 5 — Atualizar `config.toml` + validar lint/build/test** (AC: #3, #4)
-  - [ ] 5.1 Aplicar mudança em [supabase/config.toml](../../supabase/config.toml) seção `[db.seed]`:
+- [x] **Task 5 — Atualizar `config.toml` + validar lint/build/test** (AC: #3, #4)
+  - [x] 5.1 Aplicar mudança em [supabase/config.toml](../../supabase/config.toml) seção `[db.seed]`:
     ```toml
     [db.seed]
     enabled = true
     sql_paths = ["./seeds/*.sql"]
     ```
     Verificar `supabase db reset` lê o novo glob e aplica `supabase/seeds/rules_engine.sql`.
-  - [ ] 5.2 `bun run lint` — 0 erros novos (warnings baseline de shadcn permanecem).
-  - [ ] 5.3 `bun run build` — Vite precisa passar; `database.types.ts` é só tipagem, zero runtime.
-  - [ ] 5.4 `bun run test` — Vitest existente continua verde. **Nenhum teste novo em TS nesta story** (os testes de comportamento são pgTAP).
-  - [ ] 5.5 `supabase db reset` → `supabase test db` — rodar ambos e colar output no Debug Log. Total de testes pgTAP deve ser ≥ 14 (Story 1.3) + ~20 (esta) = ≥ 34 passando.
+  - [x] 5.2 `bun run lint` — 0 erros novos (warnings baseline de shadcn permanecem).
+  - [x] 5.3 `bun run build` — Vite precisa passar; `database.types.ts` é só tipagem, zero runtime.
+  - [x] 5.4 `bun run test` — Vitest existente continua verde. **Nenhum teste novo em TS nesta story** (os testes de comportamento são pgTAP).
+  - [x] 5.5 `supabase db reset` → `supabase test db` — rodar ambos e colar output no Debug Log. Total de testes pgTAP deve ser ≥ 14 (Story 1.3) + ~20 (esta) = ≥ 34 passando.
+
+### Review Findings
+
+_Code review adversarial (Blind Hunter + Edge Case Hunter + Acceptance Auditor) — 2026-04-15._
+
+**Decision-needed (2) — resolvidas 2026-04-15:**
+- [x] [Review][Decision] Policies para `service_role` nas 3 tabelas → **deferido**. Motivo: `service_role` do Supabase tem atributo `BYPASSRLS` no role, então escrita já funciona hoje (mesmo com `force rls`). Criar policy explícita só quando o padrão mudar ou quando houver a primeira Edge Function admin.
+- [x] [Review][Decision] SES-PE `historico` `{gte:70, pts:15}` → **dismissed (falso positivo do Edge Hunter)**. O bracket existe no legado em [src/lib/calculations.ts:198](../../src/lib/calculations.ts#L198) (`else if (val(data.media_geral) >= 70) historico = 15`). Seed é fiel.
+
+**Patch (7) — todos aplicados 2026-04-15:**
+- [x] [Review][Patch] `SET LOCAL row_security = off` movido para depois do `begin;` [[supabase/seeds/rules_engine.sql:34-35](../../supabase/seeds/rules_engine.sql#L34-L35)]
+- [x] [Review][Patch] Header do seed expandido listando 10 operadores e todas as flags (when_true/when_gt0/override_by/null_policy/aggregate) [[supabase/seeds/rules_engine.sql:9-32](../../supabase/seeds/rules_engine.sql#L9-L32)]
+- [x] [Review][Patch] EINSTEIN `publicacoes` description agora inclui "Nacionais (2pts)" [[supabase/seeds/rules_engine.sql:194-196](../../supabase/seeds/rules_engine.sql#L194-L196)]
+- [x] [Review][Patch] EINSTEIN `pos_graduacao` — `override_by:null` removido em `doutorado` (uniformiza com UNICAMP/USP-SP) [[supabase/seeds/rules_engine.sql:202](../../supabase/seeds/rules_engine.sql#L202)]
+- [x] [Review][Patch] pgTAP agora valida `scoring_rules_weight_bounds_chk` por nome via `pg_constraint` [[supabase/tests/0002_rules_engine.test.sql:19-26](../../supabase/tests/0002_rules_engine.test.sql#L19-L26)]
+- [x] [Review][Patch] pgTAP agora inclui `has_index('idx_scoring_rules_default_unique')` [[supabase/tests/0002_rules_engine.test.sql:34](../../supabase/tests/0002_rules_engine.test.sql#L34)]
+- [x] [Review][Patch] pgTAP agora cobre anon UPDATE/DELETE silent-0 via `DO blocks` + `row_count` [[supabase/tests/0002_rules_engine.test.sql:76-100](../../supabase/tests/0002_rules_engine.test.sql#L76-L100)]
+
+**Plan bump:** pgTAP `plan(24)` → `plan(28)` (4 novos asserts: constraint-by-name + partial unique index + anon UPDATE pass + anon DELETE pass).
+
+**Deferrals (5):** ver `deferred-work.md` seção "Deferred from: code review of story-1.9 (2026-04-15)".
+
+- [x] [Review][Defer] AdminRuleEditor (Story 3.4) precisará de ON CONFLICT diferente para regras com `specialty_id IS NOT NULL` — deferido para Story 3.4.
+- [x] [Review][Defer] `formula: Json` untyped em `database.types.ts` — discriminated union TS deferido para Story 2.6 (Zod schemas).
+- [x] [Review][Defer] FMABC `bloco_cientifico` usa `field:"artigos_total"` + sibling `aggregate` ad-hoc ([seed:177](../../supabase/seeds/rules_engine.sql#L177)) — contrato com `calculate_scores` deferido para Story 2.5.
+- [x] [Review][Defer] Sem CHECK de shape no `formula jsonb` no DB — validação Zod deferida para Story 2.6.
+- [x] [Review][Defer] Glob `./seeds/*.sql` carrega `curriculum_fields.sql` antes de `rules_engine.sql` (alfabético); depende da migration 0003 da Story 1.10 existir — deferido para Story 1.10 (WIP).
+
+**Dismissed (5):** CHECK `weight <= max_points` tautológico no MVP mas guarda edição admin futura | RLS SELECT permissiva para anon justificada no spec (editais públicos) | `./seed.sql` órfão — confirmado inexistente | migration não-idempotente é padrão forward-only | header "GERADO" de `database.types.ts` — arquivo é realmente gerado por `supabase gen types`.
 
 ## Dev Notes
 
@@ -633,16 +662,46 @@ Casos não cobertos acima no `calculations.ts` (EX: `SCMSP.formacao` = `internat
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.6 (claude-opus-4-6[1m]) via bmad-dev-story skill.
 
 ### Debug Log References
 
+- `supabase db reset --local` → migrations 0001 + 0002 aplicadas sem erro; seed `rules_engine.sql` carregado (WARNING inócuo de `SET LOCAL` fora de tx: o role `postgres` tem `BYPASSRLS`, então as policies são contornadas naturalmente durante o seed; o `begin; ... commit;` delimita a idempotência).
+- `supabase test db` → **39/39 asserts pgTAP passam** (15 da 0001 + 24 da 0002).
+- `docker exec supabase_db_curriculo-medway psql -c "select count..."` → `institutions=11, specialties=0, scoring_rules=75`.
+- `bun run lint` → 0 erros, 7 warnings baseline (shadcn `react-refresh/only-export-components`, pré-existentes).
+- `bun run build` → ✓ Vite+SSG, 7 páginas geradas.
+- `bun run test -- --run` → **137/137 tests passam** em 26 test files (sem regressão vs baseline da Story 1.8).
+
 ### Completion Notes List
+
+- Schema híbrido relacional + JSONB entregue nas 3 tabelas (`institutions`, `specialties`, `scoring_rules`) com PK uuid + `gen_random_uuid()`, FKs + ON DELETE policies (CASCADE em `institution_id`, RESTRICT em `specialty_id`), CHECK `weight >= 0 AND weight <= max_points`, UNIQUE composto `(institution_id, specialty_id, field_key)` + **índice parcial UNIQUE** `(institution_id, field_key) WHERE specialty_id IS NULL` (essencial para idempotência do upsert quando todas as regras MVP têm `specialty_id NULL`).
+- RLS habilitada + **forçada** nas 3 tabelas com padrão "read-public / write-admin": SELECT permissivo para `anon`+`authenticated` (editais são públicos, permite SSG da landing fetchar em build time), e `FOR ALL` com `is_admin(auth.uid())` para escrita (reutiliza helper SECURITY DEFINER da 0001 — sem recriar função).
+- Triggers `updated_at` em `institutions` e `scoring_rules` reutilizam `public.set_updated_at()` da 0001; `specialties` fica sem trigger pois só tem `created_at` (imutável pós-insert por design).
+- **75 scoring_rules** semeadas a partir de `src/lib/calculations.ts` (UNICAMP 9, USP-SP 10, PSU-MG 7, FMABC 4, EINSTEIN 3, SCMSP 9, SES-PE 7, SES-DF 10, SCM-BH 6, USP-RP 5, UFPA 5). `specialties` permanece vazia (MVP não varia por especialidade — FR21 suportado apenas pelo schema).
+- **formula JSONB** codifica 5 operadores nomeados (`sum`, `threshold`, `tiered`, `bool`, `composite`) + auxiliares descritivos (`any_positive`, `any_true_or_positive`, `floor_div`, `ruf_branch`, `custom`) — protocolo entre seed e `calculate_scores` da Story 2.5. Nuances aritméticas complexas (FMABC `bloco_monitoria` com `floor(sem/2)*1 + (sem%2)*0.5`) marcadas com `op:"custom"` para tratamento explícito na Story 2.5.
+- **Idempotência**: seed usa `on conflict (institution_id, field_key) where specialty_id is null do update` (inference no índice parcial, não no constraint nomeado — porque o constraint composto trata NULL como distinto no Postgres e não dispararia conflito). Validado pelo teste pgTAP (assert 24).
+- `supabase/config.toml` `[db.seed].sql_paths` migrado de `"./seed.sql"` para `"./seeds/*.sql"` — glob permite que Story 1.10 adicione `curriculum_fields.sql` sem nova edição.
+- `src/lib/database.types.ts` regenerado via `supabase gen types typescript --local` — expõe `Database['public']['Tables']['institutions'|'specialties'|'scoring_rules']` tipados; `formula` vem como `Json` (refinado via Zod na Story 2.6). Comentário-marca adicionado no topo.
+- `src/lib/calculations.ts` **intencionalmente não migrado** — continua como fallback client-side até Story 2.5 substituir por `calculate_scores()` DB function. `deferred-work.md:32-48` já rastreia os débitos semânticos (coerção `val`, caps agregados UFPA, `ranking_ruf_top35` ternary) para Story 2.5.
+- **Ajustes pontuais durante TDD**: `col_has_check` exigiu array quando a CHECK envolve múltiplas colunas; `throws_ok` precisa testar INSERT (e não UPDATE) pois RLS filtra UPDATE silenciosamente ao invés de lançar exceção; `on conflict` alinhado ao índice parcial do MVP.
 
 ### File List
 
+**Created:**
+- `supabase/migrations/0002_rules_engine.sql`
+- `supabase/seeds/rules_engine.sql`
+- `supabase/tests/0002_rules_engine.test.sql`
+
+**Modified:**
+- `supabase/config.toml` — `[db.seed].sql_paths` para `./seeds/*.sql`
+- `src/lib/database.types.ts` — regenerado com 3 novas tabelas
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — story 1.9 ready-for-dev → review
+- `_bmad-output/implementation-artifacts/1-9-schema-motor-regras-seeds-instituicoes.md` — Status=review, tasks marcadas, Dev Agent Record preenchido
+
 ## Change Log
 
-| Data       | Versão | Descrição                                                                          | Autor |
-|------------|--------|------------------------------------------------------------------------------------|-------|
-| 2026-04-14 | 0.1    | Story 1.9 criada via create-story (ready-for-dev). Motor de regras + seeds 11 inst. | PM    |
+| Data       | Versão | Descrição                                                                                                                      | Autor    |
+|------------|--------|--------------------------------------------------------------------------------------------------------------------------------|----------|
+| 2026-04-14 | 0.1    | Story 1.9 criada via create-story (ready-for-dev). Motor de regras + seeds 11 inst.                                            | PM       |
+| 2026-04-15 | 1.0    | Implementação: migration 0002 (3 tabelas + RLS), seed 11 inst / 75 regras, 24 asserts pgTAP, types regenerados. Status → review. | Rcfranco |
