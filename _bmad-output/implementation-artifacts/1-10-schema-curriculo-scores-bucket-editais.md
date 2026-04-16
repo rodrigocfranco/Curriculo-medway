@@ -1,6 +1,6 @@
 # Story 1.10: Schema de currículo e scores + bucket `editais`
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -65,16 +65,16 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — Criar migration `0003_curriculum_scores.sql`** (AC: #1, #2)
-  - [ ] 1.1 Gerar esqueleto: `supabase migration new curriculum_scores`; **renomear** arquivo para `0003_curriculum_scores.sql` (convenção numérica sequencial — ver [architecture.md#Implementation Handoff (linhas 761-767)](../planning-artifacts/architecture.md) e padrão estabelecido em `0001_profiles.sql`).
-  - [ ] 1.2 Header + dependências explícitas (pattern da Story 1.3):
+- [x] **Task 1 — Criar migration `0003_curriculum_scores.sql`** (AC: #1, #2)
+  - [x] 1.1 Gerar esqueleto: `supabase migration new curriculum_scores`; **renomear** arquivo para `0003_curriculum_scores.sql` (convenção numérica sequencial — ver [architecture.md#Implementation Handoff (linhas 761-767)](../planning-artifacts/architecture.md) e padrão estabelecido em `0001_profiles.sql`).
+  - [x] 1.2 Header + dependências explícitas (pattern da Story 1.3):
     ```sql
     -- 0003_curriculum_scores.sql
     -- Story 1.10: curriculum_fields + user_curriculum + user_scores + RLS
     -- Depends on: 0001_profiles.sql (profiles + set_updated_at + is_admin),
     --             0002_rules_engine.sql (institutions + specialties)
     ```
-  - [ ] 1.3 **Tabela `curriculum_fields`** — catálogo de campos (leitura pública, escrita admin):
+  - [x] 1.3 **Tabela `curriculum_fields`** — catálogo de campos (leitura pública, escrita admin):
     ```sql
     create table public.curriculum_fields (
       id uuid primary key default gen_random_uuid(),
@@ -91,7 +91,7 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
       on public.curriculum_fields (category, display_order);
     ```
     **Não** adicionar `updated_at` — catálogo mutável por seed/admin; suficiente `created_at` para auditoria mínima.
-  - [ ] 1.4 **Tabela `user_curriculum`** — currículo do aluno (1 linha por user, `data jsonb`):
+  - [x] 1.4 **Tabela `user_curriculum`** — currículo do aluno (1 linha por user, `data jsonb`):
     ```sql
     create table public.user_curriculum (
       user_id uuid primary key references public.profiles(id) on delete cascade,
@@ -105,7 +105,7 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
     ```
     **Reutilize** `public.set_updated_at()` — função genérica criada na Story 1.3 (não redefinir).
     **Não** adicionar coluna `specialty` — especialidade escolhida fica no `profiles.specialty_interest` (já existe) + seleção inline (Epic 2).
-  - [ ] 1.5 **Tabela `user_scores`** — cache de scores com PK composta + flag `stale`:
+  - [x] 1.5 **Tabela `user_scores`** — cache de scores com PK composta + flag `stale`:
     ```sql
     create table public.user_scores (
       user_id uuid not null references public.profiles(id) on delete cascade,
@@ -123,7 +123,7 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
     create index idx_user_scores_institution on public.user_scores (institution_id, specialty_id);
     ```
     **Atenção PK composta com NULL**: Postgres considera `(u, i, NULL)` e `(u, i, NULL)` como **distintos** em UNIQUE/PK por default. Para MVP aceitar essa semântica — `calculate_scores` (Story 2.5) usará `INSERT ... ON CONFLICT (user_id, institution_id, specialty_id)` com lógica explícita de NULL via `COALESCE(specialty_id, '00000000-0000-0000-0000-000000000000'::uuid)` ou via `UNIQUE NULLS NOT DISTINCT` (Postgres 15+). **Decisão**: deixar PK composta simples agora; documentar no dev note para Story 2.5 escolher a abordagem.
-  - [ ] 1.6 **Habilitar RLS** (padrão `ENABLE + FORCE` da Story 1.3):
+  - [x] 1.6 **Habilitar RLS** (padrão `ENABLE + FORCE` da Story 1.3):
     ```sql
     alter table public.curriculum_fields enable row level security;
     alter table public.curriculum_fields force row level security;
@@ -134,7 +134,7 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
     alter table public.user_scores enable row level security;
     alter table public.user_scores force row level security;
     ```
-  - [ ] 1.7 **Policies `curriculum_fields`** — leitura pública (anon+authenticated), escrita admin via helper `is_admin`:
+  - [x] 1.7 **Policies `curriculum_fields`** — leitura pública (anon+authenticated), escrita admin via helper `is_admin`:
     ```sql
     create policy "curriculum_fields_select_all"
       on public.curriculum_fields for select
@@ -155,7 +155,7 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
       using (public.is_admin(auth.uid()));
     ```
     Reutiliza helper `public.is_admin(uuid)` da Story 1.3 (já tem `grant execute ... to authenticated` aplicado).
-  - [ ] 1.8 **Policies `user_curriculum` e `user_scores`** — isolamento estrito por `auth.uid() = user_id`:
+  - [x] 1.8 **Policies `user_curriculum` e `user_scores`** — isolamento estrito por `auth.uid() = user_id`:
     ```sql
     -- user_curriculum: CRUD completo limitado ao dono
     create policy "user_curriculum_select_own"
@@ -190,9 +190,9 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
     ```
     **Não** adicionar policy admin para `user_*` — admin acessa dados de alunos via views anonimizadas (Epic 4/5), não direto.
 
-- [ ] **Task 2 — Criar seed `supabase/seeds/curriculum_fields.sql`** (AC: #3)
-  - [ ] 2.1 **Extrair contrato** de [src/lib/types.ts](../../src/lib/types.ts) (29 chaves de `UserProfile`) + labels curtos em português (derivados de [src/lib/calculations.ts](../../src/lib/calculations.ts); ver dev note "Labels canônicos" abaixo).
-  - [ ] 2.2 Criar `supabase/seeds/curriculum_fields.sql` com **exatamente 29 INSERTs** + `ON CONFLICT` idempotente:
+- [x] **Task 2 — Criar seed `supabase/seeds/curriculum_fields.sql`** (AC: #3)
+  - [x] 2.1 **Extrair contrato** de [src/lib/types.ts](../../src/lib/types.ts) (29 chaves de `UserProfile`) + labels curtos em português (derivados de [src/lib/calculations.ts](../../src/lib/calculations.ts); ver dev note "Labels canônicos" abaixo).
+  - [x] 2.2 Criar `supabase/seeds/curriculum_fields.sql` com **exatamente 29 INSERTs** + `ON CONFLICT` idempotente:
     ```sql
     -- supabase/seeds/curriculum_fields.sql
     -- Story 1.10: Catálogo de campos do currículo (29 fields, 5 categorias).
@@ -241,11 +241,11 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
       options = excluded.options,
       display_order = excluded.display_order;
     ```
-  - [ ] 2.3 **Wire up no `supabase/seed.sql`** (arquivo carregado por `db reset` pós-migrations): adicionar `\i seeds/curriculum_fields.sql` (ou criar `supabase/seed.sql` se não existe — `supabase/seeds/` não é auto-carregado, só `supabase/seed.sql` é). **Verificar primeiro** se Story 1.9 já criou `supabase/seed.sql` para carregar seeds de instituições — se sim, apenas anexar linha; se não, criar com comentário-header.
+  - [x] 2.3 **Wire up no `supabase/seed.sql`** (arquivo carregado por `db reset` pós-migrations): adicionar `\i seeds/curriculum_fields.sql` (ou criar `supabase/seed.sql` se não existe — `supabase/seeds/` não é auto-carregado, só `supabase/seed.sql` é). **Verificar primeiro** se Story 1.9 já criou `supabase/seed.sql` para carregar seeds de instituições — se sim, apenas anexar linha; se não, criar com comentário-header.
 
-- [ ] **Task 3 — Criar migration `0004_storage_editais.sql`** (AC: #4)
-  - [ ] 3.1 Gerar esqueleto: `supabase migration new storage_editais`; renomear para `0004_storage_editais.sql`.
-  - [ ] 3.2 **Insert idempotente do bucket** em `storage.buckets`:
+- [x] **Task 3 — Criar migration `0004_storage_editais.sql`** (AC: #4)
+  - [x] 3.1 Gerar esqueleto: `supabase migration new storage_editais`; renomear para `0004_storage_editais.sql`.
+  - [x] 3.2 **Insert idempotente do bucket** em `storage.buckets`:
     ```sql
     -- 0004_storage_editais.sql
     -- Story 1.10: bucket `editais` (PDFs, 10MB max, leitura autenticada, escrita admin)
@@ -257,7 +257,7 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
       file_size_limit = excluded.file_size_limit,
       allowed_mime_types = excluded.allowed_mime_types;
     ```
-  - [ ] 3.3 **Policies em `storage.objects`** — `USING`/`WITH CHECK` inclui `bucket_id = 'editais'` para isolar policies deste bucket:
+  - [x] 3.3 **Policies em `storage.objects`** — `USING`/`WITH CHECK` inclui `bucket_id = 'editais'` para isolar policies deste bucket:
     ```sql
     create policy "editais_authenticated_read"
       on storage.objects for select to authenticated
@@ -277,7 +277,7 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
       using (bucket_id = 'editais' and public.is_admin(auth.uid()));
     ```
     **Atenção**: policies em `storage.objects` são **globais** — o filtro `bucket_id = 'editais'` é obrigatório para não afetar outros buckets (ex.: avatars futuros).
-  - [ ] 3.4 **Guard de `DROP POLICY IF EXISTS`** antes de cada `CREATE POLICY` para tornar migration re-aplicável em ambientes onde `db reset` não dropa storage schema (staging/prod):
+  - [x] 3.4 **Guard de `DROP POLICY IF EXISTS`** antes de cada `CREATE POLICY` para tornar migration re-aplicável em ambientes onde `db reset` não dropa storage schema (staging/prod):
     ```sql
     drop policy if exists "editais_authenticated_read" on storage.objects;
     drop policy if exists "editais_admin_write_insert" on storage.objects;
@@ -286,33 +286,62 @@ Copiados verbatim de [epics.md#Story 1.10 (_bmad-output/planning-artifacts/epics
     ```
     Colocar **antes** dos `create policy`.
 
-- [ ] **Task 4 — Testes pgTAP** (AC: #1, #2, #3, #4)
-  - [ ] 4.1 Criar `supabase/tests/0003_curriculum_scores.test.sql` seguindo padrão de `0001_profiles.test.sql`:
+- [x] **Task 4 — Testes pgTAP** (AC: #1, #2, #3, #4)
+  - [x] 4.1 Criar `supabase/tests/0003_curriculum_scores.test.sql` seguindo padrão de `0001_profiles.test.sql`:
     - `has_table` para as 3 tabelas
     - `col_type_is`/`col_has_check` para `curriculum_fields.field_type`
     - `has_pk` composta em `user_scores`
     - RLS: `relrowsecurity = true` e `relforcerowsecurity = true` nas 3 tabelas
     - Fluxo funcional: inserir 2 users via `auth.users` (aproveitando trigger `handle_new_user`), setar `role='admin'` em 1 via update direto (ou via helper de teste), `set local role authenticated` + `set local request.jwt.claim.sub = ...`, upsert em `user_curriculum` do user 1 → confirmar que user 2 não vê
     - Contagem: `select is((select count(*) from public.curriculum_fields), 29::bigint, 'seed has 29 fields')` — **após** carregar seed manualmente na prova de teste ou em fixture separada
-  - [ ] 4.2 Criar `supabase/tests/0004_storage_editais.test.sql`:
+  - [x] 4.2 Criar `supabase/tests/0004_storage_editais.test.sql`:
     - `is((select file_size_limit from storage.buckets where id='editais'), 10485760, '10MB limit')`
     - `is((select allowed_mime_types from storage.buckets where id='editais'), array['application/pdf'], 'pdf only')`
     - Verificar existência das 4 policies em `storage.objects` via `pg_policies`
-  - [ ] 4.3 **Não** usar `test_helpers` ad-hoc além dos usados em 0001 — manter estilo consistente.
+  - [x] 4.3 **Não** usar `test_helpers` ad-hoc além dos usados em 0001 — manter estilo consistente.
 
-- [ ] **Task 5 — Regenerar `src/lib/database.types.ts`** (AC: #5)
-  - [ ] 5.1 Subir Supabase local limpo: `supabase stop && supabase start && supabase db reset` (garante que `0001 + 0002 + 0003 + 0004` + seeds aplicam em ordem sem erro).
-  - [ ] 5.2 Rodar: `supabase gen types typescript --local > src/lib/database.types.ts`.
-  - [ ] 5.3 **Preservar o comentário-marca no topo**: após a regeneração, inserir `// GERADO — não editar manualmente` na linha 1 se o gen sobrescrever (gen do Supabase não preserva comentário — ver [1-3#AC3 (../planning-artifacts/epics.md:403)](../planning-artifacts/epics.md); padrão estabelecido em Story 1.3).
-  - [ ] 5.4 Confirmar `npx tsc --noEmit` passa. **Nenhum consumidor existente** usa `curriculum_fields`/`user_curriculum`/`user_scores` (schema greenfield consumido só a partir de Epic 2) — portanto risco zero de regressão.
-  - [ ] 5.5 Rodar `npm test` (vitest) — nenhum teste existente toca esse schema; deve permanecer verde.
+- [x] **Task 5 — Regenerar `src/lib/database.types.ts`** (AC: #5)
+  - [x] 5.1 Subir Supabase local limpo: `supabase stop && supabase start && supabase db reset` (garante que `0001 + 0002 + 0003 + 0004` + seeds aplicam em ordem sem erro).
+  - [x] 5.2 Rodar: `supabase gen types typescript --local > src/lib/database.types.ts`.
+  - [x] 5.3 **Preservar o comentário-marca no topo**: após a regeneração, inserir `// GERADO — não editar manualmente` na linha 1 se o gen sobrescrever (gen do Supabase não preserva comentário — ver [1-3#AC3 (../planning-artifacts/epics.md:403)](../planning-artifacts/epics.md); padrão estabelecido em Story 1.3).
+  - [x] 5.4 Confirmar `npx tsc --noEmit` passa. **Nenhum consumidor existente** usa `curriculum_fields`/`user_curriculum`/`user_scores` (schema greenfield consumido só a partir de Epic 2) — portanto risco zero de regressão.
+  - [x] 5.5 Rodar `npm test` (vitest) — nenhum teste existente toca esse schema; deve permanecer verde.
 
-- [ ] **Task 6 — Atualizar [deferred-work.md](./deferred-work.md) e status**
-  - [ ] 6.1 Adicionar entrada em `deferred-work.md` (se já existir) listando itens fora de escopo que merecem ser rastreados:
+- [x] **Task 6 — Atualizar [deferred-work.md](./deferred-work.md) e status**
+  - [x] 6.1 Adicionar entrada em `deferred-work.md` (se já existir) listando itens fora de escopo que merecem ser rastreados:
     - PK composta com `NULL` em `user_scores.specialty_id` → escolher `UNIQUE NULLS NOT DISTINCT` vs sentinel UUID em **Story 2.5** (database function `calculate_scores`).
     - Trigger `mark_scores_stale` — **NÃO** implementar aqui; é escopo explícito da **Story 2.5**.
     - Legado `src/lib/calculations.ts` + `src/lib/types.ts` — manter intocado até Epic 2 (ver decisão consolidada em Story 1.3 dev notes).
-  - [ ] 6.2 Atualizar `sprint-status.yaml` (já feito pelo workflow; confirmar status `1-10-schema-curriculo-scores-bucket-editais: ready-for-dev`).
+  - [x] 6.2 Atualizar `sprint-status.yaml` (já feito pelo workflow; confirmar status `1-10-schema-curriculo-scores-bucket-editais: ready-for-dev`).
+
+### Review Findings
+
+_Code review executado em 2026-04-15 — 3 camadas paralelas (Blind Hunter, Edge Case Hunter, Acceptance Auditor)._
+
+#### decision-needed
+
+- [x] [Review][Decision] Orquestrador do seed diverge do AC3 literal — AC3 pedia `supabase/seed.sql` com `\i seeds/...`, mas `\i` é meta-comando psql e o driver pgx do Supabase CLI não aceita (verificado: `supabase db reset` falha com `syntax error at or near "\"`). **Resolução**: `sql_paths = ["./seeds/rules_engine.sql", "./seeds/curriculum_fields.sql"]` em `config.toml` — ordem explícita sem glob. AC3 deve ser atualizado na retrospectiva. [`supabase/config.toml:65`]
+
+#### patch
+
+- [x] [Review][Patch] `database.types.ts` não compila (falso positivo) — `tsc --noEmit` passa limpo; Acceptance Auditor reportou string `Connecting to db 5432` mas arquivo já estava limpo no HEAD. Verificado por grep. [`src/lib/database.types.ts`] **[DISMISSED — falso positivo]**
+- [x] [Review][Patch] Testes pgTAP de `0004_storage_editais` agora têm 3 casos funcionais de RLS: student `throws_ok` em INSERT, anon vê 0 rows em SELECT, admin `lives_ok` em INSERT. `plan(10)`. [`supabase/tests/0004_storage_editais.test.sql:78-113`]
+- [x] [Review][Patch] Teste 0003 agora valida caminho positivo admin: `lives_ok` insert em `curriculum_fields` via JWT com `profiles.role='admin'`, e conta persistência. [`supabase/tests/0003_curriculum_scores.test.sql:144-162`]
+- [x] [Review][Patch] `plan()` ajustado para 28 (28 asserções reais; rodado e verde). [`supabase/tests/0003_curriculum_scores.test.sql:4`]
+- [x] [Review][Patch] CHECK `user_scores_non_negative (score >= 0 and max_score >= 0)` adicionado. [`supabase/migrations/0003_curriculum_scores.sql:54`]
+- [x] [Review][Patch] CHECK `user_scores_calc_consistency (stale = true or calculated_at is not null)` adicionado. [`supabase/migrations/0003_curriculum_scores.sql:55`]
+- [x] [Review][Patch] CHECK `curriculum_fields_options_consistency` (field_type='select' ⇔ options IS NOT NULL) adicionado. [`supabase/migrations/0003_curriculum_scores.sql:19-22`]
+
+#### defer
+
+- [x] [Review][Defer] PK composta com `specialty_id NULL` em `user_scores` — deferido para Story 2.5 (conforme Task 6.1 e Dev Notes linhas 125/312/358). `UNIQUE NULLS NOT DISTINCT` vs sentinel UUID será decidido junto ao `calculate_scores`. [`supabase/migrations/0003_curriculum_scores.sql:42-52`] — deferido, decisão arquitetural em escopo futuro
+- [x] [Review][Defer] Policies INSERT/UPDATE/DELETE de `user_scores` permitem student escrever via PostgREST direto (bypassando `calculate_scores` SECURITY DEFINER) — implementação segue AC2 literal ("SELECT + INSERT + UPDATE + DELETE policies"). Tightening (remover policies CRUD de student, manter só SELECT, escrita exclusiva via RPC) é decisão da Story 2.5. [`supabase/migrations/0003_curriculum_scores.sql:117-136`] — deferido, tightening faz sentido junto ao RPC
+- [x] [Review][Defer] Seed `curriculum_fields` não remove `field_key` órfãos em reruns — drift silencioso quando `UserProfile` mudar. Aceitável MVP; revisitar quando Epic 2 formalizar contrato. [`supabase/seeds/curriculum_fields.sql:44-49`] — deferido, aceitável MVP
+- [x] [Review][Defer] `user_curriculum.data jsonb` sem validação contra catálogo — aluno pode gravar chaves/tipos arbitrários. Intencional por design (flexibilidade Epic 2); validação cliente-side via Zod. [`supabase/migrations/0003_curriculum_scores.sql:28-32`] — deferido, validação na camada de app
+- [x] [Review][Defer] `curriculum_fields.category` como `text` livre sem FK/enum — typo futuro cria categoria fantasma. Trade-off de simplicidade; considerar enum em Epic 2. [`supabase/migrations/0003_curriculum_scores.sql:12`] — deferido, Epic 2
+- [x] [Review][Defer] `field_type='text'` permitido no CHECK mas nenhum field usa — reservado para futuro. Não-bug. [`supabase/migrations/0003_curriculum_scores.sql:15`] — deferido, reservado
+- [x] [Review][Defer] `conceito_historico` tem `options='["A","B","C"]'` mas `calculations.ts` nunca lê essa chave — dead data até Epic 2 consumir. [`supabase/seeds/curriculum_fields.sql:40`] — deferido, Epic 2.6
+- [x] [Review][Defer] Label `media_geral` ambíguo (`0-10 ou 0-100`) — `calculations.ts` usa `>= 80` e `>= 85` (escala 0-100). UI de Epic 2 precisa resolver escala. [`supabase/seeds/curriculum_fields.sql:38`] — deferido, Epic 2
 
 ## Dev Notes
 
@@ -427,10 +456,40 @@ src/lib/
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+claude-opus-4-6[1m]
 
 ### Debug Log References
 
+- `supabase db reset` aplicou 0001 → 0002 → 0003 → 0004 + seeds `curriculum_fields.sql` e `rules_engine.sql` sem erro (NOTICE esperado sobre DROP POLICY IF EXISTS na primeira aplicação do 0004).
+- `supabase db test` → 72 testes pgTAP verdes (0001: 15, 0002: 24, 0003: 26, 0004: 7).
+- `npx tsc --noEmit` → 0 erros.
+- `npm test -- --run` → 26 arquivos / 143 testes verdes (nenhuma regressão).
+- **Observação**: config.toml usa `[db.seed] sql_paths = ["./seeds/*.sql"]` — seeds são auto-carregados por glob; `supabase/seed.sql` orquestrador **não é necessário** e **não foi criado** (diverge da guidance na Task 2.3 do story file, que é stale).
+- Plan pgTAP inicialmente em 22 para 0003 foi corrigido para 26 após primeira execução sinalizar "ran 26".
+
 ### Completion Notes List
 
+- ✅ AC1 — Migration `0003_curriculum_scores.sql` cria `curriculum_fields`, `user_curriculum`, `user_scores` com schema exato, trigger `updated_at` reutilizando `public.set_updated_at()` e 3 índices (`idx_curriculum_fields_display_order`, `idx_user_scores_user_id`, `idx_user_scores_institution`). PK composta em `user_scores` validada por pgTAP.
+- ✅ AC2 — RLS `ENABLE + FORCE` nas 3 tabelas. Policies: `curriculum_fields` leitura `anon, authenticated`; escrita via `is_admin`. `user_curriculum` e `user_scores` com CRUD isolado por `auth.uid() = user_id`. Testes funcionais verificam isolamento (aluno A vê só própria linha; aluno B vê zero; WITH CHECK bloqueia cross-user insert; anon lê catálogo público).
+- ✅ AC3 — Seed `supabase/seeds/curriculum_fields.sql` com **29 fields** distribuídos em 5 categorias (5+5+5+8+6). Mapping de `field_type`: 6 boolean, 1 select (`conceito_historico` com `options=["A","B","C"]`), demais number. Idempotente via `ON CONFLICT (field_key) DO UPDATE SET ...`. `display_order` com offset 10.
+- ✅ AC4 — Migration `0004_storage_editais.sql` cria bucket `editais` (private, 10 MiB, MIME=pdf) idempotente via `ON CONFLICT (id)`, + 4 policies em `storage.objects` com `bucket_id = 'editais'` e guard `DROP POLICY IF EXISTS` antes de `CREATE`.
+- ✅ AC5 — `src/lib/database.types.ts` regenerado com `supabase gen types typescript --local`. Comentário-marca `// GERADO — não editar manualmente` re-inserido no topo (gen do Supabase não preserva). `tsc --noEmit` OK; Vitest 143/143 verdes.
+- **Pré-requisito 1.9 atendido**: 0002_rules_engine.sql já aplicado no repo (`institutions` e `specialties` disponíveis como FKs de `user_scores`).
+- **Legado intocado**: `src/lib/types.ts` e `src/lib/calculations.ts` não foram modificados — consumo Supabase começa no Epic 2.
+- **Escopo deferido** registrado em `_bmad-output/implementation-artifacts/deferred-work.md` (semântica PK-com-NULL para Story 2.5; trigger `mark_scores_stale` para Story 2.5; validação client-side de upload para Story 3.3).
+
 ### File List
+
+- `supabase/migrations/0003_curriculum_scores.sql` [NOVO]
+- `supabase/migrations/0004_storage_editais.sql` [NOVO]
+- `supabase/seeds/curriculum_fields.sql` [NOVO]
+- `supabase/tests/0003_curriculum_scores.test.sql` [NOVO]
+- `supabase/tests/0004_storage_editais.test.sql` [NOVO]
+- `src/lib/database.types.ts` [REGENERADO — comentário-marca preservado]
+- `_bmad-output/implementation-artifacts/deferred-work.md` [MODIFICADO — nova seção Story 1.10]
+- `_bmad-output/implementation-artifacts/1-10-schema-curriculo-scores-bucket-editais.md` [MODIFICADO — tasks marcadas + Dev Agent Record]
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` [MODIFICADO — status 1-10 → review]
+
+### Change Log
+
+- 2026-04-15 — Story 1.10 implementada: migrations 0003+0004, seed 29 fields, pgTAP 33 testes novos (26+7), types regenerados. Todos os 5 ACs satisfeitos; 72 pgTAP + 143 Vitest + tsc verdes. Status → review.

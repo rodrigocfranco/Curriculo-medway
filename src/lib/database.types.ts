@@ -1,3 +1,4 @@
+// GERADO — não editar manualmente. Rode `supabase gen types typescript --local > src/lib/database.types.ts`.
 export type Json =
   | string
   | number
@@ -34,6 +35,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      curriculum_fields: {
+        Row: {
+          category: string
+          created_at: string
+          display_order: number
+          field_key: string
+          field_type: string
+          id: string
+          label: string
+          options: Json | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          display_order?: number
+          field_key: string
+          field_type: string
+          id?: string
+          label: string
+          options?: Json | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          display_order?: number
+          field_key?: string
+          field_type?: string
+          id?: string
+          label?: string
+          options?: Json | null
+        }
+        Relationships: []
+      }
+      institutions: {
+        Row: {
+          created_at: string
+          edital_url: string | null
+          id: string
+          name: string
+          pdf_path: string | null
+          short_name: string | null
+          state: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          edital_url?: string | null
+          id?: string
+          name: string
+          pdf_path?: string | null
+          short_name?: string | null
+          state?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          edital_url?: string | null
+          id?: string
+          name?: string
+          pdf_path?: string | null
+          short_name?: string | null
+          state?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -75,6 +142,162 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      scoring_rules: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          field_key: string
+          formula: Json
+          id: string
+          institution_id: string
+          max_points: number
+          specialty_id: string | null
+          updated_at: string
+          weight: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          field_key: string
+          formula: Json
+          id?: string
+          institution_id: string
+          max_points: number
+          specialty_id?: string | null
+          updated_at?: string
+          weight: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          field_key?: string
+          formula?: Json
+          id?: string
+          institution_id?: string
+          max_points?: number
+          specialty_id?: string | null
+          updated_at?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scoring_rules_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scoring_rules_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      specialties: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      user_curriculum: {
+        Row: {
+          data: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          data?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          data?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_curriculum_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_scores: {
+        Row: {
+          breakdown: Json
+          calculated_at: string | null
+          institution_id: string
+          max_score: number
+          score: number
+          specialty_id: string
+          stale: boolean
+          user_id: string
+        }
+        Insert: {
+          breakdown?: Json
+          calculated_at?: string | null
+          institution_id: string
+          max_score?: number
+          score?: number
+          specialty_id: string
+          stale?: boolean
+          user_id: string
+        }
+        Update: {
+          breakdown?: Json
+          calculated_at?: string | null
+          institution_id?: string
+          max_score?: number
+          score?: number
+          specialty_id?: string
+          stale?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_scores_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_scores_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
