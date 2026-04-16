@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality (lint + typecheck + test + build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck (app)
+        run: bunx tsc --noEmit -p tsconfig.app.json
+
+      - name: Typecheck (node)
+        run: bunx tsc --noEmit -p tsconfig.node.json
+
+      - name: Test
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+        env:
+          VITE_SUPABASE_URL: http://127.0.0.1:54321
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          VITE_APP_ENV: ci
+
+  types-drift:
+    name: Schema drift (database.types.ts)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase
+        run: supabase db start
+
+      - name: Apply migrations + seeds
+        run: supabase db reset
+
+      - name: Generate types from current schema
+        run: |
+          {
+            echo "// GERADO — não editar manualmente. Rode \`supabase gen types typescript --local > src/lib/database.types.ts\`."
+            supabase gen types typescript --local
+          } > /tmp/database.types.ts
+
+      - name: Diff against committed types (ignoring marker line)
+        run: |
+          set -e
+          if ! diff <(tail -n +2 src/lib/database.types.ts) <(tail -n +2 /tmp/database.types.ts); then
+            echo ""
+            echo "::error::Schema drift detected in src/lib/database.types.ts"
+            echo "Regenere rodando: supabase gen types typescript --local > src/lib/database.types.ts"
+            echo "E adicione manualmente o header '// GERADO — não editar manualmente.' na linha 1."
+            exit 1
+          fi

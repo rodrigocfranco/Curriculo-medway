@@ -40,11 +40,12 @@ export function ForgotPasswordForm() {
 
   const onSubmit = (values: ForgotPasswordFormValues) => {
     if (mutation.isPending) return;
-    mutation.mutate(values, {
+    const email = values.email ?? "";
+    mutation.mutate({ email }, {
       onSuccess: () => {
         // AC1 anti-enumeração: só mostra tela neutra após servidor aceitar (sucesso
         // real ou erro neutralizado em isNeutralizableError).
-        setSubmittedEmail(values.email);
+        setSubmittedEmail(email);
       },
       onError: (err) => {
         // Erros técnicos NÃO devem mostrar a tela neutra de "link enviado".

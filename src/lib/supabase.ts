@@ -1,23 +1,16 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 
-let client: SupabaseClient<Database> | null = null;
+const url = import.meta.env.VITE_SUPABASE_URL;
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-function getClient(): SupabaseClient<Database> {
-  if (client) return client;
-  const url = import.meta.env.VITE_SUPABASE_URL;
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) {
-    throw new Error(
-      "Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY — ver .env.example",
-    );
-  }
-  client = createClient<Database>(url, anonKey);
-  return client;
+if (import.meta.env.MODE !== "test" && (!url || !anonKey)) {
+  throw new Error(
+    "VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY são obrigatórios — configure em .env.local (dev) ou nas env vars do Railway (Preview/Production).",
+  );
 }
 
-export const supabase = new Proxy({} as SupabaseClient<Database>, {
-  get(_target, prop, receiver) {
-    return Reflect.get(getClient(), prop, receiver);
-  },
-});
+export const supabase: SupabaseClient<Database> = createClient<Database>(
+  url,
+  anonKey,
+);

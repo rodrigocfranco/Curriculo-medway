@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-14
-last_updated: 2026-04-14 (story 1.6 review aprovada & patches aplicados → done; 10 patches aplicados, 5 deferreds, 111 testes passam, build SSG OK)
+last_updated: 2026-04-15 (story 1.11 implementada e movida para review — código/config completos (CI workflows, Vercel config, Sentry + ErrorBoundary, health.json, db-push.yml, robots.txt, supabase.ts env throw, docs/deployment.md + architecture-deviations.md, deferred-work atualizado); 150 testes verdes, typecheck limpo, build gera apenas rotas públicas. Setup manual em dashboards (Vercel/Supabase/Sentry/UptimeRobot/GitHub Environments) documentado como checklist em docs/deployment.md.)
 project: curriculo-medway
 project_key: NOKEY
 tracking_system: file-system
@@ -51,10 +51,10 @@ development_status:
   1-5-cadastro-publico-signup-lgpd: done
   1-6-login-logout-authcontext: done
   1-7-recuperacao-de-senha: done
-  1-8-protectedroute-appshell-adminshell: ready-for-dev
-  1-9-schema-motor-regras-seeds-instituicoes: ready-for-dev
-  1-10-schema-curriculo-scores-bucket-editais: ready-for-dev
-  1-11-ci-cd-completo: backlog
+  1-8-protectedroute-appshell-adminshell: done
+  1-9-schema-motor-regras-seeds-instituicoes: done
+  1-10-schema-curriculo-scores-bucket-editais: done
+  1-11-ci-cd-completo: review
   epic-1-retrospective: optional
 
   epic-2: backlog

@@ -1,6 +1,7 @@
 import type { RouteRecord } from "vite-react-ssg";
 import NotFound from "./pages/NotFound";
 import { AppProviders } from "./App";
+import ChunkLoadErrorFallback from "./components/layout/ChunkLoadErrorFallback";
 
 const devDesignSystemRoute: RouteRecord[] = import.meta.env.DEV
   ? [
@@ -16,6 +17,7 @@ export const routes: RouteRecord[] = [
   {
     path: "/",
     Component: AppProviders,
+    errorElement: <ChunkLoadErrorFallback />,
     children: [
       {
         index: true,
@@ -50,12 +52,55 @@ export const routes: RouteRecord[] = [
       {
         path: "app",
         lazy: () =>
-          import("./pages/app/Home").then((m) => ({ Component: m.default })),
+          import("./components/layout/StudentLayout").then((m) => ({
+            Component: m.default,
+          })),
+        children: [
+          {
+            index: true,
+            lazy: () =>
+              import("./pages/app/Home").then((m) => ({
+                Component: m.default,
+              })),
+          },
+        ],
       },
       {
         path: "admin",
         lazy: () =>
-          import("./pages/admin/Home").then((m) => ({ Component: m.default })),
+          import("./components/layout/AdminLayout").then((m) => ({
+            Component: m.default,
+          })),
+        children: [
+          {
+            index: true,
+            lazy: () =>
+              import("./pages/admin/Home").then((m) => ({
+                Component: m.default,
+              })),
+          },
+          {
+            path: "regras",
+            lazy: () =>
+              import("./pages/admin/Stub").then((m) => ({
+                Component: m.RegrasStub,
+              })),
+          },
+          {
+            path: "leads",
+            lazy: () =>
+              import("./pages/admin/Stub").then((m) => ({
+                Component: m.LeadsStub,
+              })),
+          },
+          {
+            path: "historico",
+            lazy: () =>
+              import("./pages/admin/Stub").then((m) => ({
+                Component: m.HistoricoStub,
+              })),
+          },
+        ],
       },
       { path: "*", Component: NotFound },
     ],

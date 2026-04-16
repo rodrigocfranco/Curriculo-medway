@@ -11,14 +11,12 @@ const Login = () => {
     if (loading) return;
     if (!user) return;
     if (!profile) {
-      // user truthy + profile null + loading false = órfão (RLS denial / sem
-      // row em profiles). Não redirecionar para /app sem role definida (admin
-      // seria rebaixado para /app silenciosamente). Deslogar para forçar
-      // re-login limpo; loop /login ↔ /app fica fechado.
       void signOut();
       return;
     }
-    navigate(profile.role === "admin" ? "/admin" : "/app", { replace: true });
+    const role: "admin" | "student" = profile.role === "admin" ? "admin" : "student";
+    const target = role === "admin" ? "/admin" : "/app";
+    navigate(target, { replace: true });
   }, [loading, user, profile, navigate, signOut]);
 
   return (

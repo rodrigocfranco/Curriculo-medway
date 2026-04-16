@@ -20,15 +20,17 @@ import {
 import type { SignupFormValues } from "../schemas/signup";
 import type { LoginFormValues } from "../schemas/login";
 
-const signUpMock = vi.fn();
-const signInMock = vi.fn();
-const signOutMock = vi.fn();
-const resetPasswordForEmailMock = vi.fn();
-const updateUserMock = vi.fn();
-const singleMock = vi.fn();
+const signUpMock = vi.fn<(...args: unknown[]) => unknown>();
+const signInMock = vi.fn<(...args: unknown[]) => unknown>();
+const signOutMock = vi.fn<(...args: unknown[]) => unknown>();
+const resetPasswordForEmailMock = vi.fn<(...args: unknown[]) => unknown>();
+const updateUserMock = vi.fn<(...args: unknown[]) => unknown>();
+const singleMock = vi.fn<(...args: unknown[]) => unknown>();
 const eqMock = vi.fn(() => ({ single: singleMock }));
 const selectMock = vi.fn(() => ({ eq: eqMock }));
-const fromMock = vi.fn(() => ({ select: selectMock }));
+const fromMock = vi.fn<(...args: unknown[]) => { select: typeof selectMock }>(
+  () => ({ select: selectMock }),
+);
 
 vi.mock("../supabase", () => ({
   supabase: {
@@ -98,7 +100,11 @@ describe("useSignup mutation", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(signUpMock).toHaveBeenCalledTimes(1);
-    const call = signUpMock.mock.calls[0][0];
+    const call = signUpMock.mock.calls[0][0] as {
+      email: string;
+      password: string;
+      options: { data: Record<string, unknown> };
+    };
     expect(call.email).toBe(signupValues.email);
     expect(call.password).toBe(signupValues.password);
     expect(call.options.data).toMatchObject({
@@ -301,7 +307,10 @@ describe("useRequestPasswordReset mutation", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(resetPasswordForEmailMock).toHaveBeenCalledTimes(1);
-    const [email, opts] = resetPasswordForEmailMock.mock.calls[0];
+    const [email, opts] = resetPasswordForEmailMock.mock.calls[0] as [
+      string,
+      { redirectTo: string },
+    ];
     expect(email).toBe("lucas@example.com");
     expect(opts.redirectTo).toMatch(/\/reset-password$/);
   });

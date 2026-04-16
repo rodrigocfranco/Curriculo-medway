@@ -14,7 +14,6 @@ describe("Landing", () => {
       screen.getByRole("heading", {
         level: 1,
         name: "Descubra como está seu currículo para as maiores instituições de residência do Brasil",
-        exact: true,
       })
     ).toBeInTheDocument();
   });

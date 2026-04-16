@@ -10,7 +10,9 @@ type AuthCallback = (event: string, session: unknown) => void;
 const listeners: AuthCallback[] = [];
 const unsubscribeMock = vi.fn();
 const getSessionMock = vi.fn();
-const signOutMock = vi.fn(() => Promise.resolve({ error: null }));
+const signOutMock = vi.fn<(...args: unknown[]) => Promise<{ error: null }>>(
+  () => Promise.resolve({ error: null }),
+);
 const singleMock = vi.fn();
 const removeQueriesSpy = vi.fn();
 

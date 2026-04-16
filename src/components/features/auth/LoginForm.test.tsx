@@ -3,13 +3,15 @@ import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const signInMock = vi.fn();
-const navigateMock = vi.fn();
-const toastErrorMock = vi.fn();
-const singleMock = vi.fn();
+const signInMock = vi.fn<(...args: unknown[]) => unknown>();
+const navigateMock = vi.fn<(...args: unknown[]) => unknown>();
+const toastErrorMock = vi.fn<(...args: unknown[]) => unknown>();
+const singleMock = vi.fn<(...args: unknown[]) => unknown>();
 const eqMock = vi.fn(() => ({ single: singleMock }));
 const selectMock = vi.fn(() => ({ eq: eqMock }));
-const fromMock = vi.fn(() => ({ select: selectMock }));
+const fromMock = vi.fn<(...args: unknown[]) => { select: typeof selectMock }>(
+  () => ({ select: selectMock }),
+);
 
 vi.mock("@/lib/supabase", () => ({
   supabase: {
