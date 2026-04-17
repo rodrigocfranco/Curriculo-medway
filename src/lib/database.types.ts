@@ -1,3 +1,4 @@
+// GERADO — não editar manualmente.
 export type Json =
   | string
   | number

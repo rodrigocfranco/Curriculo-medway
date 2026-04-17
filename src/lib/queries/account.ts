@@ -16,9 +16,10 @@ type DeleteAccountResponse = {
 
 export function useDeleteAccount(): UseMutationResult<
   DeleteAccountResponse,
-  Error
+  Error,
+  void
 > {
-  return useMutation<DeleteAccountResponse, Error>({
+  return useMutation<DeleteAccountResponse, Error, void>({
     mutationFn: async () => {
       const { data, error } = await supabase.functions.invoke<DeleteAccountResponse>(
         "delete-account"

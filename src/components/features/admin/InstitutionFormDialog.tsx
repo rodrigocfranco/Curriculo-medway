@@ -85,7 +85,7 @@ export function InstitutionFormDialog({
         form.reset({
           name: institution.name,
           short_name: institution.short_name ?? "",
-          state: institution.state ?? "",
+          state: (institution.state ?? "") as InstitutionFormValues["state"],
           edital_url: institution.edital_url ?? "",
         });
         setEditalMode(institution.pdf_path ? "upload" : "link");

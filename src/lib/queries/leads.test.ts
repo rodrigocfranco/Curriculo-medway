@@ -39,11 +39,11 @@ function buildChain() {
 }
 
 const chain = buildChain();
-const mockFrom = vi.fn(() => chain);
+const mockFrom = vi.fn((_table: string) => chain);
 
 vi.mock("../supabase", () => ({
   supabase: {
-    from: (...args: unknown[]) => mockFrom(...args),
+    from: (table: string) => mockFrom(table),
   },
 }));
 

@@ -379,9 +379,13 @@ export function useRevertRule(): UseMutationResult<
       const { old_values, change_type, rule_id } = auditEntry;
       if (!old_values) throw new Error("Sem valores anteriores para reverter.");
 
+      type ScoringRuleUpdate = Database["public"]["Tables"]["scoring_rules"]["Update"];
+      type ScoringRuleInsert = Database["public"]["Tables"]["scoring_rules"]["Insert"];
+
       // Campos de metadados que não devem ser usados no revert
-      const { id: _id, created_at: _ca, updated_at: _ua, ...restoreValues } =
+      const { id: _id, created_at: _ca, updated_at: _ua, ...rest } =
         old_values as Record<string, unknown>;
+      const restoreValues = rest as ScoringRuleUpdate;
 
       if (change_type === "UPDATE") {
         const { error } = await supabase
@@ -390,10 +394,13 @@ export function useRevertRule(): UseMutationResult<
           .eq("id", rule_id);
         if (error) throw error;
       } else if (change_type === "DELETE") {
-        // Recria a regra usando old_values, tentando manter o id original
+        const insertValues = {
+          id: old_values.id as string,
+          ...rest,
+        } as ScoringRuleInsert;
         const { error } = await supabase
           .from("scoring_rules")
-          .insert({ id: old_values.id as string, ...restoreValues });
+          .insert(insertValues);
         if (error) throw error;
       }
     },

@@ -6,7 +6,7 @@ import {
   type UseQueryResult,
 } from "@tanstack/react-query";
 import { supabase } from "../supabase";
-import type { Database } from "../database.types";
+import type { Database, Json } from "../database.types";
 import type { CurriculumData } from "../schemas/curriculum";
 
 // ---------------------------------------------------------------------------
@@ -98,7 +98,7 @@ export function useUpdateCurriculum(
     mutationFn: async (curriculumData) => {
       const { error } = await supabase.from("user_curriculum").upsert({
         user_id: userId,
-        data: curriculumData,
+        data: curriculumData as unknown as Json,
         updated_at: new Date().toISOString(),
       });
 

@@ -101,7 +101,7 @@ export function CurriculoFormSection({
             <FormField
               key={field.field_key}
               control={form.control}
-              name={field.field_key as keyof CurriculumData}
+              name={field.field_key as keyof CurriculumData & string}
               render={({ field: formField }) => {
                 if (field.field_type === "boolean") {
                   return (
