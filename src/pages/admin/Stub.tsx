@@ -12,7 +12,6 @@ export const AdminStub = ({ title }: AdminStubProps) => (
 );
 
 export const RegrasStub = () => <AdminStub title="Regras" />;
-export const LeadsStub = () => <AdminStub title="Leads" />;
 export const HistoricoStub = () => <AdminStub title="Histórico" />;
 
 export default AdminStub;

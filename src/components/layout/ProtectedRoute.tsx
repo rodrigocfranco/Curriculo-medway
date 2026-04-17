@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 type Role = "student" | "admin";
 
 interface ProtectedRouteProps {
-  role: Role;
+  role: Role | Role[];
   children?: ReactNode;
 }
 
@@ -22,7 +22,10 @@ export const ProtectedRoute = ({ role, children }: ProtectedRouteProps) => {
   const { user, profile, loading, recoveryMode } = useAuth();
   const location = useLocation();
   const toastedRef = useRef(false);
-  const roleMismatch = !!user && !!profile && profile.role !== role;
+
+  const allowedRoles = Array.isArray(role) ? role : [role];
+  const roleMismatch =
+    !!user && !!profile && !allowedRoles.includes(profile.role as Role);
 
   useEffect(() => {
     if (roleMismatch && !toastedRef.current) {
@@ -38,7 +41,10 @@ export const ProtectedRoute = ({ role, children }: ProtectedRouteProps) => {
     return <Navigate to={`/login?redirect=${redirect}`} replace />;
   }
   if (!profile) return <LoadingSkeleton />;
-  if (roleMismatch) return <Navigate to="/app" replace />;
+  if (roleMismatch) {
+    const fallback = profile.role === "admin" ? "/admin" : "/app";
+    return <Navigate to={fallback} replace />;
+  }
 
   return <>{children ?? <Outlet />}</>;
 };

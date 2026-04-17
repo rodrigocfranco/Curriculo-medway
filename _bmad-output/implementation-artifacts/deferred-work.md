@@ -31,6 +31,25 @@ Os itens abaixo, previamente deferidos de Stories 1.1 / 1.4 / 1.5 / 1.6 / 1.7 / 
 - **Required reviewers em repo privado plano Free** — `db-push.yml` depende de GitHub Environments com required reviewers, que exige plano Team/Enterprise em repos privados. Se Free, o guard é fraco (basta alterar código). Documentado em `docs/deployment.md`; avaliar upgrade antes do primeiro `db-push` real em produção.
 - **Domínio customizado `curriculo.medway.com.br` pendente** — se ainda não registrado/delegado ao Vercel no momento do deploy, `robots.txt` + `sitemap.xml` apontam para URL inexistente. Resolver antes do primeiro UptimeRobot monitor ser criado.
 
+## Deferred from: code review of story 2-2-motor-calculo-db-function-trigger-queries (2026-04-17)
+
+- **Cast boolean/numeric de valores inválidos no JSONB** — `evaluate_formula` faz `(p_data->>field)::numeric` e `::boolean` sem proteção contra tipos inesperados. Validação pertence à camada de currículo (Zod schema Story 2.1), não ao evaluate_formula.
+- **UPDATE institution_id no trigger não marca stale na instituição antiga** — `mark_scores_stale` usa apenas `NEW.institution_id` em UPDATE; se admin mover uma regra de instituição, scores da origem ficam desatualizados. Cenário raro em admin.
+- **Recursão ilimitada em composite** — `evaluate_formula` chama a si mesma recursivamente sem depth limit. JSONB malformado poderia causar stack overflow. Impacto baixo com dados controlados via admin.
+- **Zod schemas decorativos (type assertion sem parse)** — `as UserScore[]` e `as Institution[]` em vez de `.parse()`. Padrão da codebase (consistente com `curriculum.ts`).
+- **Termo sum sem operador ignorado silenciosamente** — Se um termo em `sum.terms[]` não tem `mult`, `when_true` nem `when_gt0`, contribui 0 sem warning.
+- **Smoke tests insuficientes para AC5** — Testes de `scoring.test.ts` cobrem apenas query keys e exports; testes de renderHook planejados para Story 2.3.
+
+## Deferred from: code review of story 3-1-navegacao-admin-crud-instituicoes-upload-edital (2026-04-17)
+
+- **Stale closure no `onSubmit` — sem optimistic locking** — Se outro usuário alterar a instituição entre abrir o dialog e submeter, `onSubmit` usa dados desatualizados. Padrão pré-existente no projeto (não introduzido nesta story).
+- **Select de estado não pode ser limpo após seleção** — Não há opção "Nenhum" no Select de UF; uma vez selecionado, não há como voltar para vazio. UX enhancement.
+- **Schema `edital_url` aceita URLs non-http(s)** — Zod `.url()` aceita `javascript:`, `data:`, `file:`. Risco mínimo (admin-only). Hardening de segurança.
+
+## Deferred from: code review of story 4-1-pagina-leads-tabela-filtros-metricas-drawer (2026-04-17)
+
+- **PK de `user_scores` inclui `specialty_id` nullable** — PostgreSQL trata NULLs como distintos em PK, funciona mas é não-convencional. Pré-existente (migration 0003). Decisão para Story 2.5.
+
 ## Deferred from: code review of story 1-11-ci-cd-completo (2026-04-16)
 
 - **Rotas stub no router (`/admin/regras`, `/admin/leads`, `/admin/historico`)** — forward work de Story 1.8 presente no `src/router.tsx`. Fora de escopo da 1.11; manter como está até as stories 3.x que implementam essas telas.
@@ -173,3 +192,54 @@ Os itens abaixo, previamente deferidos de Stories 1.1 / 1.4 / 1.5 / 1.6 / 1.7 / 
 - **Story 2.5 — `calculate_scores` cobertura de operadores exóticos:** implementar em pgplsql todos os ops usados no seed — incluindo `custom` (`fn:"fmabc_monitoria"` em [seed:174](../../supabase/seeds/rules_engine.sql#L174)), `ruf_branch` (SCMSP formacao), `floor_div` (SES-DF social), `any_positive`/`any_true_or_positive` (FMABC/SCMSP), `aggregate:{sum_of:[...]}` (FMABC bloco_cientifico com `field:"artigos_total"` sintético). Sem implementação, regras retornam 0 silentemente.
 - **Story 2.6 — CHECK de shape para `formula jsonb`:** adicionar validação Zod na escrita via admin (não no DB) garantindo `formula ? 'op'` e shape por operador.
 - **Story 1.10 — Seed `curriculum_fields.sql` vs migration 0003:** glob alfabético `./seeds/*.sql` carrega `curriculum_fields.sql` antes de `rules_engine.sql`. Story 1.10 já traz migration 0003 (`public.curriculum_fields`) — validar que ordem filesystem + migration dependency stay aligned quando 1.10 mergear.
+
+
+## Deferred from: code review of story 4-2-edge-export-leads-csv-hubspot (2026-04-17)
+
+- **Sem validação de filtros na Edge Function** — Frontend valida; PostgREST parameteriza queries. Risco é resultado errado, não injection. Padrão pré-existente replicado do frontend.
+- **Formatadores duplicados no test file** — Limitação Deno/Node impede import direto das funções da Edge Function. O test file re-implementa e documenta "keep in sync". Constraint arquitetural.
+- **formatE164 corrompe números internacionais** — Sistema exclusivamente brasileiro; números internacionais fora de escopo. Se expandir para outros países, refatorar.
+- **formatE164 ambíguo com DDD 55** — Heurística `startsWith("55") && length >= 12` é razoável para a escala atual. Números do DDD 55 (RS) sem prefixo de país podem ser mal interpretados. Aceitável até haver validação na entrada.
+
+## Deferred from: code review of story 5-1-paginas-termos-politica-privacidade (2026-04-17)
+
+- **Nenhum teste SSG smoke para páginas jurídicas** — só Landing tem `Landing.ssg.test.ts`. Se um componente futuro usar `window`/`localStorage` sem guard, regressão SSG passará despercebida. Padrão pré-existente (não introduzido por esta story).
+
+## Deferred from: story 3-2-crud-regras-adminruleeditor-impactpreview (2026-04-17)
+
+- **Re-entrada de scoring_rules por instituição** — Seed do Lovable usava taxonomia de "blocos" (`bloco_cientifico`, `bloco_extra`, `publicacoes`, `ic`, `extensao`, `formacao`, etc.) que não correspondem aos `field_key` de `curriculum_fields`. Os 75 registros foram deletados (sem alunos afetados). Regras devem ser re-inseridas pelo admin via CRUD `/admin/regras` usando as categorias e `field_key` corretos de `curriculum_fields` (Publicações, Acadêmico, Prática/Social, Liderança/Eventos, Perfil). Cada regra vincula-se a um campo granular (ex: `artigos_high_impact`, `ic_com_bolsa`, `monitoria_semestres`) em vez de blocos agregados.
+- **RPC `preview_rule_impact` server-side** — Impact preview atual é client-side (MVP). Para produção com muitos alunos, criar RPC PL/pgSQL `preview_rule_impact(rule_data jsonb)` que calcula delta server-side com precisão, usando a lógica real de `calculate_scores` em vez de estimativa simplificada.
+- **Campo `formula` no formulário admin** — Oculto na UI atual (default `{}`). Quando o motor de regras suportar fórmulas complexas (threshold, tiered, composite), reexpor o campo com editor visual ou assistido em vez de JSON cru.
+
+## Deferred from: code review of story 3-2-crud-regras-adminruleeditor-impactpreview (2026-04-17)
+
+- **Impact preview delta é flat (+weight)** — `previewRuleImpact` calcula `weight - current_weight` como delta uniforme para todos os alunos, ignorando a quantidade que cada aluno tem no campo. Delta real deveria ser `(novo_weight * quantidade) - score_atual`. Simplificação MVP aceita; corrigir com RPC server-side.
+- **`specialty_interest` validação relaxada de enum para string** — Zod schema do signup trocou `z.enum(SPECIALTIES_TUPLE)` por `z.string().min(1)`. Qualquer string passa. Adicionar validação server-side (trigger ou check constraint) para garantir que o valor existe na tabela `specialties`.
+- **`medical_schools` tabela sem migration formal** — Criada via SQL direto no dev local. Antes de homolog, criar migration em `supabase/migrations/` com CREATE TABLE + RLS + seed de dados.
+- **`previewRuleImpact` como async direto** — Usa `useEffect` + async function em vez de React Query hook. Padrão aceitável para query efêmera one-shot. Migrar para `useQuery` se preview ficar complexo.
+- **`useEffect` com `values` object reference** — Depende de `useState` manter referência estável. Se componente pai reconstruir `values` em cada render, effect re-dispara. Estável com padrão atual.
+- **`editingRule?.weight` captura antes de batching** — `handlePublish` lê `editingRule.weight` e depois seta `editingRule=null` no mesmo tick. Funciona com React 18 auto-batching mas quebraria em callbacks async sem batching.
+
+## Deferred from: code review of story-2.1 (2026-04-17)
+
+- **W1 — `formatTimeAgo` nunca atualiza:** texto "há poucos segundos" fica stale indefinidamente até próximo save. Falta interval para re-render periódico. [AutosaveIndicator.tsx:11-17]
+- **W2 — `categoryToValue` duplicada em 3 arquivos:** função idêntica em CurriculoFormSection.tsx, CurriculumSummary.tsx e Curriculo.tsx. Divergência silenciosa quebraria deep-links do accordion. Extrair para utility compartilhada.
+- **W3 — `updated_at` definido client-side:** clock do cliente pode ser incorreto, afetando resolução de conflito draft vs servidor. Deveria usar timestamp retornado pelo servidor.
+- **W4 — Transição offline→online não re-dispara save pendente:** dados ficam apenas em localStorage até próxima edição do usuário. [use-autosave.ts:48-52]
+- **W5 — `conceito_historico` aceita string livre no schema Zod:** deveria validar contra options ["A","B","C"] do seed. Form UI usa Select corretamente, mas API aceita qualquer string via schema.
+- **W6 — `curriculum_fields` vazio renderiza página em branco:** se seed não rodou, accordion vazio sem empty state ou mensagem de orientação.
+- **W7 — `pb-safe` utility pode não estar configurado:** requer plugin Tailwind safe-area ou custom config. Verificar se projeto inclui essa utility.
+- **W8 — Sync real-time entre dispositivos:** merge silencioso de draft local vs servidor pode sobrescrever dados editados em outro device. Implementar sync com Supabase Realtime + merge por campo em story futura.
+
+## Deferred from: code review of story-5.2 (2026-04-17)
+
+- **W1 — CORS wildcard `*` na Edge Function `delete-account`:** `Access-Control-Allow-Origin: *` permite qualquer origem invocar a função. Padrão arquitetural herdado (architecture.md). Restringir ao domínio da aplicação quando domínio de produção estiver definido.
+- **W2 — CROSS JOIN em `benchmark_curriculum_completeness`:** query `curriculum_fields CROSS JOIN user_curriculum` produz produto cartesiano O(M×N) e calcula avg_fill_rate sobre todos os pares, não por usuário. Resultado correto apenas se cada user tem exatamente 1 row em `user_curriculum`. Redesenhar query quando houver mais dados.
+- **W3 — Sem cron para refresh semanal das views materializadas (AC7):** `refresh_benchmarks()` existe para uso on-demand (chamada pela Edge Function e via RPC admin). Configurar `pg_cron` ou Supabase scheduled function para refresh semanal em produção.
+
+## Deferred from: code review of story-2.3 (2026-04-17)
+
+- **W1 — InstitutionDetail sem loading/404:** Placeholder da Story 2.4, sem skeleton/loading state e sem tratamento de ID inválido. Será implementado completo na Story 2.4 (ScoreHero + GapAnalysis).
+- **W2 — `prefers-reduced-motion` ainda aplica fade 200ms:** WCAG 2.1 SC 2.3.3 sugere `animation: none` para usuários que pedem reduced motion. Atualmente faz apenas fade sem slide. Polimento a11y para pass dedicado.
+- **W3 — Admin "Ver como aluno" escondido em mobile:** `AdminShell.tsx` — botão é `hidden md:inline-flex`. Admin mobile é deferral geral do Epic 3.
+- **W4 — `useScores` re-trigger RPC em cada mount (staleTime:0):** Pré-existente da Story 2.2. Cada navegação para `/app` remonta e re-executa `calculate_scores` se não há scores. Otimizar com staleTime ou refetchOnMount: false.

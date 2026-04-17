@@ -128,11 +128,10 @@ select is(
   'no specialty-specific rules in MVP seed'
 );
 
--- AC3: specialties vazio no MVP
-select is(
-  (select count(*) from public.specialties),
-  0::bigint,
-  'specialties table empty in MVP seed'
+-- AC3: specialties tem sentinel __default__ + especialidades reais
+select ok(
+  (select count(*) from public.specialties where name = '__default__') = 1,
+  '__default__ sentinel specialty exists'
 );
 
 -- AC3: formula é JSONB objeto em 100% das regras

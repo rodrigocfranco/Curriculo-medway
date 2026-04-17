@@ -1,4 +1,3 @@
-// GERADO — não editar manualmente. Rode `supabase gen types typescript --local > src/lib/database.types.ts`.
 export type Json =
   | string
   | number
@@ -35,6 +34,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_deletions: {
+        Row: {
+          deleted_at: string
+          graduation_year: number | null
+          id: string
+          state: string | null
+        }
+        Insert: {
+          deleted_at?: string
+          graduation_year?: number | null
+          id?: string
+          state?: string | null
+        }
+        Update: {
+          deleted_at?: string
+          graduation_year?: number | null
+          id?: string
+          state?: string | null
+        }
+        Relationships: []
+      }
       curriculum_fields: {
         Row: {
           category: string
@@ -98,6 +118,30 @@ export type Database = {
           short_name?: string | null
           state?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      medical_schools: {
+        Row: {
+          abbreviation: string
+          created_at: string
+          id: string
+          name: string
+          state: string | null
+        }
+        Insert: {
+          abbreviation: string
+          created_at?: string
+          id?: string
+          name: string
+          state?: string | null
+        }
+        Update: {
+          abbreviation?: string
+          created_at?: string
+          id?: string
+          name?: string
+          state?: string | null
         }
         Relationships: []
       }
@@ -200,6 +244,36 @@ export type Database = {
           },
         ]
       }
+      scoring_rules_audit: {
+        Row: {
+          change_type: string
+          changed_at: string
+          changed_by: string | null
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          rule_id: string
+        }
+        Insert: {
+          change_type: string
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          rule_id: string
+        }
+        Update: {
+          change_type?: string
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          rule_id?: string
+        }
+        Relationships: []
+      }
       specialties: {
         Row: {
           created_at: string
@@ -261,7 +335,7 @@ export type Database = {
           institution_id: string
           max_score?: number
           score?: number
-          specialty_id: string
+          specialty_id?: string
           stale?: boolean
           user_id: string
         }
@@ -301,10 +375,72 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      benchmark_curriculum_completeness: {
+        Row: {
+          avg_fill_rate: number | null
+          category: string | null
+        }
+        Relationships: []
+      }
+      benchmark_scores_by_institution: {
+        Row: {
+          avg_score: number | null
+          institution_id: string | null
+          p50: number | null
+          p75: number | null
+          p90: number | null
+          specialty_id: string | null
+          user_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_scores_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_scores_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      calculate_scores: {
+        Args: { p_specialty_id?: string; p_user_id: string }
+        Returns: undefined
+      }
+      evaluate_formula: {
+        Args: { p_data: Json; p_formula: Json }
+        Returns: number
+      }
+      fmabc_monitoria: { Args: { p_semestres: number }; Returns: number }
+      get_benchmark_curriculum: {
+        Args: never
+        Returns: {
+          avg_fill_rate: number
+          category: string
+        }[]
+      }
+      get_benchmark_scores: {
+        Args: never
+        Returns: {
+          avg_score: number
+          institution_id: string
+          p50: number
+          p75: number
+          p90: number
+          specialty_id: string
+          user_count: number
+        }[]
+      }
       is_admin: { Args: { uid: string }; Returns: boolean }
+      refresh_benchmarks: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

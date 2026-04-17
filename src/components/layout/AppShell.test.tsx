@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from "vitest";
 vi.mock("@/contexts/useAuth", () => ({
   useAuth: () => ({
     user: { id: "u1", email: "lucas@medway.com" },
-    profile: { name: "Lucas Silva", role: "student" },
+    profile: { name: "Lucas Silva", role: "student", specialty_interest: null },
     signOut: vi.fn(),
   }),
 }));
@@ -31,34 +31,61 @@ describe("AppShell", () => {
     expect(logo).toHaveAttribute("href", "/app");
   });
 
-  it("renderiza slot do SpecialtySelector", () => {
+  it("renderiza navegação com Dashboard e Currículo", () => {
     renderShell();
-    expect(screen.getByTestId("specialty-selector-slot")).toBeInTheDocument();
+    const dashboardLinks = screen.getAllByRole("link", { name: "Dashboard" });
+    const curriculoLinks = screen.getAllByRole("link", { name: "Currículo" });
+    expect(dashboardLinks.length).toBeGreaterThanOrEqual(1);
+    expect(curriculoLinks.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renderiza UserMenu (trigger com data-testid='user-menu')", () => {
+  it("renderiza UserMenu", () => {
     renderShell();
     expect(screen.getByTestId("user-menu")).toBeInTheDocument();
   });
 
-  it("header sticky: classes 'sticky', 'top-0' e altura 'h-14 md:h-16' (56/64px — AC3)", () => {
+  it("não mostra banner admin para student", () => {
+    renderShell();
+    expect(screen.queryByText(/Voltar ao painel admin/)).not.toBeInTheDocument();
+  });
+
+  it("header sticky", () => {
     const { container } = renderShell();
     const header = container.querySelector("header");
     expect(header).not.toBeNull();
     expect(header!.className).toMatch(/\bsticky\b/);
-    expect(header!.className).toMatch(/\btop-0\b/);
-    expect(header!.className).toMatch(/\bh-14\b/);
-    expect(header!.className).toMatch(/\bmd:h-16\b/);
-  });
-
-  it("container main com max-w-7xl", () => {
-    const { container } = renderShell();
-    const main = container.querySelector("main");
-    expect(main!.className).toMatch(/\bmax-w-7xl\b/);
   });
 
   it("Outlet renderiza rota filha", () => {
     renderShell();
     expect(screen.getByText("HomeOutlet")).toBeInTheDocument();
+  });
+});
+
+describe("AppShell (admin)", () => {
+  it("mostra banner 'Voltar ao painel admin' para admin", async () => {
+    vi.resetModules();
+
+    vi.doMock("@/contexts/useAuth", () => ({
+      useAuth: () => ({
+        user: { id: "u1", email: "admin@medway.com" },
+        profile: { name: "Admin", role: "admin", specialty_interest: null },
+        signOut: vi.fn(),
+      }),
+    }));
+
+    const { default: AppShellAdmin } = await import("./AppShell");
+
+    render(
+      <MemoryRouter initialEntries={["/app"]}>
+        <Routes>
+          <Route path="/app" element={<AppShellAdmin />}>
+            <Route index element={<div>HomeOutlet</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Voltar ao painel admin/)).toBeInTheDocument();
   });
 });

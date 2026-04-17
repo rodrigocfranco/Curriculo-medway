@@ -215,42 +215,42 @@ This document provides the complete epic and story breakdown for **curriculo-med
 
 ### FR Coverage Map
 
-| FR | Epic | Capacidade |
-|---|---|---|
-| FR1 | 1 | Landing com proposta de valor |
-| FR2 | 1 | Cadastro com 7 campos |
-| FR3 | 1 | Aceite LGPD no cadastro |
-| FR4 | 1 | Login |
-| FR5 | 1 | Logout |
-| FR6 | 1 | Recuperação de senha |
-| FR7 | 2 | Formulário de currículo multi-seção |
-| FR8 | 2 | Edição do currículo a qualquer momento |
-| FR9 | 2 | Persistência automática (autosave) |
-| FR10 | 2 | Resumo dos dados preenchidos |
-| FR11 | 2 | Cálculo de scores por instituição |
-| FR12 | 2 | Visualização de scores das 11 instituições |
-| FR13 | 2 | Detalhes por categoria |
-| FR14 | 2 | Gap analysis |
-| FR15 | 2 | Disclaimer de estimativa |
-| FR16 | 2 | Link/PDF do edital original |
-| FR17 | 2 | Dashboard consolidado |
-| FR18 | 2 | Identificação rápida de desempenho |
-| FR19 | 2 | Drill-down por instituição |
-| FR20 | 1 | Regras configuráveis por instituição (schema + seed no Epic 1); UI admin no Epic 3 |
-| FR21 | 1 | Variações por especialidade (schema no Epic 1); UI admin no Epic 3 |
-| FR22 | 2 | Recálculo na próxima sessão (trigger + stale flag) |
-| FR23 | 1 | Estrutura da regra (schema JSONB no Epic 1) |
-| FR24 | 1 | Extensibilidade sem alteração de código (modelo de dados no Epic 1) |
-| FR25 | 3 | CRUD de instituições |
-| FR26 | 3 | CRUD de regras |
-| FR27 | 3 | Upload/link PDF de edital |
-| FR28 | 4 | Listagem de leads com filtros |
-| FR29 | 4 | Exportação CSV |
-| FR30 | 4 | Exportação Hubspot |
-| FR31 | 4 | Métricas de captação |
-| FR32 | 1 | Exibição de termos no cadastro |
-| FR33 | 5 | Exclusão de dados (LGPD) |
-| FR34 | 5 | Anonimização para benchmarks |
+| FR | Epic | Story | Capacidade |
+|---|---|---|---|
+| FR1 | 1 | 1.4 | Landing com proposta de valor |
+| FR2 | 1 | 1.5 | Cadastro com 7 campos |
+| FR3 | 1 | 1.5 | Aceite LGPD no cadastro |
+| FR4 | 1 | 1.6 | Login |
+| FR5 | 1 | 1.6 | Logout |
+| FR6 | 1 | 1.7 | Recuperação de senha |
+| FR7 | 2 | 2.1 | Formulário de currículo multi-seção |
+| FR8 | 2 | 2.1 | Edição do currículo a qualquer momento |
+| FR9 | 2 | 2.1 | Persistência automática (autosave) |
+| FR10 | 2 | 2.1 | Resumo dos dados preenchidos |
+| FR11 | 2 | 2.2 | Cálculo de scores por instituição |
+| FR12 | 2 | 2.3 | Visualização de scores das 11 instituições |
+| FR13 | 2 | 2.4 | Detalhes por categoria |
+| FR14 | 2 | 2.4 | Gap analysis |
+| FR15 | 2 | 2.4 | Disclaimer de estimativa |
+| FR16 | 2 | 2.4 | Link/PDF do edital original |
+| FR17 | 2 | 2.3 | Dashboard consolidado |
+| FR18 | 2 | 2.3 | Identificação rápida de desempenho |
+| FR19 | 2 | 2.3 | Drill-down por instituição |
+| FR20 | 1 | 1.9 | Regras configuráveis por instituição (schema + seed no Epic 1); UI admin no Epic 3 |
+| FR21 | 1 | 1.9 | Variações por especialidade (schema no Epic 1); UI admin no Epic 3 |
+| FR22 | 2 | 2.2 | Recálculo na próxima sessão (trigger + stale flag) |
+| FR23 | 1 | 1.9 | Estrutura da regra (schema JSONB no Epic 1) |
+| FR24 | 1 | 1.9 | Extensibilidade sem alteração de código (modelo de dados no Epic 1) |
+| FR25 | 3 | 3.1 | CRUD de instituições |
+| FR26 | 3 | 3.2 | CRUD de regras |
+| FR27 | 3 | 3.1 | Upload/link PDF de edital |
+| FR28 | 4 | 4.1 | Listagem de leads com filtros |
+| FR29 | 4 | 4.2 | Exportação CSV |
+| FR30 | 4 | 4.2 | Exportação Hubspot |
+| FR31 | 4 | 4.1 | Métricas de captação |
+| FR32 | 1 | 1.5 | Exibição de termos no cadastro |
+| FR33 | 5 | 5.2 | Exclusão de dados (LGPD) |
+| FR34 | 5 | 5.2 | Anonimização para benchmarks |
 
 **Cobertura:** 34/34 FRs mapeados ✅
 
@@ -622,11 +622,17 @@ So that a plataforma está deployada, monitorada e com quality gates a cada PR.
 
 Aluno preenche currículo em seções com autosave silencioso, clica "Ver meus resultados" e vê o farol acender — scores ordenados das 11 instituições com faixa narrativa, podendo fazer drill-down para gap analysis por categoria com link para o edital.
 
-### Story 2.1: Queries e schemas do currículo
+> **Nota:** Stories consolidadas em 2026-04-16 via sprint-change-proposal. Referência: `planning-artifacts/sprint-change-proposal-2026-04-16.md`
 
-As a desenvolvedor,
-I want uma camada `src/lib/queries/curriculum.ts` + schemas Zod compartilhados,
-So that o formulário e features futuras acessam dados do currículo de forma consistente.
+### Story 2.1: Formulário de currículo completo com autosave
+
+As a aluno,
+I want preencher meu currículo em seções organizadas com salvamento automático e ver um resumo do que preenchi,
+So that a experiência é fluida, nunca perco dados e entendo meu panorama curricular.
+
+**Escopo consolidado:** Schemas Zod (`curriculumDataSchema`) + React Query hooks (`useCurriculumFields`, `useCurriculum`, `useUpdateCurriculum`) + formulário em accordion (`CurriculoFormSection`) com 5 seções (Publicações, Acadêmico, Prática/Social, Liderança/Eventos, Perfil) + hook `use-autosave` (debounce 500ms + `onBlur`) + `AutosaveIndicator` (idle/saving/saved/error/offline com `aria-live`) + fallback localStorage + resumo read-only do currículo.
+
+**FRs cobertos:** FR7, FR8, FR9, FR10
 
 **Acceptance Criteria:**
 
@@ -639,14 +645,6 @@ So that o formulário e features futuras acessam dados do currículo de forma co
 **Then** exporta hooks `useCurriculumFields()` (campos agrupados por categoria), `useCurriculum(userId)` (dados do user) e mutation `useUpdateCurriculum()`
 **And** todos usam React Query com keys tipadas (`['curriculum', userId]`, `['curriculum-fields']`)
 **And** mutations fazem `invalidateQueries` explícito em `onSuccess`
-
-### Story 2.2: Formulário de currículo em accordion com CurriculoFormSection
-
-As a aluno,
-I want preencher meu currículo em seções organizadas,
-So that a densidade é absorvível e mantenho foco no que estou preenchendo.
-
-**Acceptance Criteria:**
 
 **Given** rota `/app/curriculo` protegida por role student
 **When** acesso
@@ -664,14 +662,6 @@ So that a densidade é absorvível e mantenho foco no que estou preenchendo.
 **When** renderizo
 **Then** 1 coluna, inputs `w-full`, accordion funcional via tap
 **And** CTA "Ver meus resultados" fixo no bottom com `safe-area-inset`
-
-### Story 2.3: Autosave silencioso com AutosaveIndicator
-
-As a aluno,
-I want que meus dados sejam salvos automaticamente enquanto preencho,
-So that nunca perco nada ao fechar o navegador ou trocar de dispositivo.
-
-**Acceptance Criteria:**
 
 **Given** `src/hooks/use-autosave.ts`
 **When** importo e uso
@@ -693,25 +683,21 @@ So that nunca perco nada ao fechar o navegador ou trocar de dispositivo.
 **Then** dados salvos populam o formulário no ponto exato onde deixei
 **And** feedback visual de save completa em <500ms (NFR5)
 
-### Story 2.4: Resumo do currículo
-
-As a aluno,
-I want ver um resumo do que preenchi,
-So that entendo rapidamente o panorama do meu currículo.
-
-**Acceptance Criteria:**
-
 **Given** rota `/app/curriculo/resumo` (ou seção na mesma página)
 **When** acesso
 **Then** vejo lista agrupada por categoria com valores preenchidos
 **And** campos vazios aparecem como "—" (não omitidos)
 **And** link "Editar" leva ao formulário
 
-### Story 2.5: Database Function calculate_scores + trigger mark_scores_stale
+### Story 2.2: Motor de cálculo — DB Function + trigger + queries frontend
 
 As a desenvolvedor,
-I want função PL/pgSQL que calcula scores por instituição e trigger que invalida ao mudar regras,
-So that o backend tem lógica autoritativa de cálculo e recálculo automático.
+I want função PL/pgSQL que calcula scores por instituição, trigger de invalidação e camada de queries frontend,
+So that o backend tem lógica autoritativa de cálculo e o dashboard consome scores consistentemente.
+
+**Escopo consolidado:** Migration `calculate_scores(p_user_id, p_specialty_id)` em PL/pgSQL + trigger `on_scoring_rule_updated` que marca `stale=true` + RPC exposta com RLS + testes pgTAP + `src/lib/queries/scoring.ts` com hooks `useScores`, `useInstitutions` + schemas Zod de scoring.
+
+**FRs cobertos:** FR11, FR22
 
 **Acceptance Criteria:**
 
@@ -733,25 +719,21 @@ So that o backend tem lógica autoritativa de cálculo e recálculo automático.
 **When** executo
 **Then** passam ao menos 3 cenários: currículo vazio → 0; currículo cheio → score esperado por instituição; troca de especialidade usa regras específicas quando existem
 
-### Story 2.6: Queries e schemas de scoring
-
-As a desenvolvedor,
-I want camada `src/lib/queries/scoring.ts`,
-So that o dashboard consome scores consistentemente.
-
-**Acceptance Criteria:**
-
 **Given** `src/lib/queries/scoring.ts`
 **When** importo
 **Then** `useScores(userId, specialtyId)` (a) lê `user_scores`; (b) se algum `stale=true`, invoca RPC `calculate_scores` e re-lê; (c) retorna array ordenado `score desc`
 **And** `useInstitutions()` retorna lista com `edital_url` e `pdf_path`
 **And** keys tipadas `['scores', userId, specialtyId]`, `['institutions']`
 
-### Story 2.7: Dashboard com grid responsivo (ScoreCard + NarrativeBanner)
+### Story 2.3: Dashboard completo com ScoreCard + NarrativeBanner + SpecialtySelector + transição
 
 As a aluno,
-I want ver um dashboard com meus scores nas 11 instituições,
-So that tenho clareza imediata de onde estou mais e menos competitivo.
+I want ver um dashboard com meus scores nas 11 instituições, trocar especialidade pelo header e ter transição fluida do formulário,
+So that tenho clareza imediata de onde estou mais competitivo e o momento "ver o farol acender" é marcante.
+
+**Escopo consolidado:** Dashboard grid responsivo 4/3/1 com `ScoreCard` + `NarrativeBanner` + `SpecialtySelector` inline no header AppShell (com mutation + recálculo) + transição fade+slide ~200ms do formulário para o dashboard + skeletons dos 11 cards + `DisclaimerBanner` compacto no subheader.
+
+**FRs cobertos:** FR12, FR17, FR18, FR19
 
 **Acceptance Criteria:**
 
@@ -778,31 +760,37 @@ So that tenho clareza imediata de onde estou mais e menos competitivo.
 **When** `useScores` em `isLoading`
 **Then** vejo 11 skeletons com dimensões finais (nunca spinner full-screen)
 
-### Story 2.8: SpecialtySelector inline com recálculo global
-
-As a aluno,
-I want trocar especialidade pelo header,
-So that vejo scores calculados conforme as regras dela.
-
-**Acceptance Criteria:**
-
 **Given** `SpecialtySelector` no header AppShell
 **When** abro o dropdown
 **Then** vejo todas as especialidades cadastradas
 **And** a atual está marcada
 
-**Given** seleciono outra
+**Given** seleciono outra especialidade
 **When** confirmo
 **Then** mutation atualiza `profile.specialty_interest`
 **And** `useScores` invalida e dispara `calculate_scores` com nova especialidade
 **And** dashboard atualiza em <1s (NFR3)
 **And** `aria-live` anuncia "Scores atualizados para {especialidade}"
 
-### Story 2.9: Detalhe da instituição com ScoreHero + GapAnalysisList
+**Given** estou no formulário
+**When** clico "Ver meus resultados"
+**Then** transição fade+slide ~200ms leva ao dashboard
+**And** skeletons dos 11 cards aparecem instantaneamente
+**And** cards populam numa única atualização (não sequencial) em <1s
+
+**Given** user com `prefers-reduced-motion: reduce`
+**When** a transição dispara
+**Then** anima só com opacidade (ou sem animação), sem slide
+
+### Story 2.4: Detalhe da instituição — ScoreHero + GapAnalysis + DisclaimerBanner
 
 As a aluno,
-I want ver o detalhe de cada instituição com gap por categoria,
-So that entendo exatamente onde posso ganhar pontos.
+I want ver o detalhe de cada instituição com gap por categoria, disclaimer e link para o edital original,
+So that entendo exatamente onde posso ganhar pontos e posso consultar a fonte.
+
+**Escopo consolidado:** Rota `/app/instituicoes/:id` com breadcrumb + header com link externo edital + `ScoreHero` 96px + `GapAnalysisList` (categorias com mini-barra + delta + "Saiba +") + `DisclaimerBanner` + link para edital original (URL ou Storage signed URL).
+
+**FRs cobertos:** FR13, FR14, FR15, FR16
 
 **Acceptance Criteria:**
 
@@ -821,15 +809,7 @@ So that entendo exatamente onde posso ganhar pontos.
 **When** score é baixo
 **Then** texto contextualiza positivamente ("Você tem {X} pontos possíveis para crescer aqui"); nunca vermelho, nunca culpa
 
-### Story 2.10: DisclaimerBanner + link para edital original
-
-As a aluno,
-I want ver disclaimer claro e acessar o edital original,
-So that entendo que scores são estimativas e posso consultar a fonte.
-
-**Acceptance Criteria:**
-
-**Given** `DisclaimerBanner` no subheader do dashboard e no detalhe da instituição
+**Given** `DisclaimerBanner` no detalhe da instituição
 **When** renderiza
 **Then** exibe "Estes scores são estimativas baseadas em editais públicos. A pontuação oficial é determinada pela instituição."
 **And** fundo âmbar sutil (warning semântico), ícone ⚠️, tipografia caption
@@ -839,53 +819,29 @@ So that entendo que scores são estimativas e posso consultar a fonte.
 **Then** abre em nova aba o `institutions.edital_url` OU URL assinada do Storage (se `pdf_path` existe)
 **And** link sinaliza "abre em nova aba" a leitores de tela
 
-### Story 2.11: Transição fade+slide + skeleton do formulário para o dashboard
-
-As a aluno,
-I want que a transição entre preencher e ver resultados seja fluida,
-So that o momento "ver o farol acender" é emocionalmente marcante.
-
-**Acceptance Criteria:**
-
-**Given** estou no formulário
-**When** clico "Ver meus resultados"
-**Then** transição fade+slide ~200ms leva ao dashboard
-**And** skeletons dos 11 cards aparecem instantaneamente
-**And** cards populam numa única atualização (não sequencial) em <1s
-
-**Given** user com `prefers-reduced-motion: reduce`
-**When** a transição dispara
-**Then** anima só com opacidade (ou sem animação), sem slide
-
 ## Epic 3: Painel Admin — Motor de Regras e Editais
 
 Rcfranco atualiza regras de edital por instituição × especialidade com preview de impacto e log de auditoria, sem deploy de código, propagando recálculo aos alunos afetados.
 
-### Story 3.1: AdminShell + navegação + guard de role
+> **Nota:** Stories consolidadas em 2026-04-16 via sprint-change-proposal. Referência: `planning-artifacts/sprint-change-proposal-2026-04-16.md`
+
+### Story 3.1: Navegação admin + CRUD de instituições + upload de edital
 
 As a admin,
-I want um shell administrativo com navegação clara e guard de role,
-So that tenho contexto visual de operação e acesso restrito.
+I want tabs de navegação no painel admin, poder criar/editar/remover instituições e anexar PDF ou link do edital,
+So that a base de instituições é gerenciável sem deploy e o aluno consulta a fonte oficial.
+
+**Escopo consolidado:** Tabs de navegação no AdminShell (Instituições, Regras, Leads, Histórico) + tabela de instituições com CRUD completo + formulário com campos name/short_name/state/edital_url + upload de PDF para bucket `editais` (validação PDF ≤ 10MB) + substituição de PDF anterior.
+
+**FRs cobertos:** FR25, FR27
 
 **Acceptance Criteria:**
-
-**Given** rota `/admin` envolvida por `<ProtectedRoute role="admin">`
-**When** student tenta acessar
-**Then** é redirecionado para `/app` com toast
 
 **Given** admin autenticado em `/admin`
 **When** carrega
-**Then** `AdminShell` renderiza header com logo + badge "Admin" + tabs (Instituições, Regras, Leads, Histórico) + Avatar
-**And** densidade compacta (`p-3`/`p-4`)
+**Then** `AdminShell` exibe tabs (Instituições, Regras, Leads, Histórico)
 **And** tab ativa destacada
-
-### Story 3.2: CRUD de instituições
-
-As a admin,
-I want criar, editar e remover instituições,
-So that a base de instituições é gerenciável sem deploy.
-
-**Acceptance Criteria:**
+**And** densidade compacta (`p-3`/`p-4`)
 
 **Given** aba `/admin/instituicoes`
 **When** acesso
@@ -905,14 +861,6 @@ So that a base de instituições é gerenciável sem deploy.
 **Then** mutation deleta (com cascade explicitado)
 **And** toast "Instituição removida" + entrada de auditoria gerada
 
-### Story 3.3: Upload/vínculo de PDF do edital
-
-As a admin,
-I want anexar PDF do edital ou vincular link oficial,
-So that o aluno consulta a fonte e reduzo risco de interpretação errada.
-
-**Acceptance Criteria:**
-
 **Given** estou editando uma instituição
 **When** vejo a seção "Edital"
 **Then** posso escolher "Link externo (URL)" ou "Upload de PDF"
@@ -928,11 +876,15 @@ So that o aluno consulta a fonte e reduzo risco de interpretação errada.
 **When** faço novo upload
 **Then** PDF antigo é removido do Storage
 
-### Story 3.4: CRUD de regras por instituição × especialidade (AdminRuleEditor)
+### Story 3.2: CRUD de regras com AdminRuleEditor + ImpactPreview
 
 As a admin,
-I want configurar regras de cálculo por instituição × especialidade,
-So that adapto pontuações quando editais mudam.
+I want configurar regras de cálculo por instituição × especialidade com preview de impacto antes de publicar,
+So that adapto pontuações quando editais mudam e opero com confiança.
+
+**Escopo consolidado:** Lista de regras filtráveis por instituição/especialidade + `AdminRuleEditor` com estados draft/dirty/publishing/published/error + formulário Zod (institution, specialty, category, field_key, weight, max_points, description, formula JSONB) + `ImpactPreviewDialog` (contagem de alunos afetados + amostra de 5 deltas) disparado por "Publicar".
+
+**FRs cobertos:** FR26
 
 **Acceptance Criteria:**
 
@@ -950,18 +902,6 @@ So that adapto pontuações quando editais mudam.
 **When** interajo
 **Then** vejo draft, dirty (editado não salvo), publishing (mutação em voo), published (salvo com timestamp), error (mensagem específica)
 
-**Given** salvei uma regra
-**When** mutation completa
-**Then** trigger `on_scoring_rule_updated` marca `user_scores.stale=true` para users afetados
-
-### Story 3.5: ImpactPreviewDialog — preview de alunos afetados
-
-As a admin,
-I want ver quantos alunos serão impactados antes de publicar,
-So that opero com confiança.
-
-**Acceptance Criteria:**
-
 **Given** alterei uma regra e cliquei "Publicar"
 **When** confirmação abre
 **Then** `ImpactPreviewDialog` exibe: contagem de alunos com currículo preenchido + aquela instituição; amostra de 5 alunos com delta estimado ("João: 32 → 38 (+6)") calculado via preview function
@@ -970,9 +910,10 @@ So that opero com confiança.
 **Given** confirmo
 **When** mutation roda
 **Then** regra é persistida
+**And** trigger `on_scoring_rule_updated` marca `user_scores.stale=true` para users afetados
 **And** toast "Regra publicada — {N} alunos terão recálculo na próxima sessão"
 
-### Story 3.6: Log/histórico de alterações de regras
+### Story 3.3: Log/histórico de alterações de regras
 
 As a admin,
 I want histórico de alterações,
@@ -998,11 +939,17 @@ So that tenho auditoria e possibilidade de reverter.
 
 Admin filtra leads, vê métricas de captação e exporta em CSV ou formato Hubspot para alimentar o funil comercial.
 
-### Story 4.1: Página Leads no Admin com métricas header
+> **Nota:** Stories consolidadas em 2026-04-16 via sprint-change-proposal. Referência: `planning-artifacts/sprint-change-proposal-2026-04-16.md`
+
+### Story 4.1: Página de leads completa — tabela + filtros + métricas + drawer
 
 As a admin,
-I want ver métricas básicas de captação,
-So that acompanho o funil.
+I want ver métricas de captação, listar leads com filtros server-side e ver detalhes sem sair da tabela,
+So that acompanho e segmento o funil eficientemente.
+
+**Escopo consolidado:** Rota `/admin/leads` com cards de métricas (total, 7d, 30d, currículo preenchido vs. só cadastro) + `LeadTable` TanStack DataTable com paginação server-side (50/página) + filtros por período/UF/especialidade/status como chips removíveis + persistência em URL params + `Sheet` lateral de detalhe do lead (todos os campos + resumo currículo + top-3 scores).
+
+**FRs cobertos:** FR28, FR31
 
 **Acceptance Criteria:**
 
@@ -1010,14 +957,6 @@ So that acompanho o funil.
 **When** acesso
 **Then** header exibe cards: total de leads, últimos 7 dias, últimos 30 dias, leads com currículo preenchido vs. só cadastro
 **And** dados vêm de queries agregadas em `profiles` (`role='student'`)
-
-### Story 4.2: LeadTable com paginação server-side
-
-As a admin,
-I want listar leads em tabela paginada,
-So that navego eficientemente mesmo com 10k+ registros.
-
-**Acceptance Criteria:**
 
 **Given** abaixo dos cards
 **When** renderiza
@@ -1030,14 +969,6 @@ So that navego eficientemente mesmo com 10k+ registros.
 **When** navego páginas
 **Then** cada troca carrega em <2s
 
-### Story 4.3: Filtros server-side com chips + URL params
-
-As a admin,
-I want filtrar leads por período, UF, especialidade, status de currículo,
-So that segmento o funil.
-
-**Acceptance Criteria:**
-
 **Given** header da tabela
 **When** aplico filtros
 **Then** cada filtro vira chip removível acima da tabela
@@ -1045,25 +976,21 @@ So that segmento o funil.
 **And** compartilhar URL restaura os filtros
 **And** mudanças de params não causam full reload (React Router)
 
-### Story 4.4: Drawer (Sheet) de detalhe do lead
-
-As a admin,
-I want ver detalhes de um lead sem sair da tabela,
-So that mantenho contexto.
-
-**Acceptance Criteria:**
-
 **Given** clico numa linha
 **When** abre
 **Then** `Sheet` lateral mostra todos os campos de `profiles` + resumo de currículo + top-3 scores + data de criação/update
 **And** fecha via ESC ou clique fora
 **And** foco retorna à linha clicada
 
-### Story 4.5: Edge Function export-leads — CSV padrão
+### Story 4.2: Edge Function export-leads — CSV + formato Hubspot
 
 As a admin,
-I want exportar leads para CSV,
-So that uso fora da plataforma.
+I want exportar leads para CSV padrão ou formato compatível com Hubspot,
+So that uso fora da plataforma e importo diretamente no CRM.
+
+**Escopo consolidado:** Edge Function `supabase/functions/export-leads/` que aceita `{ filters, format: 'csv' | 'hubspot' }` + check JWT admin server-side + stream CSV UTF-8 com BOM + formato Hubspot com headers compatíveis (First Name, Last Name, Email, Phone E.164, State/Region, Company) + botões "Exportar CSV" e "Exportar para Hubspot" na página de leads.
+
+**FRs cobertos:** FR29, FR30
 
 **Acceptance Criteria:**
 
@@ -1079,14 +1006,6 @@ So that uso fora da plataforma.
 **And** CSV tem colunas: nome, email, telefone, estado, faculdade, ano formação, especialidade, data cadastro
 **And** encoding UTF-8 com BOM para Excel
 
-### Story 4.6: Edge Function export-leads — formato Hubspot
-
-As a admin,
-I want exportar em formato Hubspot,
-So that importo diretamente no CRM.
-
-**Acceptance Criteria:**
-
 **Given** clico "Exportar para Hubspot"
 **When** confirmo
 **Then** Edge Function retorna CSV com headers `First Name,Last Name,Email,Phone,State/Region,Company,...` compatíveis com importação Hubspot (NFR19)
@@ -1096,6 +1015,8 @@ So that importo diretamente no CRM.
 ## Epic 5: LGPD — Compliance e Direito ao Esquecimento
 
 Usuário lê termos/privacidade, exclui dados em 1 clique (cascade delete LGPD) e sistema preserva agregados anonimizados para benchmarks futuros sem acoplamento a PII.
+
+> **Nota:** Stories consolidadas em 2026-04-16 via sprint-change-proposal. Referência: `planning-artifacts/sprint-change-proposal-2026-04-16.md`
 
 ### Story 5.1: Páginas públicas Termos de Uso + Política de Privacidade
 
@@ -1115,11 +1036,15 @@ So that entendo os compromissos e meus direitos antes de me cadastrar.
 **When** renderizo
 **Then** sem overflow horizontal, body 16px+
 
-### Story 5.2: AccountSettings com fluxo de exclusão
+### Story 5.2: Exclusão de conta LGPD — AccountSettings + Edge Function + benchmarks anonimizados
 
 As a usuário,
-I want excluir minha conta e dados,
-So that exerço o direito de esquecimento (LGPD).
+I want excluir minha conta e dados com garantia de que agregados anonimizados são preservados para benchmarks,
+So that exerço o direito de esquecimento (LGPD) sem comprometer dados estatísticos do produto.
+
+**Escopo consolidado:** Rota `/app/conta` com informações de cadastro + seção "Excluir conta" com confirmação dupla (digitar EXCLUIR) + Edge Function `delete-account` em Deno (verifica JWT → copia agregados → cascade delete → deleta auth.users → registra em `account_deletions`) + migration com views materializadas `benchmark_scores_by_institution` e `benchmark_curriculum_completeness` + tabela `account_deletions` (sem PII) + rollback atômico em caso de erro.
+
+**FRs cobertos:** FR33, FR34
 
 **Acceptance Criteria:**
 
@@ -1138,17 +1063,9 @@ So that exerço o direito de esquecimento (LGPD).
 **Then** invoca Edge Function `delete-account`
 **And** em sucesso sou deslogado + redirecionado para `/` com toast "Conta excluída"
 
-### Story 5.3: Edge Function delete-account com cascade delete
-
-As a desenvolvedor,
-I want Edge Function que executa exclusão completa,
-So that todos os dados do usuário somem de forma atômica e auditável.
-
-**Acceptance Criteria:**
-
 **Given** `supabase/functions/delete-account/`
 **When** deploy
-**Then** função: (1) verifica JWT (só o próprio user); (2) copia agregados anonimizados para `anonymous_benchmarks` (ver Story 5.4); (3) deleta `user_scores`, `user_curriculum`, `profiles` (cascade); (4) deleta `auth.users` via admin API; (5) registra em `account_deletions` (id, deleted_at, state, graduation_year — sem PII)
+**Then** função: (1) verifica JWT (só o próprio user); (2) copia agregados anonimizados para views materializadas; (3) deleta `user_scores`, `user_curriculum`, `profiles` (cascade); (4) deleta `auth.users` via admin API; (5) registra em `account_deletions` (id, deleted_at, state, graduation_year — sem PII)
 **And** retorna `{ data: { deleted: true }, error: null }` em sucesso
 **And** é idempotente
 
@@ -1157,14 +1074,6 @@ So that todos os dados do usuário somem de forma atômica e auditável.
 **Then** transação faz rollback
 **And** retorna `{ data: null, error: { message, code } }`
 **And** nada é deletado parcialmente
-
-### Story 5.4: Views materializadas anonimizadas para benchmarks
-
-As a produto,
-I want preservar agregados anonimizados,
-So that atendo FR34 sem comprometer LGPD.
-
-**Acceptance Criteria:**
 
 **Given** `supabase/migrations/00NN_benchmarks.sql`
 **When** aplico
@@ -1184,31 +1093,27 @@ So that atendo FR34 sem comprometer LGPD.
 
 **Status:** backlog (pós-MVP).
 
-### Story 6.1: Hero redesign — imagem, dois CTAs e microcopy persuasiva
+> **Nota:** Stories consolidadas em 2026-04-16 via sprint-change-proposal. Referência: `planning-artifacts/sprint-change-proposal-2026-04-16.md`
+
+### Story 6.1: Landing completa — hero + como funciona + preview do dashboard
 
 As a visitante da landing,
-I want um hero visualmente rico com imagem/ilustração, dois caminhos claros de ação (cadastrar ou explorar) e copy que me fisga em <3 segundos,
-So that entendo imediatamente o valor e escolho entre dar o próximo passo ou explorar mais.
+I want um hero visualmente rico com CTAs claros, entender em 3 passos como o produto funciona e ver screenshots reais do dashboard,
+So that entendo o valor, dissolvo ansiedade e tenho prova visual concreta do que vou receber ao me cadastrar.
+
+**Escopo consolidado:** Hero redesign com imagem/ilustração + 2 CTAs (primário "Começar" → `/signup`, secundário "Ver como funciona" → âncora `#como-funciona`) + microcopy persuasiva + seção "Como funciona" com 3 cards visuais (Cadastre-se, Preencha, Veja seu score) + seção preview com 2–3 screenshots anotados do dashboard (assets estáticos em `public/landing/`, sem PII).
 
 **Acceptance Criteria:**
 
 **Given** a landing atual entregue na Story 1.4 (hero + CTA único)
 **When** aplico o redesign
-**Then** hero passa a ter: imagem/ilustração à direita (ou background com profundidade visual via gradiente/shapes geométricos navy→teal), CTA primário "Começar" → `/signup`, CTA secundário "Ver como funciona" → âncora `#como-funciona` (seção entregue na Story 6.2)
+**Then** hero passa a ter: imagem/ilustração à direita (ou background com profundidade visual via gradiente/shapes geométricos navy→teal), CTA primário "Começar" → `/signup`, CTA secundário "Ver como funciona" → âncora `#como-funciona`
 **And** microcopy substitui subheadline atual por versão mais persuasiva (2ª pessoa direta, specificidade mensurável — ex: "Em 10 minutos você tem seu score em 11 programas das maiores instituições")
 **And** layout responsivo: desktop hero split 60/40 (texto/imagem); mobile stack vertical com imagem abaixo do CTA
 
 **Given** acessibilidade
 **When** valido
 **Then** ilustração tem `alt` descritivo (ou `aria-hidden` se decorativa); contraste AA preservado sobre novo background; CTAs mantêm ≥44px touch target
-
-### Story 6.2: Seção "Como funciona" — 3 passos visuais
-
-As a visitante ainda não convencido pelo hero,
-I want entender em 3 passos o que acontece depois que eu clico "Começar",
-So that dissolvo a ansiedade de "quanto tempo vai levar?" e "o que vão fazer com meus dados?".
-
-**Acceptance Criteria:**
 
 **Given** seção `#como-funciona` abaixo do hero
 **When** visualizo
@@ -1220,14 +1125,6 @@ So that dissolvo a ansiedade de "quanto tempo vai levar?" e "o que vão fazer co
 **When** atualizo o número
 **Then** o valor é fetched de `institutions` table em build-time (SSG) OU hardcoded com nota de revisão em `deferred-work.md` — documentar decisão
 
-### Story 6.3: Seção "O que você vai ver" — preview do dashboard
-
-As a visitante cético sobre a qualidade do produto,
-I want ver screenshots reais do dashboard que vou usar,
-So that tenho prova visual concreta do que estou me cadastrando para receber.
-
-**Acceptance Criteria:**
-
 **Given** seção `#preview` com screenshots anotados
 **When** visualizo
 **Then** vejo 2–3 screenshots: (1) dashboard com 11 ScoreCards populados, (2) detalhe de uma instituição com GapAnalysisList, (3) opcional — formulário accordion meio preenchido
@@ -1238,11 +1135,13 @@ So that tenho prova visual concreta do que estou me cadastrando para receber.
 **When** capturo
 **Then** uso conta/currículo mock (nome genérico "Lucas", email fictício); sem PII real
 
-### Story 6.4: Social proof — números e depoimentos
+### Story 6.2: Social proof + FAQ + footer institucional
 
-As a visitante que precisa de validação social,
-I want ver que outros alunos já usam e confiam no produto,
-So that sinto segurança em me cadastrar também.
+As a visitante que precisa de validação social e respostas rápidas,
+I want ver que outros alunos confiam no produto, ter minhas objeções respondidas e navegar para conteúdo institucional,
+So that sinto segurança em me cadastrar e encontro todos os caminhos esperados.
+
+**Escopo consolidado:** Seção social proof com estatísticas reais + 2–3 depoimentos (ou fallback "Apoiado pela Medway") + seção FAQ com 5–8 perguntas em Accordion shadcn + footer institucional com 3–4 colunas (logo, links produto, links legais, redes sociais) + links para `/termos` e `/privacidade` (Story 5.1).
 
 **Acceptance Criteria:**
 
@@ -1250,33 +1149,17 @@ So that sinto segurança em me cadastrar também.
 **When** visualizo
 **Then** vejo estatísticas reais (fetched em build-time ou atualizadas manualmente): número de alunos cadastrados, número de currículos preenchidos, número de instituições cobertas, número de regras configuradas
 **And** 2–3 depoimentos de alunos reais (com foto opcional, nome, cidade, ano de formação) — coletados via formulário ou comunidade Medway
-**And** se não houver depoimentos coletados até a Story 6.4 executar, substituir por uma seção alternativa ("Apoiado pela Medway — 10 anos preparando médicos") e documentar gap em `deferred-work.md`
+**And** se não houver depoimentos coletados, substituir por seção alternativa ("Apoiado pela Medway — 10 anos preparando médicos") e documentar gap em `deferred-work.md`
 
 **Given** consentimento LGPD dos alunos citados
 **When** uso depoimento
 **Then** tenho registro escrito de autorização (campo dedicado no form de coleta ou email separado)
-
-### Story 6.5: FAQ curto — quebra de objeções
-
-As a visitante com dúvidas específicas,
-I want respostas rápidas para 5–8 objeções comuns,
-So that removo bloqueios antes de me cadastrar.
-
-**Acceptance Criteria:**
 
 **Given** seção `#faq` com `Accordion` do shadcn
 **When** visualizo
 **Then** vejo 5–8 perguntas cobrindo: é gratuito?, meus dados são seguros?, quais instituições cobrem?, como calculam meu score?, preciso pagar depois?, posso excluir meus dados?, quanto tempo leva pra preencher?, a Medway faz mentoria baseada nisso?
 **And** cada resposta ≤3 parágrafos, linguagem direta, sem jargão técnico
 **And** links internos para `/termos`, `/privacidade` (Story 5.1) quando aplicável
-
-### Story 6.6: Footer institucional
-
-As a visitante que quer explorar a Medway ou sair pela porta da frente,
-I want um footer com navegação institucional completa,
-So that tenho todos os caminhos (sair para Medway, contato, legal) em um lugar previsível.
-
-**Acceptance Criteria:**
 
 **Given** footer no final da landing (e eventualmente em outras páginas públicas)
 **When** visualizo
@@ -1287,6 +1170,6 @@ So that tenho todos os caminhos (sair para Medway, contato, legal) em um lugar p
 **When** mobile
 **Then** colunas empilham; links mantêm ≥44px touch target
 
-**Given** Story 5.1 ainda não estar completa quando Story 6.6 rodar
+**Given** Story 5.1 ainda não estar completa quando Story 6.2 rodar
 **When** links `/termos` e `/privacidade` não existirem
 **Then** link leva para placeholder `/em-breve` OU aguardar 5.1 completar (bloqueio formal) — documentar decisão no commit

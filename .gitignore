@@ -22,6 +22,9 @@ supabase/.temp/
 supabase/volumes/
 supabase/.env
 
+# MCP server config (contém tokens)
+.mcp.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

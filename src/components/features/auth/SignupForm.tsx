@@ -39,9 +39,8 @@ import {
 import { cn } from "@/lib/utils";
 
 import { BRAZIL_STATES } from "@/lib/brazil-states";
-import { SPECIALTIES } from "@/lib/specialties";
-import { UNIVERSITIES } from "@/lib/universities";
 import { getGraduationYearOptions } from "@/lib/graduation-year";
+import { useSpecialtiesPublic, useMedicalSchools } from "@/lib/queries/public";
 import { formatPhone } from "@/lib/formatters/phone";
 import {
   signupFormSchema,
@@ -57,6 +56,15 @@ export function SignupForm() {
   const [universityOpen, setUniversityOpen] = useState(false);
   const [universityQuery, setUniversityQuery] = useState("");
   const graduationYears = useMemo(() => getGraduationYearOptions(), []);
+  const { data: specialties, isLoading: specialtiesLoading } = useSpecialtiesPublic();
+  const { data: medicalSchools, isLoading: schoolsLoading } = useMedicalSchools();
+
+  // Build display list for combobox: "SIGLA - Nome"
+  const schoolOptions = useMemo(
+    () =>
+      medicalSchools?.map((s) => `${s.abbreviation} - ${s.name}`) ?? [],
+    [medicalSchools],
+  );
 
   // defaultValues usa Partial para evitar casts inseguros em campos obrigatórios
   // (state/specialty enums, graduation_year number, lgpd_accepted literal(true)).
@@ -202,7 +210,7 @@ export function SignupForm() {
                   value={field.value ?? ""}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger tabIndex={0}>
                       <SelectValue placeholder="Selecione o estado" />
                     </SelectTrigger>
                   </FormControl>
@@ -220,7 +228,7 @@ export function SignupForm() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}
             name="university"
@@ -241,13 +249,14 @@ export function SignupForm() {
                           type="button"
                           variant="outline"
                           role="combobox"
+                          tabIndex={0}
                           aria-expanded={universityOpen}
                           className={cn(
                             "w-full justify-between font-normal",
                             !field.value && "text-muted-foreground",
                           )}
                         >
-                          {field.value || "Selecione ou digite sua faculdade"}
+                          {field.value || (schoolsLoading ? "Carregando..." : "Selecione ou digite sua faculdade")}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
@@ -277,7 +286,7 @@ export function SignupForm() {
                                 : "Digite pelo menos 2 caracteres"}
                             </button>
                           </CommandEmpty>
-                          {UNIVERSITIES.map((u) => (
+                          {schoolOptions.map((u) => (
                             <CommandItem
                               key={u}
                               value={u}
@@ -304,7 +313,9 @@ export function SignupForm() {
               );
             }}
           />
+        </div>
 
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
             name="graduation_year"
@@ -316,7 +327,7 @@ export function SignupForm() {
                   value={field.value ? String(field.value) : ""}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger tabIndex={0}>
                       <SelectValue placeholder="Selecione o ano" />
                     </SelectTrigger>
                   </FormControl>
@@ -332,35 +343,35 @@ export function SignupForm() {
               </FormItem>
             )}
           />
-        </div>
 
-        <FormField
-          control={form.control}
-          name="specialty_interest"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Especialidade desejada</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={field.value ?? ""}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a especialidade" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {SPECIALTIES.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage className={warningMessageClass} />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="specialty_interest"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Especialidade desejada</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value ?? ""}
+                >
+                  <FormControl>
+                    <SelectTrigger tabIndex={0} disabled={specialtiesLoading}>
+                      <SelectValue placeholder={specialtiesLoading ? "Carregando..." : "Selecione a especialidade"} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {specialties?.map((s) => (
+                      <SelectItem key={s.id} value={s.name}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage className={warningMessageClass} />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField

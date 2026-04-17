@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -72,6 +72,9 @@ export const UserMenu = () => {
           </DropdownMenuLabel>
         ) : null}
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/app/conta">Minha conta</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>Sair</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

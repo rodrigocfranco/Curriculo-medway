@@ -1,6 +1,6 @@
 # generated: 2026-04-14
-# last_updated: 2026-04-14
-# Note: 2026-04-14 — Story 1.5 started (in-progress); signup público + 7 campos + LGPD + trigger handle_new_user.
+# last_updated: 2026-04-16
+# Note: 2026-04-16 — Story 3.1 created (ready-for-dev); navegação admin + CRUD instituições + upload edital.
 # project: curriculo-medway
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-14
-last_updated: 2026-04-15 (story 1.11 implementada e movida para review — código/config completos (CI workflows, Vercel config, Sentry + ErrorBoundary, health.json, db-push.yml, robots.txt, supabase.ts env throw, docs/deployment.md + architecture-deviations.md, deferred-work atualizado); 150 testes verdes, typecheck limpo, build gera apenas rotas públicas. Setup manual em dashboards (Vercel/Supabase/Sentry/UptimeRobot/GitHub Environments) documentado como checklist em docs/deployment.md.)
+last_updated: 2026-04-17 (Story 3.3 review)
 project: curriculo-medway
 project_key: NOKEY
 tracking_system: file-system
@@ -54,53 +54,38 @@ development_status:
   1-8-protectedroute-appshell-adminshell: done
   1-9-schema-motor-regras-seeds-instituicoes: done
   1-10-schema-curriculo-scores-bucket-editais: done
-  1-11-ci-cd-completo: review
+  1-11-ci-cd-completo: done
   epic-1-retrospective: optional
 
-  epic-2: backlog
-  2-1-queries-schemas-curriculo: backlog
-  2-2-formulario-curriculo-accordion: backlog
-  2-3-autosave-silencioso-indicator: backlog
-  2-4-resumo-do-curriculo: backlog
-  2-5-db-function-calculate-scores-trigger: backlog
-  2-6-queries-schemas-scoring: backlog
-  2-7-dashboard-grid-scorecard-narrativebanner: backlog
-  2-8-specialtyselector-inline-recalculo: backlog
-  2-9-detalhe-instituicao-scorehero-gapanalysis: backlog
-  2-10-disclaimerbanner-link-edital: backlog
-  2-11-transicao-fade-slide-skeleton: backlog
+  # Epic 2 — Consolidado em 2026-04-16 (11 → 4 stories)
+  epic-2: in-progress
+  2-1-formulario-curriculo-completo-autosave: done
+  2-2-motor-calculo-db-function-trigger-queries: done
+  2-3-dashboard-scorecard-narrativebanner-specialtyselector: done
+  2-4-detalhe-instituicao-scorehero-gapanalysis-disclaimer: backlog
   epic-2-retrospective: optional
 
-  epic-3: backlog
-  3-1-adminshell-navegacao-guard: backlog
-  3-2-crud-instituicoes: backlog
-  3-3-upload-pdf-edital: backlog
-  3-4-crud-regras-adminruleeditor: backlog
-  3-5-impactpreviewdialog-preview-alunos: backlog
-  3-6-log-historico-alteracoes-regras: backlog
+  # Epic 3 — Consolidado em 2026-04-16 (6 → 3 stories)
+  epic-3: in-progress
+  3-1-navegacao-admin-crud-instituicoes-upload-edital: done
+  3-2-crud-regras-adminruleeditor-impactpreview: done
+  3-3-log-historico-alteracoes-regras: review
   epic-3-retrospective: optional
 
-  epic-4: backlog
-  4-1-pagina-leads-metricas-header: backlog
-  4-2-leadtable-paginacao-server-side: backlog
-  4-3-filtros-server-side-chips-url-params: backlog
-  4-4-drawer-detalhe-lead: backlog
-  4-5-edge-export-leads-csv: backlog
-  4-6-edge-export-leads-hubspot: backlog
+  # Epic 4 — Consolidado em 2026-04-16 (6 → 2 stories)
+  epic-4: in-progress
+  4-1-pagina-leads-tabela-filtros-metricas-drawer: done
+  4-2-edge-export-leads-csv-hubspot: done
   epic-4-retrospective: optional
 
-  epic-5: backlog
-  5-1-paginas-termos-politica-privacidade: backlog
-  5-2-accountsettings-fluxo-exclusao: backlog
-  5-3-edge-delete-account-cascade: backlog
-  5-4-views-materializadas-anonimizadas-benchmarks: backlog
+  # Epic 5 — Consolidado em 2026-04-16 (4 → 2 stories)
+  epic-5: in-progress
+  5-1-paginas-termos-politica-privacidade: done
+  5-2-exclusao-lgpd-accountsettings-edge-function-benchmarks: done
   epic-5-retrospective: optional
 
+  # Epic 6 — Consolidado em 2026-04-16 (6 → 2 stories)
   epic-6: backlog
-  6-1-hero-redesign-dois-ctas-microcopy: backlog
-  6-2-secao-como-funciona-tres-passos: backlog
-  6-3-secao-preview-dashboard-screenshots: backlog
-  6-4-social-proof-numeros-depoimentos: backlog
-  6-5-faq-quebra-objecoes: backlog
-  6-6-footer-institucional: backlog
+  6-1-landing-completa-hero-como-funciona-preview: backlog
+  6-2-social-proof-faq-footer: backlog
   epic-6-retrospective: optional

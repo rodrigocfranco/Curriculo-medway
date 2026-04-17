@@ -63,6 +63,27 @@ export const routes: RouteRecord[] = [
                 Component: m.default,
               })),
           },
+          {
+            path: "curriculo",
+            lazy: () =>
+              import("./pages/app/Curriculo").then((m) => ({
+                Component: m.default,
+              })),
+          },
+          {
+            path: "instituicoes/:id",
+            lazy: () =>
+              import("./pages/app/InstitutionDetail").then((m) => ({
+                Component: m.default,
+              })),
+          },
+          {
+            path: "conta",
+            lazy: () =>
+              import("./pages/app/Conta").then((m) => ({
+                Component: m.default,
+              })),
+          },
         ],
       },
       {
@@ -82,25 +103,39 @@ export const routes: RouteRecord[] = [
           {
             path: "regras",
             lazy: () =>
-              import("./pages/admin/Stub").then((m) => ({
-                Component: m.RegrasStub,
+              import("./pages/admin/Regras").then((m) => ({
+                Component: m.default,
               })),
           },
           {
             path: "leads",
             lazy: () =>
-              import("./pages/admin/Stub").then((m) => ({
-                Component: m.LeadsStub,
+              import("./pages/admin/Leads").then((m) => ({
+                Component: m.default,
               })),
           },
           {
             path: "historico",
             lazy: () =>
-              import("./pages/admin/Stub").then((m) => ({
-                Component: m.HistoricoStub,
+              import("./pages/admin/Historico").then((m) => ({
+                Component: m.default,
               })),
           },
         ],
+      },
+      {
+        path: "termos",
+        lazy: () =>
+          import("./pages/legal/TermosDeUso").then((m) => ({
+            Component: m.default,
+          })),
+      },
+      {
+        path: "privacidade",
+        lazy: () =>
+          import("./pages/legal/PoliticaPrivacidade").then((m) => ({
+            Component: m.default,
+          })),
       },
       { path: "*", Component: NotFound },
     ],

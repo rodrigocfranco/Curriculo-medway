@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { BRAZIL_STATE_CODES } from "../brazil-states";
-import { SPECIALTIES_TUPLE } from "../specialties";
 
 const currentYear = new Date().getFullYear();
 
@@ -37,9 +36,7 @@ const signupFormBase = z.object({
     .int()
     .min(currentYear - 10, "Ano fora do intervalo permitido")
     .max(currentYear + 8, "Ano fora do intervalo permitido"),
-  specialty_interest: z.enum(SPECIALTIES_TUPLE, {
-    errorMap: () => ({ message: "Selecione a especialidade desejada" }),
-  }),
+  specialty_interest: z.string().min(1, "Selecione a especialidade desejada"),
   password: z.string().min(8, "Mínimo 8 caracteres").max(72, "Máximo 72 caracteres"),
   confirmPassword: z.string(),
   lgpd_accepted: z.literal(true, {

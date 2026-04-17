@@ -1,37 +1,48 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const useAuthMock = vi.fn();
-
-vi.mock("@/contexts/useAuth", () => ({
-  useAuth: () => useAuthMock(),
+vi.mock("@/lib/queries/admin", () => ({
+  useInstitutions: () => ({
+    data: [
+      {
+        id: "inst-1",
+        name: "Universidade Estadual de Campinas",
+        short_name: "UNICAMP",
+        state: "SP",
+        edital_url: null,
+        pdf_path: null,
+        created_at: "2026-01-01",
+        updated_at: "2026-01-01",
+      },
+    ],
+    isLoading: false,
+  }),
+  useInstitutionRuleCounts: () => ({
+    data: { "inst-1": 3 },
+  }),
+  useCreateInstitution: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useUpdateInstitution: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useDeleteInstitution: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
 import AdminHome from "./Home";
 
-beforeEach(() => {
-  useAuthMock.mockReset();
-});
-
 describe("AdminHome", () => {
-  it("renderiza heading 'Instituições' + nome do admin", () => {
-    useAuthMock.mockReturnValue({
-      user: { id: "u1", email: "admin@medway.com" },
-      profile: { name: "Admin Medway", role: "admin" },
-    });
-    render(<AdminHome />);
+  it("renderiza heading 'Instituições' e botão 'Nova instituição'", () => {
+    render(<TooltipProvider><AdminHome /></TooltipProvider>);
     expect(
       screen.getByRole("heading", { name: "Instituições" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Admin Medway/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /nova instituição/i }),
+    ).toBeInTheDocument();
   });
 
-  it("fallback: profile=null → usa user.email", () => {
-    useAuthMock.mockReturnValue({
-      user: { id: "u1", email: "admin@medway.com" },
-      profile: null,
-    });
-    render(<AdminHome />);
-    expect(screen.getByText(/admin@medway\.com/)).toBeInTheDocument();
+  it("exibe tabela com dados das instituições", () => {
+    render(<TooltipProvider><AdminHome /></TooltipProvider>);
+    expect(screen.getByText("UNICAMP")).toBeInTheDocument(); // short_name
+    expect(screen.getByText("SP")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
   });
 });

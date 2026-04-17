@@ -2,7 +2,7 @@ import AppShell from "./AppShell";
 import ProtectedRoute from "./ProtectedRoute";
 
 const StudentLayout = () => (
-  <ProtectedRoute role="student">
+  <ProtectedRoute role={["student", "admin"]}>
     <AppShell />
   </ProtectedRoute>
 );

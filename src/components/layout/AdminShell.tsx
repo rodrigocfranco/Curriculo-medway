@@ -1,6 +1,8 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import UserMenu from "./UserMenu";
@@ -47,7 +49,15 @@ export const AdminShell = () => (
             </NavLink>
           ))}
         </nav>
-        <UserMenu />
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" asChild className="hidden gap-1.5 text-muted-foreground md:inline-flex">
+            <Link to="/app">
+              <Eye className="h-4 w-4" />
+              Ver como aluno
+            </Link>
+          </Button>
+          <UserMenu />
+        </div>
       </div>
     </header>
     <div
