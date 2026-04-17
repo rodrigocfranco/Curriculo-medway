@@ -19,6 +19,32 @@ import {
 import type { ScoringRuleRow, InstitutionRow, SpecialtyRow } from "@/lib/queries/admin";
 import { useCurriculumFields } from "@/lib/queries/curriculum";
 
+/** Labels para field_keys compostos (fórmulas que combinam vários campos do currículo) */
+const COMPOSITE_FIELD_LABELS: Record<string, string> = {
+  publicacoes: "Publicações",
+  ic: "Iniciação Científica",
+  monitoria: "Monitoria",
+  formacao: "Formação acadêmica",
+  extensao: "Extensão universitária",
+  voluntariado: "Voluntariado",
+  ligas: "Ligas acadêmicas",
+  ligas_rep: "Representação e Ligas",
+  ligas_ext: "Extensão e Ligas",
+  congressos: "Congressos e Eventos",
+  eventos: "Eventos",
+  historico: "Histórico escolar",
+  idiomas: "Idiomas",
+  estagio: "Estágio extracurricular",
+  social: "Experiência social",
+  representante: "Representante de turma",
+  instituicao_origem: "Instituição de origem",
+  pos_graduacao: "Pós-graduação",
+  bloco_cientifico: "Produção científica",
+  bloco_monitoria: "Monitoria",
+  bloco_extra: "Atividades extracurriculares",
+  bloco_idioma: "Língua estrangeira",
+};
+
 interface ScoringRuleTableProps {
   rules: ScoringRuleRow[] | undefined;
   institutions: InstitutionRow[] | undefined;
@@ -126,7 +152,7 @@ export function ScoringRuleTable({
                 </TableCell>
                 <TableCell>{rule.category}</TableCell>
                 <TableCell>
-                  {fieldLabelMap.get(rule.field_key) ?? rule.field_key}
+                  {fieldLabelMap.get(rule.field_key) ?? COMPOSITE_FIELD_LABELS[rule.field_key] ?? rule.field_key}
                 </TableCell>
                 <TableCell className="text-center">{rule.weight}</TableCell>
                 <TableCell className="text-center">{rule.max_points}</TableCell>

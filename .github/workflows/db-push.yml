@@ -12,6 +12,8 @@ jobs:
   db-push:
     name: Apply migrations to production
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     environment: production
     steps:
       - name: Checkout
@@ -20,7 +22,7 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v2
+        uses: supabase/setup-cli@v1
         with:
           version: latest
 

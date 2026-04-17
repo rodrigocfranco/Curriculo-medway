@@ -14,6 +14,8 @@ jobs:
   quality:
     name: Quality (lint + typecheck + test + build)
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -50,6 +52,8 @@ jobs:
   types-drift:
     name: Schema drift (database.types.ts)
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -57,7 +61,7 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v2
+        uses: supabase/setup-cli@v1
         with:
           version: latest
 
