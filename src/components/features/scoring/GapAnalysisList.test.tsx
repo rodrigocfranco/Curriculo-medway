@@ -4,21 +4,19 @@ import { GapAnalysisList } from "./GapAnalysisList";
 import type { ScoreBreakdown } from "@/lib/schemas/scoring";
 
 const mockBreakdown: ScoreBreakdown = {
-  publicacoes: { score: 10, max: 15, description: "Autor principal indexado: 10 pts | Coautor: 5 pts", category: "Publicações", label: "Publicações científicas" },
-  ic: { score: 20, max: 20, description: "Bolsa Oficial: 20 pts | Voluntária: 10 pts", category: "Pesquisa", label: "Iniciação Científica" },
-  monitoria: { score: 2, max: 5, description: "Monitoria acadêmica registrada", category: "Pesquisa", label: "Monitoria acadêmica" },
+  publicacoes: { score: 10, max: 15, description: "Autor principal indexado (10pts) | Coautor (5pts)", category: "Publicações", label: "Publicações científicas" },
+  ic: { score: 20, max: 20, description: "Bolsa Oficial (20pts) | Voluntária (10pts)", category: "Pesquisa", label: "Iniciação Científica" },
+  monitoria: { score: 2, max: 5, description: "Monitoria acadêmica registrada (5pts)", category: "Pesquisa", label: "Monitoria acadêmica" },
 };
 
 describe("GapAnalysisList", () => {
   it("agrupa por categoria e ordena por delta descendente", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    const items = screen.getAllByRole("listitem");
-    // 2 grupos: Pesquisa (delta 3) e Publicações (delta 5)
-    // Publicações primeiro (delta 5 > delta 3)
-    expect(items).toHaveLength(2);
-    expect(items[0]).toHaveTextContent("Publicações");
-    expect(items[1]).toHaveTextContent("Pesquisa");
+    // Verificar que categorias aparecem na ordem certa (maior delta primeiro)
+    const headings = screen.getAllByRole("heading", { level: 3 });
+    expect(headings[0]).toHaveTextContent("Publicações");
+    expect(headings[1]).toHaveTextContent("Pesquisa");
   });
 
   it("exibe totais por categoria", () => {
@@ -55,14 +53,24 @@ describe("GapAnalysisList", () => {
     expect(screen.getByText("Nenhuma categoria de pontuação disponível.")).toBeInTheDocument();
   });
 
-  it("expande descrição ao clicar 'Saiba +'", () => {
+  it("mostra regras expandidas por padrão quando delta > 0", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    const saibaMais = screen.getAllByText("Saiba +");
-    expect(saibaMais.length).toBeGreaterThan(0);
+    // Publicações (delta 5) deve estar expandida, mostrando itens parseados
+    expect(screen.getByText("Autor principal indexado")).toBeInTheDocument();
+    expect(screen.getByText("10 pts")).toBeInTheDocument();
+    expect(screen.getByText("Coautor")).toBeInTheDocument();
+    // "5 pts" aparece em Publicações e Monitoria
+    expect(screen.getAllByText("5 pts").length).toBeGreaterThanOrEqual(1);
+  });
 
-    fireEvent.click(saibaMais[0]);
-    expect(screen.getByText("Autor principal indexado: 10 pts | Coautor: 5 pts")).toBeInTheDocument();
+  it("mostra 'Como pontuar' ao invés de 'Saiba +'", () => {
+    render(<GapAnalysisList breakdown={mockBreakdown} />);
+
+    // Campos com delta > 0 mostram "Ocultar" (já aberto)
+    expect(screen.getAllByText("Ocultar").length).toBeGreaterThan(0);
+    // Campos com delta = 0 mostram "Como pontuar" (fechado)
+    expect(screen.getAllByText("Como pontuar").length).toBeGreaterThan(0);
   });
 
   it("agrupa em 'Outros' quando category não está presente", () => {

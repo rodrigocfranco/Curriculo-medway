@@ -37,6 +37,19 @@ function formatKey(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/** Parseia "item (Xpts) | item (Ypts)" em lista estruturada */
+function parseRuleItems(description: string): { text: string; pts: string }[] {
+  if (!description) return [];
+  return description.split("|").map((part) => {
+    const trimmed = part.trim();
+    const match = trimmed.match(/^(.+?)\s*\((\d+[\.,]?\d*)\s*pts?\)$/i);
+    if (match) {
+      return { text: match[1].trim(), pts: match[2] };
+    }
+    return { text: trimmed, pts: "" };
+  }).filter((item) => item.text.length > 0);
+}
+
 function groupByCategory(breakdown: ScoreBreakdown): CategoryGroup[] {
   const groups = new Map<string, BreakdownEntry[]>();
 
@@ -71,7 +84,10 @@ function groupByCategory(breakdown: ScoreBreakdown): CategoryGroup[] {
 }
 
 function RuleItem({ entry }: { entry: BreakdownEntry }) {
-  const [open, setOpen] = useState(false);
+  const hasGap = entry.delta > 0;
+  const [open, setOpen] = useState(hasGap);
+  const ruleItems = parseRuleItems(entry.description);
+  const hasStructuredItems = ruleItems.length > 0 && ruleItems.some((r) => r.pts);
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
@@ -92,14 +108,14 @@ function RuleItem({ entry }: { entry: BreakdownEntry }) {
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        {entry.delta > 0 ? (
+        {hasGap ? (
           <span className="text-xs text-accent">+{entry.delta} possíveis</span>
         ) : (
           <span className="text-xs text-emerald-600">✓ Máximo</span>
         )}
         {entry.description && (
           <CollapsibleTrigger className="inline-flex min-h-[44px] items-center gap-0.5 text-xs text-accent hover:underline">
-            Saiba +
+            {open ? "Ocultar" : "Como pontuar"}
             <ChevronDown
               className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
             />
@@ -108,9 +124,24 @@ function RuleItem({ entry }: { entry: BreakdownEntry }) {
       </div>
 
       <CollapsibleContent>
-        <p className="mb-2 rounded bg-muted/50 p-2 text-xs text-muted-foreground">
-          {entry.description}
-        </p>
+        {hasStructuredItems ? (
+          <ul className="mb-2 space-y-1 rounded bg-muted/50 p-3">
+            {ruleItems.map((item, i) => (
+              <li key={i} className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-muted-foreground">{item.text}</span>
+                {item.pts && (
+                  <span className="shrink-0 font-medium tabular-nums text-accent">
+                    {item.pts} pts
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mb-2 rounded bg-muted/50 p-2 text-xs text-muted-foreground">
+            {entry.description}
+          </p>
+        )}
       </CollapsibleContent>
     </Collapsible>
   );
@@ -141,7 +172,7 @@ function CategoryCard({ group }: { group: CategoryGroup }) {
           </p>
         )}
 
-        {/* Nível 2+3: Campos e descrições */}
+        {/* Nível 2+3: Campos e regras */}
         <div className="mt-3 divide-y pl-2">
           {group.entries.map((entry) => (
             <RuleItem key={entry.key} entry={entry} />
