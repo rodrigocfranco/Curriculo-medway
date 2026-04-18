@@ -11,6 +11,10 @@ vi.mock("@/contexts/useAuth", () => ({
   useAuth: () => useAuthMock(),
 }));
 
+vi.mock("@/lib/queries/curriculum", () => ({
+  useCurriculum: () => ({ data: { data: { mestrado_status: "Não tenho", doutorado_status: "Não tenho" } } }),
+}));
+
 vi.mock("@/lib/queries/scoring", () => ({
   useInstitutionScore: (...args: unknown[]) => useInstitutionScoreMock(...args),
   useEditalUrl: (...args: unknown[]) => useEditalUrlMock(...args),
@@ -123,8 +127,8 @@ describe("InstitutionDetail", () => {
     expect(screen.getByText("Bom caminho — veja onde pode crescer")).toBeInTheDocument();
 
     // GapAnalysis — categorias agrupadas
-    expect(screen.getByText("Publicações")).toBeInTheDocument();
-    expect(screen.getByText("Pesquisa")).toBeInTheDocument();
+    expect(screen.getAllByText("Publicações").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Pesquisa").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("10/15 pontos")).toBeInTheDocument();
     expect(screen.getByText("✓ Máximo")).toBeInTheDocument();
 

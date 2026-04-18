@@ -8,6 +8,7 @@ import {
   useEditalUrl,
   scoringKeys,
 } from "@/lib/queries/scoring";
+import { useCurriculum } from "@/lib/queries/curriculum";
 import { ScoreHero } from "@/components/features/scoring/ScoreHero";
 import { GapAnalysisList } from "@/components/features/scoring/GapAnalysisList";
 import { DisclaimerBanner } from "@/components/features/scoring/DisclaimerBanner";
@@ -44,6 +45,8 @@ const InstitutionDetail = () => {
   );
 
   const editalUrl = useEditalUrl(institution);
+  const { data: curriculumRow } = useCurriculum(userId);
+  const curriculumData = (curriculumRow?.data ?? {}) as Record<string, unknown>;
 
   const displayName =
     institution?.short_name || institution?.name || "Instituição";
@@ -150,7 +153,7 @@ const InstitutionDetail = () => {
           {score && (
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">Detalhamento por categoria</h2>
-              <GapAnalysisList breakdown={score.breakdown} />
+              <GapAnalysisList breakdown={score.breakdown} curriculumData={curriculumData} />
             </div>
           )}
 
