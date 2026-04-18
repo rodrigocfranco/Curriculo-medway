@@ -25,15 +25,15 @@ const Historico = () => {
   return (
     <section className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold">Historico de alteracoes</h1>
+        <h1 className="text-xl font-semibold">Histórico de alterações</h1>
         <p className="text-sm text-muted-foreground">
-          Auditoria completa das alteracoes em regras de pontuacao.
+          Auditoria completa das alterações em regras de pontuação.
         </p>
       </div>
 
       {error && (
         <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
-          Erro ao carregar historico. Verifique sua conexao e tente novamente.
+          Erro ao carregar histórico. Verifique sua conexão e tente novamente.
         </div>
       )}
 

@@ -339,6 +339,7 @@ export function useDeleteScoringRule(): UseMutationResult<
 export function useAuditLog(): UseQueryResult<ScoringRulesAuditRow[], Error> {
   return useQuery<ScoringRulesAuditRow[], Error>({
     queryKey: ["audit-log"],
+    staleTime: 2 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("scoring_rules_audit")
@@ -368,13 +369,17 @@ export function useAdminProfiles(): UseQueryResult<
   });
 }
 
+export interface RevertResult {
+  affectedCount: number;
+}
+
 export function useRevertRule(): UseMutationResult<
-  void,
+  RevertResult,
   Error,
   { auditEntry: ScoringRulesAuditRow }
 > {
   const queryClient = useQueryClient();
-  return useMutation<void, Error, { auditEntry: ScoringRulesAuditRow }>({
+  return useMutation<RevertResult, Error, { auditEntry: ScoringRulesAuditRow }>({
     mutationFn: async ({ auditEntry }) => {
       const { old_values, change_type, rule_id } = auditEntry;
       if (!old_values) throw new Error("Sem valores anteriores para reverter.");
@@ -387,13 +392,30 @@ export function useRevertRule(): UseMutationResult<
         old_values as Record<string, unknown>;
       const restoreValues = rest as ScoringRuleUpdate;
 
+      const institutionId = (old_values.institution_id ?? rest.institution_id) as string | undefined;
+
       if (change_type === "UPDATE") {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("scoring_rules")
           .update(restoreValues)
-          .eq("id", rule_id);
+          .eq("id", rule_id)
+          .select("id");
         if (error) throw error;
+        if (!data || data.length === 0) {
+          throw new Error("Regra não encontrada — pode ter sido excluída após esta alteração.");
+        }
       } else if (change_type === "DELETE") {
+        // Validar que a instituição ainda existe antes de re-inserir
+        if (institutionId) {
+          const { data: inst } = await supabase
+            .from("institutions")
+            .select("id")
+            .eq("id", institutionId)
+            .single();
+          if (!inst) {
+            throw new Error("Não é possível reverter — a instituiç��o não existe mais no sistema.");
+          }
+        }
         const insertValues = {
           id: old_values.id as string,
           ...rest,
@@ -403,6 +425,18 @@ export function useRevertRule(): UseMutationResult<
           .insert(insertValues);
         if (error) throw error;
       }
+
+      // Contar alunos afetados (scores que ficarão stale)
+      let affectedCount = 0;
+      if (institutionId) {
+        const { count } = await supabase
+          .from("user_scores")
+          .select("user_id", { count: "exact", head: true })
+          .eq("institution_id", institutionId);
+        affectedCount = count ?? 0;
+      }
+
+      return { affectedCount };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["audit-log"] });

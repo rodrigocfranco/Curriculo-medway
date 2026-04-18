@@ -1,6 +1,6 @@
 # Story 3.3: Log/histórico de alterações de regras
 
-Status: review
+Status: done
 
 ## Story
 
@@ -338,9 +338,22 @@ Claude Opus 4.6 (1M context)
 - Types regenerados com `supabase gen types typescript --local`
 - Todos os testes passam: 122 pgTAP + 341 Vitest, 0 regressões, 0 erros tsc/lint
 
+### Review Findings
+
+- [x] [Review][Patch] P1: Acentos pt-BR ausentes em todas as strings de UI — CORRIGIDO
+- [x] [Review][Patch] P2: Revert de UPDATE em regra deletada é no-op silencioso com toast de sucesso — CORRIGIDO (`.select("id")` + check empty)
+- [x] [Review][Patch] P3: Estado `page` não reseta quando `data` muda — CORRIGIDO (useEffect reset)
+- [x] [Review][Patch] P4: `useAuditLog` sem `staleTime` — CORRIGIDO (staleTime: 2min)
+- [x] [Review][Patch] D1→P5: Toast de revert sem contagem {N} de alunos afetados — CORRIGIDO (query user_scores count)
+- [x] [Review][Patch] D2→P6: `changed_by` sem FK para `auth.users(id)` ON DELETE SET NULL — CORRIGIDO (migration 0013 + teste pgTAP)
+- [x] [Review][Patch] D3→P7: Revert de DELETE falha silenciosamente quando instituição foi cascade-deleted — CORRIGIDO (validação prévia)
+- [x] [Review][Defer] W1: Concurrent revert sem idempotência — deferred, baixa probabilidade no MVP
+- [x] [Review][Defer] W2: `useAuditLog` carrega tabela inteira sem server-side limit — deferred, volume <500 no MVP
+
 ### Change Log
 
 - 2026-04-17: Implementação completa da Story 3.3 — auditoria de regras com tabela, trigger, UI e reversão
+- 2026-04-18: Code review — 7 patches aplicados (acentos pt-BR, revert edge cases, staleTime, FK changed_by, contagem alunos no toast)
 
 ### File List
 

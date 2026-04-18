@@ -13,6 +13,7 @@ import {
 import {
   useRevertRule,
   type ScoringRulesAuditRow,
+  type RevertResult,
 } from "@/lib/queries/admin";
 
 interface RevertRuleDialogProps {
@@ -48,13 +49,14 @@ export function RevertRuleDialog({
     if (!entry || revertMutation.isPending) return;
 
     try {
-      await revertMutation.mutateAsync({ auditEntry: entry });
+      const result: RevertResult = await revertMutation.mutateAsync({ auditEntry: entry });
       toast.success(
-        "Regra revertida com sucesso — alunos afetados terao recalculo na proxima sessao.",
+        `Regra revertida com sucesso — ${result.affectedCount} aluno(s) terão recálculo na próxima sessão.`,
       );
       onOpenChange(false);
-    } catch {
-      toast.error("Erro ao reverter regra. Tente novamente.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erro ao reverter regra. Tente novamente.";
+      toast.error(message);
     }
   };
 
@@ -68,10 +70,10 @@ export function RevertRuleDialog({
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Reverter alteracao</AlertDialogTitle>
+          <AlertDialogTitle>Reverter alteração</AlertDialogTitle>
           <AlertDialogDescription>
-            Reverter esta alteracao restaurara a regra para o estado anterior.
-            Uma nova entrada de historico sera criada automaticamente.
+            Reverter esta alteração restaurará a regra para o estado anterior.
+            Uma nova entrada de histórico será criada automaticamente.
             {entry && (
               <>
                 <br />
@@ -94,7 +96,7 @@ export function RevertRuleDialog({
             {revertMutation.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Confirmar reversao
+            Confirmar reversão
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

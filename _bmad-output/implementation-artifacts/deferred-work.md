@@ -237,6 +237,11 @@ Os itens abaixo, previamente deferidos de Stories 1.1 / 1.4 / 1.5 / 1.6 / 1.7 / 
 - **W2 — CROSS JOIN em `benchmark_curriculum_completeness`:** query `curriculum_fields CROSS JOIN user_curriculum` produz produto cartesiano O(M×N) e calcula avg_fill_rate sobre todos os pares, não por usuário. Resultado correto apenas se cada user tem exatamente 1 row em `user_curriculum`. Redesenhar query quando houver mais dados.
 - **W3 — Sem cron para refresh semanal das views materializadas (AC7):** `refresh_benchmarks()` existe para uso on-demand (chamada pela Edge Function e via RPC admin). Configurar `pg_cron` ou Supabase scheduled function para refresh semanal em produção.
 
+## Deferred from: code review of story 3-3-log-historico-alteracoes-regras (2026-04-18)
+
+- **W1 — Concurrent revert sem idempotência** — Dois admins revertendo a mesma entrada simultaneamente: UPDATE reverts geram 2 audit entries redundantes; DELETE reverts colidem na PK. Baixa probabilidade no MVP (equipe admin pequena, <500 registros).
+- **W2 — `useAuditLog` carrega tabela inteira sem server-side limit** — Query faz `select(*)` sem `.limit()` ou `.range()`. Volume <500 no MVP é aceitável; implementar paginação server-side quando volume crescer.
+
 ## Deferred from: code review of story-2.3 (2026-04-17)
 
 - **W1 — InstitutionDetail sem loading/404:** Placeholder da Story 2.4, sem skeleton/loading state e sem tratamento de ID inválido. Será implementado completo na Story 2.4 (ScoreHero + GapAnalysis).

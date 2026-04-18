@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, RotateCcw } from "lucide-react";
 import {
   Table,
@@ -20,9 +20,9 @@ import { AuditDiffView } from "./AuditDiffView";
 const PAGE_SIZE = 25;
 
 const CHANGE_TYPE_CONFIG = {
-  INSERT: { label: "Criacao", variant: "default" as const },
-  UPDATE: { label: "Edicao", variant: "secondary" as const },
-  DELETE: { label: "Remocao", variant: "destructive" as const },
+  INSERT: { label: "Criação", variant: "default" as const },
+  UPDATE: { label: "Edição", variant: "secondary" as const },
+  DELETE: { label: "Remoção", variant: "destructive" as const },
 };
 
 function formatDateTime(iso: string): string {
@@ -71,6 +71,11 @@ export function AuditLogTable({
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [page, setPage] = useState(0);
 
+  // P3: Reset page when data changes (e.g. after revert)
+  useEffect(() => {
+    setPage(0);
+  }, [data]);
+
   const institutionMap = useMemo(
     () =>
       new Map(
@@ -111,11 +116,11 @@ export function AuditLogTable({
           <TableRow>
             <TableHead scope="col" className="w-10" />
             <TableHead scope="col">Data/hora</TableHead>
-            <TableHead scope="col">Instituicao</TableHead>
+            <TableHead scope="col">Instituição</TableHead>
             <TableHead scope="col">Regra</TableHead>
             <TableHead scope="col">Tipo</TableHead>
             <TableHead scope="col">Admin</TableHead>
-            <TableHead scope="col" className="text-right">Acoes</TableHead>
+            <TableHead scope="col" className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -127,7 +132,7 @@ export function AuditLogTable({
                 colSpan={7}
                 className="text-center text-muted-foreground py-8"
               >
-                Nenhuma alteracao registrada ainda.
+                Nenhuma alteração registrada ainda.
               </TableCell>
             </TableRow>
           )}
@@ -202,10 +207,10 @@ export function AuditLogTable({
       {totalPages > 1 && (
         <nav
           className="flex items-center justify-between px-2 py-3"
-          aria-label="Navegacao de paginas"
+          aria-label="Navegação de páginas"
         >
           <span className="text-sm text-muted-foreground">
-            Pagina {page + 1} de {totalPages}
+            Página {page + 1} de {totalPages}
           </span>
           <div className="flex gap-2">
             <Button
@@ -222,7 +227,7 @@ export function AuditLogTable({
               disabled={page >= totalPages - 1}
               onClick={() => setPage((p) => p + 1)}
             >
-              Proxima
+              Próxima
             </Button>
           </div>
         </nav>

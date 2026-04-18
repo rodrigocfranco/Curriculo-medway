@@ -1,14 +1,14 @@
 import type { ScoringRulesAuditRow } from "@/lib/queries/admin";
 
 const FIELD_LABELS: Record<string, string> = {
-  institution_id: "Instituicao",
+  institution_id: "Instituição",
   specialty_id: "Especialidade",
   category: "Categoria",
   field_key: "Campo",
   weight: "Peso",
-  max_points: "Pontuacao maxima",
-  description: "Descricao",
-  formula: "Formula",
+  max_points: "Pontuação máxima",
+  description: "Descrição",
+  formula: "Fórmula",
 };
 
 const IGNORED_FIELDS = new Set(["id", "created_at", "updated_at"]);
@@ -120,7 +120,7 @@ export function AuditDiffView({ entry, institutionMap }: AuditDiffViewProps) {
 
   return (
     <p className="text-sm text-muted-foreground">
-      Detalhes indisponiveis para esta entrada.
+      Detalhes indisponíveis para esta entrada.
     </p>
   );
 }

@@ -1,7 +1,7 @@
 -- Story 3.3: testes pgTAP para scoring_rules_audit — tabela, trigger, RLS
 begin;
 create extension if not exists pgtap;
-select plan(14);
+select plan(15);
 
 -- ---------------------------------------------------------------------------
 -- AC1: tabela existe + colunas críticas
@@ -14,6 +14,9 @@ select has_column('public','scoring_rules_audit','change_type','change_type colu
 select has_column('public','scoring_rules_audit','old_values','old_values column exists');
 select has_column('public','scoring_rules_audit','new_values','new_values column exists');
 select has_column('public','scoring_rules_audit','changed_at','changed_at column exists');
+
+-- AC1: FK changed_by → auth.users
+select has_fk('public','scoring_rules_audit','changed_by has FK to auth.users');
 
 -- AC1: índices
 select has_index('public','scoring_rules_audit','idx_scoring_rules_audit_rule_id','rule_id index exists');
