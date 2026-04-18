@@ -33,10 +33,6 @@ interface CurriculoFormSectionProps {
 }
 
 const PLACEHOLDERS: Record<string, string> = {
-  artigos_high_impact: "Ex: 2",
-  artigos_mid_impact: "Ex: 3",
-  artigos_low_impact: "Ex: 1",
-  artigos_nacionais: "Ex: 4",
   capitulos_livro: "Ex: 1",
   monitoria_horas_totais: "Ex: 192 (horas)",
   ic_com_bolsa: "Ex: 2 (anos)",
@@ -162,9 +158,7 @@ export function CurriculoFormSection({
                 }
 
                 if (field.field_type === "article_list") {
-                  const options = Array.isArray(field.options)
-                    ? (field.options as string[])
-                    : [];
+                  const opts = (field.options ?? {}) as { posicao: string[]; veiculo: string[] };
                   return (
                     <FormItem>
                       <FormLabel>{field.label}</FormLabel>
@@ -175,7 +169,7 @@ export function CurriculoFormSection({
                             formField.onChange(articles);
                           }}
                           onBlur={onBlur}
-                          options={options}
+                          options={opts}
                         />
                       </FormControl>
                       <FormMessage />

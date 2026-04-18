@@ -27,10 +27,6 @@ function formatDate(iso: string) {
 
 const CURRICULUM_CATEGORIES: Record<string, string> = {
   publicacoes: "Publicações",
-  artigos_high_impact: "Publicações",
-  artigos_mid_impact: "Publicações",
-  artigos_low_impact: "Publicações",
-  artigos_nacionais: "Publicações",
   capitulos_livro: "Publicações",
   ic_com_bolsa: "Acadêmico",
   ic_sem_bolsa: "Acadêmico",

@@ -1,10 +1,6 @@
 export interface UserProfile {
   // Publicações
-  publicacoes: Array<{ posicao: string; fi: number }>;
-  artigos_high_impact: number | null;
-  artigos_mid_impact: number | null;
-  artigos_low_impact: number | null;
-  artigos_nacionais: number | null;
+  publicacoes: Array<{ posicao: string; veiculo: string; fi: number }>;
   capitulos_livro: number | null;
 
   // Acadêmico
@@ -66,10 +62,6 @@ export interface InstitutionScore {
 
 export const defaultProfile: UserProfile = {
   publicacoes: [],
-  artigos_high_impact: null,
-  artigos_mid_impact: null,
-  artigos_low_impact: null,
-  artigos_nacionais: null,
   capitulos_livro: null,
   ic_com_bolsa: null,
   ic_sem_bolsa: null,

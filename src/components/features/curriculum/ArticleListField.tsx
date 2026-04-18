@@ -15,7 +15,7 @@ interface ArticleListFieldProps {
   value: Article[];
   onChange: (articles: Article[]) => void;
   onBlur: () => void;
-  options: string[];
+  options: { posicao: string[]; veiculo: string[] };
 }
 
 export function ArticleListField({
@@ -25,9 +25,11 @@ export function ArticleListField({
   options,
 }: ArticleListFieldProps) {
   const articles = value ?? [];
+  const posicaoOptions = options?.posicao ?? [];
+  const veiculoOptions = options?.veiculo ?? [];
 
   const addArticle = () => {
-    onChange([...articles, { posicao: "", fi: 0 }]);
+    onChange([...articles, { posicao: "", veiculo: "", fi: 0 }]);
   };
 
   const removeArticle = (index: number) => {
@@ -75,19 +77,14 @@ export function ArticleListField({
               </label>
               <Select
                 value={article.posicao}
-                onValueChange={(val) => {
-                  updateArticle(index, "posicao", val);
-                  onBlur();
-                }}
+                onValueChange={(val) => { updateArticle(index, "posicao", val); onBlur(); }}
               >
                 <SelectTrigger className="h-9">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {options.map((opt) => (
-                    <SelectItem key={opt} value={opt}>
-                      {opt}
-                    </SelectItem>
+                  {posicaoOptions.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -95,25 +92,40 @@ export function ArticleListField({
 
             <div>
               <label className="mb-1 block text-xs text-muted-foreground">
-                Fator de Impacto (JCR)
+                Veículo de publicação
               </label>
-              <Input
-                type="number"
-                min={0}
-                step="0.01"
-                className="h-9"
-                placeholder="Ex: 2.5"
-                value={article.fi || ""}
-                onChange={(e) =>
-                  updateArticle(
-                    index,
-                    "fi",
-                    e.target.value === "" ? 0 : parseFloat(e.target.value),
-                  )
-                }
-                onBlur={onBlur}
-              />
+              <Select
+                value={article.veiculo}
+                onValueChange={(val) => { updateArticle(index, "veiculo", val); onBlur(); }}
+              >
+                <SelectTrigger className="h-9">
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {veiculoOptions.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+          </div>
+
+          <div className="mt-2">
+            <label className="mb-1 block text-xs text-muted-foreground">
+              Fator de Impacto JCR (opcional)
+            </label>
+            <Input
+              type="number"
+              min={0}
+              step="0.01"
+              className="h-9"
+              placeholder="Ex: 2.5 (deixe 0 se não souber)"
+              value={article.fi || ""}
+              onChange={(e) =>
+                updateArticle(index, "fi", e.target.value === "" ? 0 : parseFloat(e.target.value))
+              }
+              onBlur={onBlur}
+            />
           </div>
         </Card>
       ))}

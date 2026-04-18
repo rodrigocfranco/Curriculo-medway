@@ -12,6 +12,7 @@ import { z } from "zod";
 
 const articleSchema = z.object({
   posicao: z.string(),
+  veiculo: z.string().default(""),
   fi: z.coerce.number().min(0).default(0),
 });
 
@@ -21,13 +22,9 @@ export type Article = z.infer<typeof articleSchema>;
 // Campos por categoria
 // ---------------------------------------------------------------------------
 
-// Publicações (6)
+// Publicações (2)
 const publicacoesFields = {
   publicacoes: z.array(articleSchema).default([]),
-  artigos_high_impact: z.coerce.number().min(0).default(0),
-  artigos_mid_impact: z.coerce.number().min(0).default(0),
-  artigos_low_impact: z.coerce.number().min(0).default(0),
-  artigos_nacionais: z.coerce.number().min(0).default(0),
   capitulos_livro: z.coerce.number().min(0).default(0),
 };
 

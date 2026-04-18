@@ -115,8 +115,7 @@ describe("curriculumDataSchema", () => {
     expect(result.success).toBe(true);
     if (result.success) {
       const knownFields = [
-        "publicacoes", "artigos_high_impact", "artigos_mid_impact",
-        "artigos_low_impact", "artigos_nacionais", "capitulos_livro",
+        "publicacoes", "capitulos_livro",
         "ic_com_bolsa", "ic_sem_bolsa", "ic_horas_totais",
         "monitoria_semestres", "extensao_semestres",
         "premios_academicos", "cursinhos_preparatorios",
