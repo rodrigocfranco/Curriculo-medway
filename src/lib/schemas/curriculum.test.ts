@@ -4,12 +4,10 @@ import { curriculumDataSchema } from "./curriculum";
 describe("curriculumDataSchema", () => {
   it("aceita dados válidos completos", () => {
     const result = curriculumDataSchema.safeParse({
-      artigo_1_posicao: "1º Autor / Último autor",
-      artigo_1_fi: 2.5,
-      artigo_2_posicao: "Coautor",
-      artigo_2_fi: 0.8,
-      artigo_3_posicao: "",
-      artigo_3_fi: 0,
+      publicacoes: [
+        { posicao: "1º Autor / Último autor", fi: 2.5 },
+        { posicao: "Coautor", fi: 0.8 },
+      ],
       capitulos_livro: 1,
       ic_com_bolsa: 2,
       ic_sem_bolsa: 0,
@@ -43,8 +41,8 @@ describe("curriculumDataSchema", () => {
     const result = curriculumDataSchema.safeParse({});
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.artigo_1_posicao).toBe("");
-      expect(result.data.artigo_1_fi).toBe(0);
+      expect(result.data.publicacoes).toEqual([]);
+      expect(result.data.capitulos_livro).toBe(0);
       expect(result.data.projeto_rondon).toBe(false);
       expect(result.data.conceito_historico).toBe("");
       expect(result.data.mestrado_status).toBe("Não tenho");
@@ -52,21 +50,21 @@ describe("curriculumDataSchema", () => {
     }
   });
 
-  it("rejeita números negativos", () => {
+  it("rejeita artigos com FI negativo", () => {
     const result = curriculumDataSchema.safeParse({
-      artigo_1_fi: -1,
+      publicacoes: [{ posicao: "Coautor", fi: -1 }],
     });
     expect(result.success).toBe(false);
   });
 
   it("coerce strings numéricas para number", () => {
     const result = curriculumDataSchema.safeParse({
-      artigo_1_fi: "2.5",
+      capitulos_livro: "3",
       media_geral: "8.5",
     });
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.artigo_1_fi).toBe(2.5);
+      expect(result.data.capitulos_livro).toBe(3);
       expect(result.data.media_geral).toBe(8.5);
     }
   });
@@ -91,15 +89,27 @@ describe("curriculumDataSchema", () => {
     }
   });
 
+  it("valida publicacoes como array de artigos", () => {
+    const result = curriculumDataSchema.safeParse({
+      publicacoes: [
+        { posicao: "1º Autor / Último autor", fi: 3.5 },
+        { posicao: "Coautor", fi: 1.2 },
+        { posicao: "Coautor", fi: 0 },
+      ],
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.publicacoes).toHaveLength(3);
+      expect(result.data.publicacoes[0].fi).toBe(3.5);
+    }
+  });
+
   it("valida todos os campos conhecidos com defaults", () => {
     const result = curriculumDataSchema.safeParse({});
     expect(result.success).toBe(true);
     if (result.success) {
       const knownFields = [
-        "artigo_1_posicao", "artigo_1_fi",
-        "artigo_2_posicao", "artigo_2_fi",
-        "artigo_3_posicao", "artigo_3_fi",
-        "capitulos_livro",
+        "publicacoes", "capitulos_livro",
         "ic_com_bolsa", "ic_sem_bolsa", "ic_horas_totais",
         "monitoria_semestres", "extensao_semestres",
         "voluntariado_horas", "estagio_extracurricular_horas",

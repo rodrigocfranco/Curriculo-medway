@@ -26,12 +26,7 @@ function formatDate(iso: string) {
 }
 
 const CURRICULUM_CATEGORIES: Record<string, string> = {
-  artigo_1_posicao: "Publicações",
-  artigo_1_fi: "Publicações",
-  artigo_2_posicao: "Publicações",
-  artigo_2_fi: "Publicações",
-  artigo_3_posicao: "Publicações",
-  artigo_3_fi: "Publicações",
+  publicacoes: "Publicações",
   capitulos_livro: "Publicações",
   ic_com_bolsa: "Acadêmico",
   ic_sem_bolsa: "Acadêmico",

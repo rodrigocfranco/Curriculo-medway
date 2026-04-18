@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
-import type { CurriculumData } from "@/lib/schemas/curriculum";
+import type { CurriculumData, Article } from "@/lib/schemas/curriculum";
+import { ArticleListField } from "./ArticleListField";
 
 interface CurriculoFormSectionProps {
   category: string;
@@ -69,7 +70,9 @@ function isFieldFilled(value: unknown, fieldType: string): boolean {
   if (fieldType === "boolean") return value === true;
   if (fieldType === "number") return typeof value === "number" && value > 0;
   if (fieldType === "select" || fieldType === "text")
-    return typeof value === "string" && value !== "";
+    return typeof value === "string" && value !== "" && value !== "Não tenho";
+  if (fieldType === "article_list")
+    return Array.isArray(value) && value.length > 0;
   return false;
 }
 
@@ -151,6 +154,28 @@ export function CurriculoFormSection({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }
+
+                if (field.field_type === "article_list") {
+                  const options = Array.isArray(field.options)
+                    ? (field.options as string[])
+                    : [];
+                  return (
+                    <FormItem>
+                      <FormLabel>{field.label}</FormLabel>
+                      <FormControl>
+                        <ArticleListField
+                          value={formField.value as Article[]}
+                          onChange={(articles) => {
+                            formField.onChange(articles);
+                          }}
+                          onBlur={onBlur}
+                          options={options}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   );

@@ -1,11 +1,6 @@
 export interface UserProfile {
   // Publicações
-  artigo_1_posicao: string;
-  artigo_1_fi: number | null;
-  artigo_2_posicao: string;
-  artigo_2_fi: number | null;
-  artigo_3_posicao: string;
-  artigo_3_fi: number | null;
+  publicacoes: Array<{ posicao: string; fi: number }>;
   capitulos_livro: number | null;
 
   // Acadêmico
@@ -56,12 +51,7 @@ export interface InstitutionScore {
 }
 
 export const defaultProfile: UserProfile = {
-  artigo_1_posicao: "",
-  artigo_1_fi: null,
-  artigo_2_posicao: "",
-  artigo_2_fi: null,
-  artigo_3_posicao: "",
-  artigo_3_fi: null,
+  publicacoes: [],
   capitulos_livro: null,
   ic_com_bolsa: null,
   ic_sem_bolsa: null,

@@ -9,14 +9,16 @@ import { z } from "zod";
  * Fallback z.record() para campos adicionais futuros via admin.
  */
 
-// Publicações (7: 3 artigos × 2 campos + capítulos)
+// Publicações
+const articleSchema = z.object({
+  posicao: z.string(),
+  fi: z.coerce.number().min(0).default(0),
+});
+
+export type Article = z.infer<typeof articleSchema>;
+
 const publicacoesFields = {
-  artigo_1_posicao: z.string().default(""),
-  artigo_1_fi: z.coerce.number().min(0).default(0),
-  artigo_2_posicao: z.string().default(""),
-  artigo_2_fi: z.coerce.number().min(0).default(0),
-  artigo_3_posicao: z.string().default(""),
-  artigo_3_fi: z.coerce.number().min(0).default(0),
+  publicacoes: z.array(articleSchema).default([]),
   capitulos_livro: z.coerce.number().min(0).default(0),
 };
 
