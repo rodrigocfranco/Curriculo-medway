@@ -38,7 +38,7 @@ describe("curriculumDataSchema", () => {
       ouvinte_congresso: 5,
       organizador_evento: 1,
       teste_progresso: 4,
-      ingles_fluente: true,
+      ingles_fluente: "Avançado",
       media_geral: 8.5,
       conceito_historico: "A",
       ranking_ruf_top35: true,

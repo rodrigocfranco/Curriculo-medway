@@ -35,7 +35,7 @@ export interface UserProfile {
   teste_progresso: number | null;
 
   // Perfil
-  ingles_fluente: boolean;
+  ingles_fluente: string;
   media_geral: number | null;
   conceito_historico: 'A' | 'B' | 'C' | null;
   ranking_ruf_top35: boolean;
@@ -88,7 +88,7 @@ export const defaultProfile: UserProfile = {
   ouvinte_congresso: null,
   organizador_evento: null,
   teste_progresso: null,
-  ingles_fluente: false,
+  ingles_fluente: "Não tenho",
   media_geral: null,
   conceito_historico: null,
   ranking_ruf_top35: false,
