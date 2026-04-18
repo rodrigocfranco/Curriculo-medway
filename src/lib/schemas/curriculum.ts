@@ -63,6 +63,7 @@ const academicoFields = {
   extensao_semestres: z.coerce.number().min(0).default(0),
   premios_academicos: z.coerce.number().min(0).default(0),
   cursinhos_preparatorios: z.coerce.number().min(0).default(0),
+  cursos_temas_medicos: z.coerce.number().min(0).default(0),
 };
 
 // Prática/Social
@@ -102,6 +103,7 @@ const perfilFields = {
   nivel_assistencial: z.string().default(""),
   residencia_medica_concluida: z.boolean().default(false),
   outro_curso_universitario: z.boolean().default(false),
+  prova_proficiencia_medicina: z.boolean().default(false),
 };
 
 export const curriculumDataSchema = z
