@@ -173,6 +173,16 @@ function groupByCategory(breakdown: ScoreBreakdown): CategoryGroup[] {
     .sort((a, b) => b.totalDelta - a.totalDelta);
 }
 
+/** Verifica se o valor é "preenchido" (contribui com algo) */
+function isValueFilled(value: unknown): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value > 0;
+  if (typeof value === "string") return value !== "" && value !== "Não" && value !== "Não tenho";
+  if (Array.isArray(value)) return value.length > 0;
+  return false;
+}
+
 function CurriculumSnapshot({
   fieldKey,
   curriculumData,
@@ -185,21 +195,27 @@ function CurriculumSnapshot({
     .map((k) => ({
       label: FIELD_LABELS[k] ?? formatKey(k),
       value: formatCurriculumValue(curriculumData[k]),
+      filled: isValueFilled(curriculumData[k]),
     }))
     .filter((item) => item.value !== undefined);
 
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-2 rounded border border-border/50 bg-background p-2.5">
-      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="mb-3 rounded-lg border-l-4 border-l-accent/40 bg-accent/5 px-3 py-2.5">
+      <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-accent/70">
         Seu currículo
       </p>
-      <div className="space-y-0.5">
+      <div className="space-y-1.5">
         {items.map((item) => (
-          <div key={item.label} className="flex items-center justify-between gap-2 text-xs">
+          <div key={item.label} className="flex items-center gap-2 text-xs">
+            <span className={`shrink-0 ${item.filled ? "text-emerald-500" : "text-muted-foreground/50"}`}>
+              {item.filled ? "●" : "○"}
+            </span>
             <span className="text-muted-foreground">{item.label}</span>
-            <span className="font-medium">{item.value}</span>
+            <span className="ml-auto shrink-0 font-semibold">
+              {item.value}
+            </span>
           </div>
         ))}
       </div>
@@ -221,66 +237,72 @@ function RuleItem({
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <div className="flex items-center justify-between gap-2 py-1.5">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-sm">{entry.label}</span>
-            <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-              {entry.score}/{entry.max}
-            </span>
-          </div>
-          <Progress
-            value={entry.percentage}
-            className="mt-1 h-1 bg-primary/20 [&>div]:bg-accent"
-            aria-hidden
-          />
+      {/* Header da regra */}
+      <div className="py-3">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm font-medium">{entry.label}</span>
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${
+            entry.score > 0
+              ? "bg-emerald-50 text-emerald-700"
+              : "bg-muted text-muted-foreground"
+          }`}>
+            {entry.score}/{entry.max}
+          </span>
+        </div>
+        <Progress
+          value={entry.percentage}
+          className="mt-2 h-1.5 bg-primary/10 [&>div]:bg-accent"
+          aria-hidden
+        />
+        <div className="mt-1.5 flex items-center justify-between gap-2">
+          {hasGap ? (
+            <span className="text-xs font-medium text-accent">+{entry.delta} possíveis</span>
+          ) : (
+            <span className="text-xs font-medium text-emerald-600">✓ Máximo atingido</span>
+          )}
+          {entry.description && (
+            <CollapsibleTrigger className="inline-flex min-h-[44px] items-center gap-1 rounded-md px-2 text-xs font-medium text-accent hover:bg-accent/10">
+              {open ? "Ocultar" : "Detalhes"}
+              <ChevronDown
+                className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`}
+              />
+            </CollapsibleTrigger>
+          )}
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
-        {hasGap ? (
-          <span className="text-xs text-accent">+{entry.delta} possíveis</span>
-        ) : (
-          <span className="text-xs text-emerald-600">✓ Máximo</span>
-        )}
-        {entry.description && (
-          <CollapsibleTrigger className="inline-flex min-h-[44px] items-center gap-0.5 text-xs text-accent hover:underline">
-            {open ? "Ocultar" : "Detalhes"}
-            <ChevronDown
-              className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
-            />
-          </CollapsibleTrigger>
-        )}
-      </div>
-
       <CollapsibleContent>
-        {/* Dados do currículo do aluno */}
-        {curriculumData && (
-          <CurriculumSnapshot fieldKey={entry.key} curriculumData={curriculumData} />
-        )}
+        <div className="space-y-2 pb-3">
+          {/* Dados do currículo do aluno */}
+          {curriculumData && (
+            <CurriculumSnapshot fieldKey={entry.key} curriculumData={curriculumData} />
+          )}
 
-        {/* Regras de pontuação */}
-        {hasStructuredItems ? (
-          <ul className="mb-2 space-y-1 rounded bg-muted/50 p-3">
-            <li className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Como pontuar
-            </li>
-            {ruleItems.map((item, i) => (
-              <li key={i} className="flex items-center justify-between gap-2 text-xs">
-                <span className="text-muted-foreground">{item.text}</span>
-                {item.pts && (
-                  <span className="shrink-0 font-medium tabular-nums text-accent">
-                    {item.pts} pts
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mb-2 rounded bg-muted/50 p-2 text-xs text-muted-foreground">
-            {entry.description}
-          </p>
-        )}
+          {/* Regras de pontuação */}
+          {hasStructuredItems ? (
+            <div className="rounded-lg bg-muted/30 px-3 py-2.5">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
+                Como pontuar
+              </p>
+              <div className="space-y-1.5">
+                {ruleItems.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between gap-2 text-xs">
+                    <span className="text-muted-foreground">{item.text}</span>
+                    {item.pts && (
+                      <span className="shrink-0 font-semibold tabular-nums text-accent">
+                        {item.pts} pts
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-lg bg-muted/30 px-3 py-2.5">
+              <p className="text-xs text-muted-foreground">{entry.description}</p>
+            </div>
+          )}
+        </div>
       </CollapsibleContent>
     </Collapsible>
   );
@@ -298,25 +320,38 @@ function CategoryCard({
 
   return (
     <li>
-      <Card className="p-4">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold">{group.category}</h3>
-          <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
-            {group.totalScore}/{group.totalMax} pontos
-          </span>
+      <Card className="overflow-hidden">
+        {/* Header da categoria — fundo sutil */}
+        <div className="border-b bg-muted/20 px-5 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-base font-bold">{group.category}</h3>
+            <span className={`rounded-full px-3 py-1 text-sm font-bold tabular-nums ${
+              group.totalScore > 0
+                ? "bg-emerald-50 text-emerald-700"
+                : "bg-muted text-muted-foreground"
+            }`}>
+              {group.totalScore}/{group.totalMax}
+            </span>
+          </div>
+          <Progress
+            value={percentage}
+            className="mt-3 h-2.5 bg-primary/10 [&>div]:bg-accent"
+            aria-hidden
+          />
+          {group.totalDelta > 0 && (
+            <p className="mt-2 text-xs font-semibold text-accent">
+              +{group.totalDelta} pontos possíveis
+            </p>
+          )}
+          {group.totalDelta === 0 && (
+            <p className="mt-2 text-xs font-semibold text-emerald-600">
+              ✓ Pontuação máxima atingida
+            </p>
+          )}
         </div>
-        <Progress
-          value={percentage}
-          className="mt-2 h-2 bg-primary/20 [&>div]:bg-accent"
-          aria-hidden
-        />
-        {group.totalDelta > 0 && (
-          <p className="mt-1 text-xs font-medium text-accent">
-            +{group.totalDelta} possíveis
-          </p>
-        )}
 
-        <div className="mt-3 divide-y pl-2">
+        {/* Regras individuais */}
+        <div className="divide-y px-5">
           {group.entries.map((entry) => (
             <RuleItem key={entry.key} entry={entry} curriculumData={curriculumData} />
           ))}

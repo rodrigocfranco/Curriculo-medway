@@ -129,8 +129,8 @@ describe("InstitutionDetail", () => {
     // GapAnalysis — categorias agrupadas
     expect(screen.getAllByText("Publicações").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Pesquisa").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText("10/15 pontos")).toBeInTheDocument();
-    expect(screen.getByText("✓ Máximo")).toBeInTheDocument();
+    expect(screen.getAllByText("10/15").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("✓ Máximo atingido")).toBeInTheDocument();
 
     // DisclaimerBanner
     expect(screen.getByText(/estimativas baseadas em editais públicos/)).toBeInTheDocument();

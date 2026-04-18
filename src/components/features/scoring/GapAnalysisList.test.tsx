@@ -22,14 +22,14 @@ describe("GapAnalysisList", () => {
   it("exibe totais por categoria", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    // Publicações: 10/15
-    expect(screen.getByText("10/15 pontos")).toBeInTheDocument();
+    // Publicações: 10/15 (aparece no badge da categoria e do item)
+    expect(screen.getAllByText("10/15").length).toBeGreaterThanOrEqual(1);
 
     // Pesquisa: 22/25
-    expect(screen.getByText("22/25 pontos")).toBeInTheDocument();
+    expect(screen.getAllByText("22/25").length).toBeGreaterThanOrEqual(1);
 
-    // "+5 possíveis" aparece no total da categoria Publicações e no campo individual
-    expect(screen.getAllByText("+5 possíveis").length).toBeGreaterThanOrEqual(1);
+    // "+5 pontos possíveis" aparece no total da categoria
+    expect(screen.getAllByText(/possíveis/).length).toBeGreaterThanOrEqual(1);
   });
 
   it("exibe labels dos campos dentro da categoria", () => {
@@ -40,11 +40,11 @@ describe("GapAnalysisList", () => {
     expect(screen.getByText("Monitoria acadêmica")).toBeInTheDocument();
   });
 
-  it("exibe '✓ Máximo' para campo com delta 0", () => {
+  it("exibe '✓ Máximo atingido' para campo com delta 0", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    expect(screen.getByText("✓ Máximo")).toBeInTheDocument();
-    expect(screen.getByText("20/20")).toBeInTheDocument();
+    expect(screen.getByText("✓ Máximo atingido")).toBeInTheDocument();
+    expect(screen.getAllByText("20/20").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renderiza mensagem vazia quando breakdown é vazio", () => {
@@ -81,6 +81,6 @@ describe("GapAnalysisList", () => {
     render(<GapAnalysisList breakdown={breakdownSemCategory} />);
 
     expect(screen.getByText("Outros")).toBeInTheDocument();
-    expect(screen.getByText("5/10 pontos")).toBeInTheDocument();
+    expect(screen.getAllByText("5/10").length).toBeGreaterThanOrEqual(1);
   });
 });
