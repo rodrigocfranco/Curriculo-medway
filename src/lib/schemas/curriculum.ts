@@ -2,16 +2,14 @@ import { z } from "zod";
 
 /**
  * Schema do currículo do aluno.
- * Inclui campos simples (number, boolean, select) e listas dinâmicas
- * (article_list, event_list, project_list).
+ * 40 campos: simples (number, boolean, select) + 1 lista dinâmica (article_list).
  * Fallback z.record() para campos adicionais futuros via admin.
  */
 
 // ---------------------------------------------------------------------------
-// Listas dinâmicas — schemas reutilizáveis
+// Lista dinâmica — publicações com posição + fator de impacto
 // ---------------------------------------------------------------------------
 
-// Publicações: artigos com posição + fator de impacto
 const articleSchema = z.object({
   posicao: z.string(),
   fi: z.coerce.number().min(0).default(0),
@@ -19,30 +17,11 @@ const articleSchema = z.object({
 
 export type Article = z.infer<typeof articleSchema>;
 
-// Congressos/eventos: tipo + nível + extras
-const eventSchema = z.object({
-  tipo: z.string(),
-  nivel: z.string(),
-  premio: z.boolean().default(false),
-  primeiro_autor: z.boolean().default(false),
-});
-
-export type CongressEvent = z.infer<typeof eventSchema>;
-
-// Projetos de IC: bolsa + semestres + publicação
-const projectSchema = z.object({
-  bolsa: z.string(),
-  semestres: z.coerce.number().min(0).default(0),
-  publicacao: z.boolean().default(false),
-});
-
-export type ICProject = z.infer<typeof projectSchema>;
-
 // ---------------------------------------------------------------------------
 // Campos por categoria
 // ---------------------------------------------------------------------------
 
-// Publicações
+// Publicações (6)
 const publicacoesFields = {
   publicacoes: z.array(articleSchema).default([]),
   artigos_high_impact: z.coerce.number().min(0).default(0),
@@ -52,21 +31,18 @@ const publicacoesFields = {
   capitulos_livro: z.coerce.number().min(0).default(0),
 };
 
-// Acadêmico
+// Acadêmico (7)
 const academicoFields = {
-  ic_projetos: z.array(projectSchema).default([]),
   ic_com_bolsa: z.coerce.number().min(0).default(0),
   ic_sem_bolsa: z.coerce.number().min(0).default(0),
   ic_horas_totais: z.coerce.number().min(0).default(0),
   monitoria_semestres: z.coerce.number().min(0).default(0),
-  monitoria_horas_totais: z.coerce.number().min(0).default(0),
   extensao_semestres: z.coerce.number().min(0).default(0),
   premios_academicos: z.coerce.number().min(0).default(0),
   cursinhos_preparatorios: z.coerce.number().min(0).default(0),
-  cursos_temas_medicos: z.coerce.number().min(0).default(0),
 };
 
-// Prática/Social
+// Prática/Social (5)
 const praticaSocialFields = {
   voluntariado_horas: z.coerce.number().min(0).default(0),
   estagio_extracurricular_horas: z.coerce.number().min(0).default(0),
@@ -75,13 +51,13 @@ const praticaSocialFields = {
   internato_hospital_ensino: z.string().default("Não"),
 };
 
-// Liderança/Eventos
+// Liderança/Eventos (12)
 const liderancaEventosFields = {
-  congressos: z.array(eventSchema).default([]),
   diretoria_ligas: z.coerce.number().min(0).default(0),
   membro_liga_anos: z.coerce.number().min(0).default(0),
   representante_turma_anos: z.coerce.number().min(0).default(0),
   cursos_suporte: z.coerce.number().min(0).default(0),
+  cursos_temas_medicos: z.coerce.number().min(0).default(0),
   apresentacao_congresso: z.coerce.number().min(0).default(0),
   ouvinte_congresso: z.coerce.number().min(0).default(0),
   organizador_evento: z.coerce.number().min(0).default(0),
@@ -92,11 +68,10 @@ const liderancaEventosFields = {
   equipe_esportiva_semestres: z.coerce.number().min(0).default(0),
 };
 
-// Perfil
+// Perfil (9)
 const perfilFields = {
   ingles_fluente: z.string().default("Não tenho"),
   media_geral: z.coerce.number().min(0).default(0),
-  conceito_historico: z.string().default(""),
   ranking_ruf_top35: z.boolean().default(false),
   mestrado_status: z.string().default("Não tenho"),
   doutorado_status: z.string().default("Não tenho"),

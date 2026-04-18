@@ -22,10 +22,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
-import type { CurriculumData, Article, CongressEvent, ICProject } from "@/lib/schemas/curriculum";
+import type { CurriculumData, Article } from "@/lib/schemas/curriculum";
 import { ArticleListField } from "./ArticleListField";
-import { EventListField } from "./EventListField";
-import { ProjectListField } from "./ProjectListField";
 
 interface CurriculoFormSectionProps {
   category: string;
@@ -75,7 +73,7 @@ function isFieldFilled(value: unknown, fieldType: string): boolean {
   if (fieldType === "number") return typeof value === "number" && value > 0;
   if (fieldType === "select" || fieldType === "text")
     return typeof value === "string" && value !== "" && value !== "Não tenho";
-  if (fieldType === "article_list" || fieldType === "event_list" || fieldType === "project_list")
+  if (fieldType === "article_list")
     return Array.isArray(value) && value.length > 0;
   return false;
 }
@@ -124,42 +122,6 @@ export function CurriculoFormSection({
                       <FormLabel className="text-sm font-normal leading-none">
                         {field.label}
                       </FormLabel>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }
-
-                if (field.field_type === "event_list") {
-                  const opts = (field.options ?? {}) as { tipo: string[]; nivel: string[]; extras: string[] };
-                  return (
-                    <FormItem>
-                      <FormLabel>{field.label}</FormLabel>
-                      <FormControl>
-                        <EventListField
-                          value={formField.value as CongressEvent[]}
-                          onChange={formField.onChange}
-                          onBlur={onBlur}
-                          options={opts}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }
-
-                if (field.field_type === "project_list") {
-                  const opts = (field.options ?? {}) as { bolsa: string[]; extras: string[] };
-                  return (
-                    <FormItem>
-                      <FormLabel>{field.label}</FormLabel>
-                      <FormControl>
-                        <ProjectListField
-                          value={formField.value as ICProject[]}
-                          onChange={formField.onChange}
-                          onBlur={onBlur}
-                          options={opts}
-                        />
-                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   );

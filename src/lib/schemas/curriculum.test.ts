@@ -13,18 +13,11 @@ describe("curriculumDataSchema", () => {
       artigos_low_impact: 0,
       artigos_nacionais: 3,
       capitulos_livro: 1,
-      ic_projetos: [
-        { bolsa: "Com bolsa", semestres: 4, publicacao: true },
-      ],
       ic_com_bolsa: 2,
       ic_sem_bolsa: 0,
       ic_horas_totais: 120,
       monitoria_semestres: 2,
-      monitoria_horas_totais: 192,
       extensao_semestres: 1,
-      congressos: [
-        { tipo: "Apresentação oral", nivel: "Internacional", premio: true, primeiro_autor: true },
-      ],
       voluntariado_horas: 80,
       estagio_extracurricular_horas: 200,
       trabalho_sus_meses: 6,
@@ -58,7 +51,6 @@ describe("curriculumDataSchema", () => {
       expect(result.data.publicacoes).toEqual([]);
       expect(result.data.capitulos_livro).toBe(0);
       expect(result.data.projeto_rondon).toBe(false);
-      expect(result.data.conceito_historico).toBe("");
       expect(result.data.mestrado_status).toBe("Não tenho");
       expect(result.data.doutorado_status).toBe("Não tenho");
     }
@@ -123,16 +115,23 @@ describe("curriculumDataSchema", () => {
     expect(result.success).toBe(true);
     if (result.success) {
       const knownFields = [
-        "publicacoes", "capitulos_livro",
+        "publicacoes", "artigos_high_impact", "artigos_mid_impact",
+        "artigos_low_impact", "artigos_nacionais", "capitulos_livro",
         "ic_com_bolsa", "ic_sem_bolsa", "ic_horas_totais",
         "monitoria_semestres", "extensao_semestres",
+        "premios_academicos", "cursinhos_preparatorios",
         "voluntariado_horas", "estagio_extracurricular_horas",
         "trabalho_sus_meses", "projeto_rondon", "internato_hospital_ensino",
         "diretoria_ligas", "membro_liga_anos", "representante_turma_anos",
-        "cursos_suporte", "apresentacao_congresso", "ouvinte_congresso",
+        "cursos_suporte", "cursos_temas_medicos",
+        "apresentacao_congresso", "ouvinte_congresso",
         "organizador_evento", "teste_progresso",
-        "ingles_fluente", "media_geral", "conceito_historico",
+        "colegiado_institucional_semestres", "centro_academico_semestres",
+        "atletica_semestres", "equipe_esportiva_semestres",
+        "ingles_fluente", "media_geral",
         "ranking_ruf_top35", "mestrado_status", "doutorado_status",
+        "nivel_assistencial", "residencia_medica_concluida",
+        "outro_curso_universitario", "prova_proficiencia_medicina",
       ];
       for (const field of knownFields) {
         expect(result.data).toHaveProperty(field);
