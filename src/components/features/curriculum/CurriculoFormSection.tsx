@@ -22,8 +22,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
-import type { CurriculumData, Article } from "@/lib/schemas/curriculum";
+import type { CurriculumData, Article, CongressEvent, ICProject } from "@/lib/schemas/curriculum";
 import { ArticleListField } from "./ArticleListField";
+import { EventListField } from "./EventListField";
+import { ProjectListField } from "./ProjectListField";
 
 interface CurriculoFormSectionProps {
   category: string;
@@ -33,10 +35,12 @@ interface CurriculoFormSectionProps {
 }
 
 const PLACEHOLDERS: Record<string, string> = {
-  artigo_1_fi: "Ex: 2.5 (consulte jcr.clarivate.com)",
-  artigo_2_fi: "Ex: 1.8",
-  artigo_3_fi: "Ex: 0.9",
+  artigos_high_impact: "Ex: 2",
+  artigos_mid_impact: "Ex: 3",
+  artigos_low_impact: "Ex: 1",
+  artigos_nacionais: "Ex: 4",
   capitulos_livro: "Ex: 1",
+  monitoria_horas_totais: "Ex: 192 (horas)",
   ic_com_bolsa: "Ex: 2 (anos)",
   ic_sem_bolsa: "Ex: 1 (anos)",
   ic_horas_totais: "Ex: 120 (horas)",
@@ -71,7 +75,7 @@ function isFieldFilled(value: unknown, fieldType: string): boolean {
   if (fieldType === "number") return typeof value === "number" && value > 0;
   if (fieldType === "select" || fieldType === "text")
     return typeof value === "string" && value !== "" && value !== "Não tenho";
-  if (fieldType === "article_list")
+  if (fieldType === "article_list" || fieldType === "event_list" || fieldType === "project_list")
     return Array.isArray(value) && value.length > 0;
   return false;
 }
@@ -120,6 +124,42 @@ export function CurriculoFormSection({
                       <FormLabel className="text-sm font-normal leading-none">
                         {field.label}
                       </FormLabel>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }
+
+                if (field.field_type === "event_list") {
+                  const opts = (field.options ?? {}) as { tipo: string[]; nivel: string[]; extras: string[] };
+                  return (
+                    <FormItem>
+                      <FormLabel>{field.label}</FormLabel>
+                      <FormControl>
+                        <EventListField
+                          value={formField.value as CongressEvent[]}
+                          onChange={formField.onChange}
+                          onBlur={onBlur}
+                          options={opts}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }
+
+                if (field.field_type === "project_list") {
+                  const opts = (field.options ?? {}) as { bolsa: string[]; extras: string[] };
+                  return (
+                    <FormItem>
+                      <FormLabel>{field.label}</FormLabel>
+                      <FormControl>
+                        <ProjectListField
+                          value={formField.value as ICProject[]}
+                          onChange={formField.onChange}
+                          onBlur={onBlur}
+                          options={opts}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   );
