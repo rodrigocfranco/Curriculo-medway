@@ -83,6 +83,10 @@ const liderancaEventosFields = {
   ouvinte_congresso: z.coerce.number().min(0).default(0),
   organizador_evento: z.coerce.number().min(0).default(0),
   teste_progresso: z.coerce.number().min(0).default(0),
+  colegiado_institucional_semestres: z.coerce.number().min(0).default(0),
+  centro_academico_semestres: z.coerce.number().min(0).default(0),
+  atletica_semestres: z.coerce.number().min(0).default(0),
+  equipe_esportiva_semestres: z.coerce.number().min(0).default(0),
 };
 
 // Perfil
