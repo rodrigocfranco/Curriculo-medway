@@ -169,7 +169,7 @@ BEGIN
     END IF;
 
   WHEN 'bool' THEN
-    IF coalesce((p_data->>p_formula->>'field')::boolean, false) THEN
+    IF coalesce((p_data->>(p_formula->>'field'))::boolean, false) THEN
       v_result := (p_formula->>'pts_true')::numeric;
     END IF;
 
@@ -180,7 +180,7 @@ BEGIN
     v_result := least(v_result, v_cap);
 
   WHEN 'custom' THEN
-    v_value := public.safe_numeric(p_data->>p_formula->>'field');
+    v_value := public.safe_numeric(p_data->>(p_formula->>'field'));
     v_cap := coalesce((p_formula->'caps'->>'total')::numeric, 999999);
     CASE p_formula->>'fn'
       WHEN 'fmabc_monitoria' THEN v_result := public.fmabc_monitoria(v_value);
@@ -189,14 +189,14 @@ BEGIN
     v_result := least(v_result, v_cap);
 
   WHEN 'ruf_branch' THEN
-    v_str_value := p_data->>p_formula->>'field';
+    v_str_value := p_data->>(p_formula->>'field');
     IF v_str_value = 'true' THEN v_result := coalesce((p_formula->>'pts_true')::numeric, 0);
     ELSIF v_str_value = 'false' THEN v_result := coalesce((p_formula->>'pts_false')::numeric, 0);
     ELSE v_result := coalesce((p_formula->>'pts_null')::numeric, 0);
     END IF;
 
   WHEN 'floor_div' THEN
-    v_value := public.safe_numeric(p_data->>p_formula->>'field');
+    v_value := public.safe_numeric(p_data->>(p_formula->>'field'));
     IF coalesce((p_formula->>'divisor')::numeric, 0) = 0 THEN v_result := 0;
     ELSE v_result := floor(v_value / (p_formula->>'divisor')::numeric) * (p_formula->>'mult')::numeric;
     END IF;
@@ -229,7 +229,7 @@ BEGIN
   WHEN 'publication_matrix' THEN
     v_cap := coalesce((p_formula->'caps'->>'total')::numeric, 999999);
     v_max_articles := coalesce((p_formula->>'max_articles')::int, 999);
-    v_articles := p_data->p_formula->>'field';
+    v_articles := p_data->(p_formula->>'field');
     IF v_articles IS NOT NULL AND jsonb_typeof(v_articles) = 'array' THEN
       v_article_count := 0;
       FOR v_article IN SELECT * FROM jsonb_array_elements(v_articles)
