@@ -45,6 +45,32 @@ const COMPOSITE_FIELD_LABELS: Record<string, string> = {
   bloco_idioma: "Língua estrangeira",
 };
 
+const ADVANCED_OPS = new Set(["publication_matrix", "tiered", "threshold", "composite", "custom", "floor_div", "ruf_branch", "any_positive", "any_true_or_positive"]);
+
+const FORMULA_LABELS: Record<string, string> = {
+  publication_matrix: "Matriz",
+  tiered: "Faixas",
+  threshold: "Faixas",
+  composite: "Composta",
+  custom: "Customizada",
+  floor_div: "Divisão",
+  ruf_branch: "Tri-state",
+  any_positive: "Qualquer positivo",
+  any_true_or_positive: "Qualquer verdadeiro",
+};
+
+function getFormulaOp(formula: unknown): string | null {
+  if (formula && typeof formula === "object" && "op" in formula) {
+    return (formula as { op: string }).op;
+  }
+  return null;
+}
+
+function isAdvancedFormula(formula: unknown): boolean {
+  const op = getFormulaOp(formula);
+  return op !== null && ADVANCED_OPS.has(op);
+}
+
 interface ScoringRuleTableProps {
   rules: ScoringRuleRow[] | undefined;
   institutions: InstitutionRow[] | undefined;
@@ -154,7 +180,15 @@ export function ScoringRuleTable({
                 <TableCell>
                   {fieldLabelMap.get(rule.field_key) ?? COMPOSITE_FIELD_LABELS[rule.field_key] ?? rule.field_key}
                 </TableCell>
-                <TableCell className="text-center">{rule.weight}</TableCell>
+                <TableCell className="text-center">
+                  {isAdvancedFormula(rule.formula) ? (
+                    <Badge variant="outline" className="text-xs">
+                      {FORMULA_LABELS[getFormulaOp(rule.formula)!] ?? "Avançada"}
+                    </Badge>
+                  ) : (
+                    rule.weight
+                  )}
+                </TableCell>
                 <TableCell className="text-center">{rule.max_points}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">

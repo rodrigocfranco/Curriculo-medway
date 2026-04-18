@@ -97,8 +97,20 @@ export function ScoringRuleFormDialog({
   });
 
   const selectedCategory = form.watch("category");
+  const formulaValue = form.watch("formula");
   const isDirty = form.formState.isDirty;
   const isPending = mutation.isPending;
+
+  // Detectar fórmula avançada
+  const advancedOps = new Set(["publication_matrix", "tiered", "threshold", "composite", "custom", "floor_div", "ruf_branch", "any_positive", "any_true_or_positive"]);
+  const isAdvanced = useMemo(() => {
+    try {
+      const parsed = JSON.parse(formulaValue);
+      return parsed?.op && advancedOps.has(parsed.op);
+    } catch {
+      return false;
+    }
+  }, [formulaValue]);
 
   // Determine visual status
   const status: RuleStatus = useMemo(() => {
@@ -386,33 +398,35 @@ export function ScoringRuleFormDialog({
             />
 
             {/* Weight & Max Points */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="weight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pontos por unidade</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={0}
-                        step="any"
-                        placeholder="0"
-                        value={field.value ?? ""}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        onChange={(e) => {
-                          const raw = e.target.value;
-                          field.onChange(raw === "" ? 0 : parseFloat(raw));
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className={isAdvanced ? "" : "grid grid-cols-2 gap-4"}>
+              {!isAdvanced && (
+                <FormField
+                  control={form.control}
+                  name="weight"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Pontos por unidade</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="any"
+                          placeholder="0"
+                          value={field.value ?? ""}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            field.onChange(raw === "" ? 0 : parseFloat(raw));
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
@@ -460,6 +474,31 @@ export function ScoringRuleFormDialog({
                 </FormItem>
               )}
             />
+
+            {/* Formula avançada (visível para regras complexas) */}
+            {isAdvanced && (
+              <FormField
+                control={form.control}
+                name="formula"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Formula avancada
+                      <Badge variant="outline" className="ml-2 text-xs">JSON</Badge>
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="font-mono text-xs"
+                        rows={10}
+                        placeholder='{"op": "..."}'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {mutationError && (
               <div className="flex items-center gap-2 text-sm text-destructive" role="alert">
