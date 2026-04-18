@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RefreshCw } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,11 +10,12 @@ import {
   useInstitutions,
   scoringKeys,
 } from "@/lib/queries/scoring";
+import { toGrade } from "@/lib/schemas/scoring";
 import { ScoreCard } from "@/components/features/scoring/ScoreCard";
 import { NarrativeBanner } from "@/components/features/scoring/NarrativeBanner";
 import { DisclaimerBanner } from "@/components/features/scoring/DisclaimerBanner";
 import { SpecialtySelector } from "@/components/features/scoring/SpecialtySelector";
-import type { Institution } from "@/lib/schemas/scoring";
+import type { Institution, UserScore } from "@/lib/schemas/scoring";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -67,10 +68,36 @@ const AppHome = () => {
   const isLoading = scoresLoading || institutionsLoading;
   const isError = scoresError || institutionsError;
 
+  const [stateFilter, setStateFilter] = useState<string>("Brasil");
+
   const instMap = useMemo(
     () => new Map<string, Institution>(institutions?.map((i) => [i.id, i]) ?? []),
     [institutions],
   );
+
+  // Estados únicos das instituições
+  const availableStates = useMemo(() => {
+    if (!institutions) return [];
+    const states = new Set(institutions.map((i) => i.state).filter(Boolean) as string[]);
+    return Array.from(states).sort();
+  }, [institutions]);
+
+  // Scores filtrados por estado e ordenados por nota (maior primeiro)
+  const filteredScores = useMemo(() => {
+    if (!scores) return [];
+    let filtered = scores;
+    if (stateFilter !== "Brasil") {
+      filtered = scores.filter((s) => {
+        const inst = instMap.get(s.institution_id);
+        return inst?.state === stateFilter;
+      });
+    }
+    return [...filtered].sort((a, b) => {
+      const gradeA = a.max_score > 0 ? a.score / a.max_score : 0;
+      const gradeB = b.max_score > 0 ? b.score / b.max_score : 0;
+      return gradeB - gradeA;
+    });
+  }, [scores, stateFilter, instMap]);
 
   const handleRetry = () => {
     if (userId) {
@@ -83,21 +110,49 @@ const AppHome = () => {
     });
   };
 
-  // Use scores count for heading — matches actual rendered cards
-  const institutionCount = scores?.length ?? institutions?.length ?? 0;
+  const filteredCount = filteredScores.length;
+  const totalCount = scores?.length ?? institutions?.length ?? 0;
 
   return (
     <div className="dashboard-enter space-y-6">
       {/* Subheader */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-bold">
-          Sua posição em {isLoading ? "…" : institutionCount} instituições
+          Sua posição em {isLoading ? "…" : stateFilter === "Brasil" ? totalCount : filteredCount} instituições
+          {stateFilter !== "Brasil" && !isLoading && (
+            <span className="ml-1 text-base font-normal text-muted-foreground">
+              ({stateFilter})
+            </span>
+          )}
         </h1>
         <div className="flex items-center gap-3">
           <SpecialtySelector />
           <DisclaimerBanner variant="compact" />
         </div>
       </div>
+
+      {/* Filtro por estado */}
+      {!isLoading && !isError && availableStates.length > 1 && (
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={stateFilter === "Brasil" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStateFilter("Brasil")}
+          >
+            Brasil
+          </Button>
+          {availableStates.map((state) => (
+            <Button
+              key={state}
+              variant={stateFilter === state ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStateFilter(state)}
+            >
+              {state}
+            </Button>
+          ))}
+        </div>
+      )}
 
       {/* Error state */}
       {isError && <DashboardError onRetry={handleRetry} />}
@@ -106,7 +161,7 @@ const AppHome = () => {
       {isLoading && !isError && (
         <>
           <Skeleton className="h-12 w-full rounded-lg" />
-          <DashboardSkeleton count={institutionCount || 11} />
+          <DashboardSkeleton count={totalCount || 11} />
         </>
       )}
 
@@ -114,21 +169,27 @@ const AppHome = () => {
       {!isLoading && !isError && scores && institutions && (
         <>
           <NarrativeBanner scores={scores} institutions={institutions} />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
-            {scores.map((score) => {
-              const inst = instMap.get(score.institution_id);
-              if (!inst) return null;
-              return (
-                <ScoreCard
-                  key={score.institution_id}
-                  institution={inst}
-                  score={score}
-                  onClick={() => navigate(`/app/instituicoes/${inst.id}`)}
-                  onEmptyClick={() => navigate("/app/curriculo")}
-                />
-              );
-            })}
-          </div>
+          {filteredScores.length === 0 && stateFilter !== "Brasil" ? (
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              Nenhuma instituição em {stateFilter}.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
+              {filteredScores.map((score) => {
+                const inst = instMap.get(score.institution_id);
+                if (!inst) return null;
+                return (
+                  <ScoreCard
+                    key={score.institution_id}
+                    institution={inst}
+                    score={score}
+                    onClick={() => navigate(`/app/instituicoes/${inst.id}`)}
+                    onEmptyClick={() => navigate("/app/curriculo")}
+                  />
+                );
+              })}
+            </div>
+          )}
         </>
       )}
     </div>
