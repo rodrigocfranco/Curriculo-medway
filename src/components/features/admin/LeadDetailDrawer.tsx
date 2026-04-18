@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { formatGrade } from "@/lib/schemas/scoring";
 import { useLeadDetail } from "@/lib/queries/leads";
 
 type Props = {
@@ -174,7 +175,7 @@ export default function LeadDetailDrawer({ leadId, onClose }: Props) {
                             {s.institution?.short_name ?? s.institution?.name ?? "—"}
                           </span>
                           <span className="tabular-nums">
-                            {s.score} / {s.max_score}
+                            {formatGrade(s.score, s.max_score)}
                           </span>
                         </div>
                         <Progress value={pct} className="mt-1 h-1.5" />

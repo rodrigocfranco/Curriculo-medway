@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { UserScore, Institution, ScoreBreakdown } from "@/lib/schemas/scoring";
+import { formatGrade } from "@/lib/schemas/scoring";
 
 interface ScoreCardProps {
   institution: Institution;
@@ -61,12 +62,13 @@ export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCa
   const displayName = institution.short_name || institution.name;
   const scoreValue = score?.score ?? 0;
   const maxScore = score?.max_score ?? 0;
+  const gradeFormatted = formatGrade(scoreValue, maxScore);
 
   const emptyHandler = onEmptyClick ?? onClick;
 
   const ariaLabel = empty
     ? `${displayName}, sem score, botão preencher currículo`
-    : `${displayName}, score ${scoreValue} de ${maxScore}${gap ? `, mais ${gap.delta} possíveis em ${gap.category}` : ""}, botão ver detalhes`;
+    : `${displayName}, nota ${gradeFormatted}${gap ? `, mais ${gap.delta} possíveis em ${gap.category}` : ""}, botão ver detalhes`;
 
   if (empty) {
     return (
@@ -114,7 +116,7 @@ export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCa
             <h3 className="text-base font-semibold">{displayName}</h3>
             {partial && <Badge variant="secondary">Parcial</Badge>}
           </div>
-          <p className="mt-1 text-5xl font-bold tabular-nums">{scoreValue}</p>
+          <p className="mt-1 text-5xl font-bold tabular-nums">{gradeFormatted}</p>
         </div>
         <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
       </div>

@@ -139,8 +139,9 @@ describe("AppHome (Dashboard)", () => {
     expect(screen.getByText("Sua posição em 2 instituições")).toBeInTheDocument();
     expect(screen.getByText("UNICAMP")).toBeInTheDocument();
     expect(screen.getByText("USP-SP")).toBeInTheDocument();
-    expect(screen.getByText("68")).toBeInTheDocument();
-    expect(screen.getByText("45")).toBeInTheDocument();
+    // Notas: 68/100 = 6,8 e 45/100 = 4,5
+    expect(screen.getByText("6,8")).toBeInTheDocument();
+    expect(screen.getByText("4,5")).toBeInTheDocument();
   });
 
   it("renderiza NarrativeBanner com dados", () => {

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { UserScore, Institution } from "@/lib/schemas/scoring";
+import { formatGrade } from "@/lib/schemas/scoring";
 
 interface NarrativeBannerProps {
   scores: UserScore[];
@@ -16,20 +17,23 @@ export function NarrativeBanner({ scores, institutions }: NarrativeBannerProps) 
 
     const instMap = new Map(institutions.map((i) => [i.id, i]));
 
-    // Top = highest score (already sorted desc by useScores)
+    // Top = highest grade (sorted desc by useScores — raw score, but grade preserves order)
     const topScore = validScores[0];
     const topInst = instMap.get(topScore.institution_id);
     const topName = topInst?.short_name || topInst?.name || "—";
+    const topGrade = formatGrade(topScore.score, topScore.max_score);
 
-    // Oportunidade = institution with largest total gap (max_score - score)
+    // Oportunidade = institution with lowest grade (most room to grow)
     let bestOppInst: Institution | undefined;
-    let bestOppDelta = 0;
+    let bestOppGrade = "10,0";
+    let bestOppLowestGradeNum = 10;
     let bestOppCategory = "";
 
     for (const s of validScores) {
-      const totalDelta = s.max_score - s.score;
-      if (totalDelta > bestOppDelta) {
-        bestOppDelta = totalDelta;
+      const gradeNum = s.max_score > 0 ? (s.score / s.max_score) * 10 : 0;
+      if (gradeNum < bestOppLowestGradeNum) {
+        bestOppLowestGradeNum = gradeNum;
+        bestOppGrade = formatGrade(s.score, s.max_score);
         bestOppInst = instMap.get(s.institution_id);
 
         // Find top gap category within this institution
@@ -38,7 +42,7 @@ export function NarrativeBanner({ scores, institutions }: NarrativeBannerProps) 
           const catDelta = item.max - item.score;
           if (catDelta > maxCatDelta) {
             maxCatDelta = catDelta;
-            bestOppCategory = item.description || key;
+            bestOppCategory = item.label || item.description || key;
           }
         }
       }
@@ -47,10 +51,10 @@ export function NarrativeBanner({ scores, institutions }: NarrativeBannerProps) 
     const oppName = bestOppInst?.short_name || bestOppInst?.name || "—";
 
     if (!bestOppCategory) {
-      return `Você está mais competitivo em ${topName}. Maior oportunidade: +${bestOppDelta} em ${oppName}.`;
+      return `Você está mais competitivo em ${topName} (nota ${topGrade}). Maior oportunidade: ${oppName} (nota ${bestOppGrade}).`;
     }
 
-    return `Você está mais competitivo em ${topName}. Maior oportunidade: +${bestOppDelta} em ${oppName}, ${bestOppCategory}.`;
+    return `Você está mais competitivo em ${topName} (nota ${topGrade}). Maior oportunidade: ${oppName} (nota ${bestOppGrade}), ${bestOppCategory}.`;
   }, [scores, institutions]);
 
   return (

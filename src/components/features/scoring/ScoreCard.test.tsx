@@ -43,7 +43,8 @@ describe("ScoreCard", () => {
     );
 
     expect(screen.getByText("UNICAMP")).toBeInTheDocument();
-    expect(screen.getByText("68")).toBeInTheDocument();
+    // 68/100 = nota 6,8
+    expect(screen.getByText("6,8")).toBeInTheDocument();
     // Top gap: Formação has delta 15 (max 25 - score 10)
     expect(screen.getByText(/\+15 em Formação/)).toBeInTheDocument();
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -126,7 +127,7 @@ describe("ScoreCard", () => {
 
     expect(screen.getByRole("button")).toHaveAttribute(
       "aria-label",
-      "UNICAMP, score 68 de 100, mais 15 possíveis em Formação, botão ver detalhes",
+      "UNICAMP, nota 6,8, mais 15 possíveis em Formação, botão ver detalhes",
     );
   });
 

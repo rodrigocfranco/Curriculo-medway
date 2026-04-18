@@ -116,10 +116,10 @@ describe("InstitutionDetail", () => {
     expect(editalLink.closest("a")).toHaveAttribute("target", "_blank");
     expect(editalLink.closest("a")).toHaveAttribute("rel", "noopener noreferrer");
 
-    // ScoreHero
-    expect(screen.getByText("68")).toBeInTheDocument();
-    expect(screen.getByText("/ 100")).toBeInTheDocument();
-    // 68% → "Bom caminho"
+    // ScoreHero — nota 6,8 (68/100)
+    expect(screen.getByText("6,8")).toBeInTheDocument();
+    expect(screen.getByText("68 / 100 pontos")).toBeInTheDocument();
+    // nota 6.8 → "Bom caminho"
     expect(screen.getByText("Bom caminho — veja onde pode crescer")).toBeInTheDocument();
 
     // GapAnalysis — categorias agrupadas

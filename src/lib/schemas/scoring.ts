@@ -50,3 +50,16 @@ export const institutionSchema = z.object({
 });
 
 export type Institution = z.infer<typeof institutionSchema>;
+
+// ---------------------------------------------------------------------------
+// Nota 0–10: (score / maxScore) * 10, arredondado para 1 decimal
+// ---------------------------------------------------------------------------
+
+export function toGrade(score: number, maxScore: number): number {
+  if (maxScore <= 0) return 0;
+  return Math.round((score / maxScore) * 100) / 10;
+}
+
+export function formatGrade(score: number, maxScore: number): string {
+  return toGrade(score, maxScore).toFixed(1).replace(".", ",");
+}

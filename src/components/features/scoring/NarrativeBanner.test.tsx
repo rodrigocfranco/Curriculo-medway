@@ -59,11 +59,11 @@ describe("NarrativeBanner", () => {
 
     render(<NarrativeBanner scores={scores} institutions={institutions} />);
 
-    // USP-SP has gap 60 > UNICAMP gap 32
+    // UNICAMP 68/100 = nota 6,8; USP-SP 40/100 = nota 4,0 (lower = more opportunity)
     expect(
-      screen.getByText(/Você está mais competitivo em UNICAMP/),
+      screen.getByText(/Você está mais competitivo em UNICAMP \(nota 6,8\)/),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Maior oportunidade: \+60 em USP-SP, Formação/)).toBeInTheDocument();
+    expect(screen.getByText(/Maior oportunidade: USP-SP \(nota 4,0\), Formação/)).toBeInTheDocument();
   });
 
   it("mostra fallback quando scores vazios", () => {
