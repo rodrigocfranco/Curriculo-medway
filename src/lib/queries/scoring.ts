@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   useMutation,
   useQuery,
@@ -183,4 +184,77 @@ export function useUpdateSpecialty(
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
   });
+}
+
+// ---------------------------------------------------------------------------
+// useInstitutionScore — score filtrado para uma instituição específica
+// ---------------------------------------------------------------------------
+
+export function useInstitutionScore(
+  userId: string | null,
+  institutionId: string | undefined,
+  specialtyId?: string,
+): {
+  score: UserScore | null;
+  institution: Institution | null;
+  isLoading: boolean;
+  isError: boolean;
+} {
+  const {
+    data: scores,
+    isLoading: scoresLoading,
+    isError: scoresError,
+  } = useScores(userId, specialtyId);
+
+  const {
+    data: institutions,
+    isLoading: instLoading,
+    isError: instError,
+  } = useInstitutions();
+
+  const score = useMemo(
+    () => scores?.find((s) => s.institution_id === institutionId) ?? null,
+    [scores, institutionId],
+  );
+
+  const institution = useMemo(
+    () => institutions?.find((i) => i.id === institutionId) ?? null,
+    [institutions, institutionId],
+  );
+
+  return {
+    score,
+    institution,
+    isLoading: scoresLoading || instLoading,
+    isError: scoresError || instError,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// useEditalUrl — retorna URL do edital (direta ou signed do Storage)
+// ---------------------------------------------------------------------------
+
+export function useEditalUrl(
+  institution: Institution | null,
+): string | null {
+  const pdfPath = institution?.pdf_path;
+  const directUrl = institution?.edital_url;
+
+  const { data: signedUrl } = useQuery<string | null, Error>({
+    queryKey: ["edital-signed-url", pdfPath],
+    enabled: !!pdfPath && !directUrl,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("editais")
+        .createSignedUrl(pdfPath!, 3600);
+
+      if (error) throw error;
+      return data.signedUrl;
+    },
+  });
+
+  if (directUrl) return directUrl;
+  if (signedUrl) return signedUrl;
+  return null;
 }

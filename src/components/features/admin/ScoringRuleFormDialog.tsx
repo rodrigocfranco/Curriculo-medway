@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -151,6 +151,7 @@ export function ScoringRuleFormDialog({
     if (open) {
       setMutationError(null);
       if (rule) {
+        isResettingRef.current = true;
         form.reset({
           institution_id: rule.institution_id,
           specialty_id: rule.specialty_id,
@@ -176,26 +177,18 @@ export function ScoringRuleFormDialog({
     }
   }, [open, rule, form]);
 
-  // Track initial category to distinguish user changes from form reset
-  const [initialCategory, setInitialCategory] = useState<string | null>(null);
+  // Ref guards against clearing field_key during form reset (initial load)
+  const isResettingRef = useRef(false);
 
-  useEffect(() => {
-    if (open && rule) {
-      setInitialCategory(rule.category);
-    } else if (open) {
-      setInitialCategory(null);
-    }
-  }, [open, rule]);
-
-  // Reset field_key when category changes (user action, not initial load)
+  // Reset field_key when category changes (user action only, not initial load)
   useEffect(() => {
     if (!selectedCategory) return;
-    if (initialCategory && selectedCategory === initialCategory) {
-      setInitialCategory(null);
+    if (isResettingRef.current) {
+      isResettingRef.current = false;
       return;
     }
     form.setValue("field_key", "");
-  }, [selectedCategory, form, initialCategory]);
+  }, [selectedCategory, form]);
 
   const onSubmit = async (values: ScoringRuleFormValues) => {
     if (isPending) return;

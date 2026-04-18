@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-14
-last_updated: 2026-04-17 (Story 3.3 review)
+last_updated: 2026-04-18 (Story 3.3 done — code review patches applied)
 project: curriculo-medway
 project_key: NOKEY
 tracking_system: file-system
@@ -62,14 +62,14 @@ development_status:
   2-1-formulario-curriculo-completo-autosave: done
   2-2-motor-calculo-db-function-trigger-queries: done
   2-3-dashboard-scorecard-narrativebanner-specialtyselector: done
-  2-4-detalhe-instituicao-scorehero-gapanalysis-disclaimer: backlog
+  2-4-detalhe-instituicao-scorehero-gapanalysis-disclaimer: review
   epic-2-retrospective: optional
 
   # Epic 3 — Consolidado em 2026-04-16 (6 → 3 stories)
   epic-3: in-progress
   3-1-navegacao-admin-crud-instituicoes-upload-edital: done
   3-2-crud-regras-adminruleeditor-impactpreview: done
-  3-3-log-historico-alteracoes-regras: review
+  3-3-log-historico-alteracoes-regras: done
   epic-3-retrospective: optional
 
   # Epic 4 — Consolidado em 2026-04-16 (6 → 2 stories)
