@@ -61,6 +61,8 @@ const academicoFields = {
   monitoria_semestres: z.coerce.number().min(0).default(0),
   monitoria_horas_totais: z.coerce.number().min(0).default(0),
   extensao_semestres: z.coerce.number().min(0).default(0),
+  premios_academicos: z.coerce.number().min(0).default(0),
+  cursinhos_preparatorios: z.coerce.number().min(0).default(0),
 };
 
 // Prática/Social
