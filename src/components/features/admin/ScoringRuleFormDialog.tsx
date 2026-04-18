@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   scoringRuleFormSchema,
   type ScoringRuleFormValues,
@@ -101,16 +102,9 @@ export function ScoringRuleFormDialog({
   const isDirty = form.formState.isDirty;
   const isPending = mutation.isPending;
 
-  // Detectar fórmula avançada
-  const advancedOps = new Set(["publication_matrix", "tiered", "threshold", "composite", "custom", "floor_div", "ruf_branch", "any_positive", "any_true_or_positive"]);
-  const isAdvanced = useMemo(() => {
-    try {
-      const parsed = JSON.parse(formulaValue);
-      return parsed?.op && advancedOps.has(parsed.op);
-    } catch {
-      return false;
-    }
-  }, [formulaValue]);
+  // Toggle simples/avançado (controlado pelo admin)
+  const [advancedMode, setAdvancedMode] = useState(false);
+  const isAdvanced = advancedMode;
 
   // Determine visual status
   const status: RuleStatus = useMemo(() => {
@@ -158,6 +152,12 @@ export function ScoringRuleFormDialog({
     return fields;
   }, [fieldsByCategory, selectedCategory, rule]);
 
+  // Ops que indicam fórmula avançada
+  const advancedOps = useMemo(() => new Set([
+    "publication_matrix", "tiered", "threshold", "composite", "custom",
+    "floor_div", "ruf_branch", "any_positive", "any_true_or_positive",
+  ]), []);
+
   // Reset form when dialog opens/closes or rule changes
   useEffect(() => {
     if (open) {
@@ -174,6 +174,11 @@ export function ScoringRuleFormDialog({
           description: rule.description ?? "",
           formula: JSON.stringify(rule.formula, null, 2),
         });
+        // Auto-detectar modo avançado da regra existente
+        const op = rule.formula && typeof rule.formula === "object" && "op" in rule.formula
+          ? (rule.formula as { op: string }).op
+          : null;
+        setAdvancedMode(op !== null && advancedOps.has(op));
       } else {
         form.reset({
           institution_id: "",
@@ -185,6 +190,7 @@ export function ScoringRuleFormDialog({
           description: "",
           formula: "{}",
         });
+        setAdvancedMode(false);
       }
     }
   }, [open, rule, form]);
@@ -396,6 +402,21 @@ export function ScoringRuleFormDialog({
                 </FormItem>
               )}
             />
+
+            {/* Toggle simples / avançado */}
+            <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+              <div>
+                <p className="text-sm font-medium">Formula avancada</p>
+                <p className="text-xs text-muted-foreground">
+                  {isAdvanced ? "Faixas, matrizes ou logica customizada" : "Pontuacao simples por unidade"}
+                </p>
+              </div>
+              <Switch
+                checked={advancedMode}
+                onCheckedChange={setAdvancedMode}
+                aria-label="Alternar modo avancado"
+              />
+            </div>
 
             {/* Weight & Max Points */}
             <div className={isAdvanced ? "" : "grid grid-cols-2 gap-4"}>
