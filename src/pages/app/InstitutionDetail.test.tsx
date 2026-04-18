@@ -50,9 +50,9 @@ const mockScore = {
   score: 68,
   max_score: 100,
   breakdown: {
-    publicacoes: { score: 10, max: 15, description: "Publicações científicas", category: "Publicações" },
-    ic: { score: 20, max: 20, description: "Iniciação Científica com bolsa", category: "Pesquisa" },
-    monitoria: { score: 2, max: 5, description: "Monitoria acadêmica", category: "Pesquisa" },
+    publicacoes: { score: 10, max: 15, description: "Autor principal: 10 pts | Coautor: 5 pts", category: "Publicações", label: "Publicações científicas" },
+    ic: { score: 20, max: 20, description: "Bolsa Oficial: 20 pts", category: "Pesquisa", label: "Iniciação Científica" },
+    monitoria: { score: 2, max: 5, description: "Monitoria registrada", category: "Pesquisa", label: "Monitoria acadêmica" },
   },
   stale: false,
   calculated_at: "2026-01-01T00:00:00Z",

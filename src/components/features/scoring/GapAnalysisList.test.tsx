@@ -4,9 +4,9 @@ import { GapAnalysisList } from "./GapAnalysisList";
 import type { ScoreBreakdown } from "@/lib/schemas/scoring";
 
 const mockBreakdown: ScoreBreakdown = {
-  publicacoes: { score: 10, max: 15, description: "Autor principal indexado: 10 pts | Coautor: 5 pts", category: "Publicações" },
-  ic: { score: 20, max: 20, description: "Bolsa Oficial: 20 pts | Voluntária: 10 pts", category: "Pesquisa" },
-  monitoria: { score: 2, max: 5, description: "Monitoria acadêmica registrada", category: "Pesquisa" },
+  publicacoes: { score: 10, max: 15, description: "Autor principal indexado: 10 pts | Coautor: 5 pts", category: "Publicações", label: "Publicações científicas" },
+  ic: { score: 20, max: 20, description: "Bolsa Oficial: 20 pts | Voluntária: 10 pts", category: "Pesquisa", label: "Iniciação Científica" },
+  monitoria: { score: 2, max: 5, description: "Monitoria acadêmica registrada", category: "Pesquisa", label: "Monitoria acadêmica" },
 };
 
 describe("GapAnalysisList", () => {
@@ -34,13 +34,12 @@ describe("GapAnalysisList", () => {
     expect(screen.getAllByText("+5 possíveis").length).toBeGreaterThanOrEqual(1);
   });
 
-  it("exibe campos individuais dentro da categoria", () => {
+  it("exibe labels dos campos dentro da categoria", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    // Campos formatados
-    expect(screen.getByText("Publicacoes")).toBeInTheDocument();
-    expect(screen.getByText("Ic")).toBeInTheDocument();
-    expect(screen.getByText("Monitoria")).toBeInTheDocument();
+    expect(screen.getByText("Publicações científicas")).toBeInTheDocument();
+    expect(screen.getByText("Iniciação Científica")).toBeInTheDocument();
+    expect(screen.getByText("Monitoria acadêmica")).toBeInTheDocument();
   });
 
   it("exibe '✓ Máximo' para campo com delta 0", () => {

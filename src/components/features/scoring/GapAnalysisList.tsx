@@ -7,7 +7,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { ScoreBreakdown, ScoreBreakdownItem } from "@/lib/schemas/scoring";
+import type { ScoreBreakdown } from "@/lib/schemas/scoring";
 
 interface GapAnalysisListProps {
   breakdown: ScoreBreakdown;
@@ -15,6 +15,7 @@ interface GapAnalysisListProps {
 
 interface BreakdownEntry {
   key: string;
+  label: string;
   score: number;
   max: number;
   delta: number;
@@ -40,10 +41,11 @@ function groupByCategory(breakdown: ScoreBreakdown): CategoryGroup[] {
   const groups = new Map<string, BreakdownEntry[]>();
 
   for (const [key, item] of Object.entries(breakdown)) {
-    const cat = (item as ScoreBreakdownItem & { category?: string }).category || "Outros";
+    const cat = item.category || "Outros";
     if (!groups.has(cat)) groups.set(cat, []);
     groups.get(cat)!.push({
       key,
+      label: item.label || formatKey(key),
       score: item.score,
       max: item.max,
       delta: item.max - item.score,
@@ -76,7 +78,7 @@ function RuleItem({ entry }: { entry: BreakdownEntry }) {
       <div className="flex items-center justify-between gap-2 py-1.5">
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm">{formatKey(entry.key)}</span>
+            <span className="text-sm">{entry.label}</span>
             <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
               {entry.score}/{entry.max}
             </span>

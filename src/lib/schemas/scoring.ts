@@ -9,6 +9,7 @@ export const scoreBreakdownItemSchema = z.object({
   max: z.number(),
   description: z.string(),
   category: z.string().optional(),
+  label: z.string().optional(),
 });
 
 export const scoreBreakdownSchema = z.record(z.string(), scoreBreakdownItemSchema);
