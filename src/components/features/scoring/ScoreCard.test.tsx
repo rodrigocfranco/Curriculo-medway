@@ -83,7 +83,7 @@ describe("ScoreCard", () => {
     expect(screen.getByText("Sem dados ainda")).toBeInTheDocument();
   });
 
-  it("renderiza estado vazio quando score é 0 com breakdown todo zerado", () => {
+  it("renderiza nota 0,0 quando score é 0 mas breakdown tem dados (currículo preenchido)", () => {
     const zeroScore: UserScore = {
       ...mockScore,
       score: 0,
@@ -97,7 +97,8 @@ describe("ScoreCard", () => {
       <ScoreCard institution={mockInstitution} score={zeroScore} onClick={vi.fn()} />,
     );
 
-    expect(screen.getByText("Comece a preencher")).toBeInTheDocument();
+    // Score 0 com breakdown = aluno preencheu, nota é legitimamente 0
+    expect(screen.getByText("0,0")).toBeInTheDocument();
   });
 
   it("chama onClick ao clicar no card", () => {

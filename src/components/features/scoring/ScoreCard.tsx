@@ -39,11 +39,9 @@ function isPartialScore(score: UserScore): boolean {
 
 function isEmptyScore(score: UserScore | null): boolean {
   if (!score) return true;
-  if (score.score === 0) {
-    const entries = Object.values(score.breakdown);
-    return entries.length === 0 || entries.every((item) => item.score === 0);
-  }
-  return false;
+  // Score existe mas breakdown vazio = nunca foi calculado de verdade
+  const entries = Object.values(score.breakdown);
+  return entries.length === 0;
 }
 
 export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCardProps) {
