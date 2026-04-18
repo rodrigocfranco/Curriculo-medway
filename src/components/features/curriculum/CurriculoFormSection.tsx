@@ -32,10 +32,9 @@ interface CurriculoFormSectionProps {
 }
 
 const PLACEHOLDERS: Record<string, string> = {
-  artigos_high_impact: "Ex: 2",
-  artigos_mid_impact: "Ex: 3",
-  artigos_low_impact: "Ex: 1",
-  artigos_nacionais: "Ex: 4",
+  artigo_1_fi: "Ex: 2.5 (consulte jcr.clarivate.com)",
+  artigo_2_fi: "Ex: 1.8",
+  artigo_3_fi: "Ex: 0.9",
   capitulos_livro: "Ex: 1",
   ic_com_bolsa: "Ex: 2 (anos)",
   ic_sem_bolsa: "Ex: 1 (anos)",

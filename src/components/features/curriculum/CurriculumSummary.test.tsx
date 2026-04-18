@@ -9,8 +9,8 @@ const mockFields: Record<string, CurriculumFieldRow[]> = {
   Publicações: [
     {
       id: "1",
-      field_key: "artigos_high_impact",
-      label: "Artigos alto impacto",
+      field_key: "artigo_1_fi",
+      label: "Artigo 1º autor (FI)",
       field_type: "number",
       category: "Publicações",
       display_order: 10,
@@ -75,7 +75,7 @@ describe("CurriculumSummary", () => {
   });
 
   it("exibe '—' para campos numéricos vazios (zero)", () => {
-    const data = curriculumDataSchema.parse({ artigos_high_impact: 0 });
+    const data = curriculumDataSchema.parse({ artigo_1_fi: 0 });
     render(
       <MemoryRouter>
         <CurriculumSummary
@@ -89,7 +89,7 @@ describe("CurriculumSummary", () => {
   });
 
   it("exibe valor numérico preenchido", () => {
-    const data = curriculumDataSchema.parse({ artigos_high_impact: 5 });
+    const data = curriculumDataSchema.parse({ artigo_1_fi: 5 });
     render(
       <MemoryRouter>
         <CurriculumSummary

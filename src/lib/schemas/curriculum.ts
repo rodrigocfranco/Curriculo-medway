@@ -9,12 +9,14 @@ import { z } from "zod";
  * Fallback z.record() para campos adicionais futuros via admin.
  */
 
-// Publicações (5)
+// Publicações (7: 3 artigos × 2 campos + capítulos)
 const publicacoesFields = {
-  artigos_high_impact: z.coerce.number().min(0).default(0),
-  artigos_mid_impact: z.coerce.number().min(0).default(0),
-  artigos_low_impact: z.coerce.number().min(0).default(0),
-  artigos_nacionais: z.coerce.number().min(0).default(0),
+  artigo_1_posicao: z.string().default(""),
+  artigo_1_fi: z.coerce.number().min(0).default(0),
+  artigo_2_posicao: z.string().default(""),
+  artigo_2_fi: z.coerce.number().min(0).default(0),
+  artigo_3_posicao: z.string().default(""),
+  artigo_3_fi: z.coerce.number().min(0).default(0),
   capitulos_livro: z.coerce.number().min(0).default(0),
 };
 
@@ -54,8 +56,8 @@ const perfilFields = {
   media_geral: z.coerce.number().min(0).default(0),
   conceito_historico: z.string().default(""),
   ranking_ruf_top35: z.boolean().default(false),
-  mestrado: z.boolean().default(false),
-  doutorado: z.boolean().default(false),
+  mestrado_status: z.string().default("Não tenho"),
+  doutorado_status: z.string().default("Não tenho"),
 };
 
 export const curriculumDataSchema = z

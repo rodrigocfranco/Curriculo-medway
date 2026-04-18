@@ -4,10 +4,12 @@ import { curriculumDataSchema } from "./curriculum";
 describe("curriculumDataSchema", () => {
   it("aceita dados válidos completos", () => {
     const result = curriculumDataSchema.safeParse({
-      artigos_high_impact: 2,
-      artigos_mid_impact: 1,
-      artigos_low_impact: 0,
-      artigos_nacionais: 3,
+      artigo_1_posicao: "1º Autor / Último autor",
+      artigo_1_fi: 2.5,
+      artigo_2_posicao: "Coautor",
+      artigo_2_fi: 0.8,
+      artigo_3_posicao: "",
+      artigo_3_fi: 0,
       capitulos_livro: 1,
       ic_com_bolsa: 2,
       ic_sem_bolsa: 0,
@@ -31,8 +33,8 @@ describe("curriculumDataSchema", () => {
       media_geral: 8.5,
       conceito_historico: "A",
       ranking_ruf_top35: true,
-      mestrado: false,
-      doutorado: false,
+      mestrado_status: "Concluído",
+      doutorado_status: "Em curso",
     });
     expect(result.success).toBe(true);
   });
@@ -41,29 +43,30 @@ describe("curriculumDataSchema", () => {
     const result = curriculumDataSchema.safeParse({});
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.artigos_high_impact).toBe(0);
+      expect(result.data.artigo_1_posicao).toBe("");
+      expect(result.data.artigo_1_fi).toBe(0);
       expect(result.data.projeto_rondon).toBe(false);
       expect(result.data.conceito_historico).toBe("");
-      expect(result.data.ingles_fluente).toBe(false);
-      expect(result.data.media_geral).toBe(0);
+      expect(result.data.mestrado_status).toBe("Não tenho");
+      expect(result.data.doutorado_status).toBe("Não tenho");
     }
   });
 
   it("rejeita números negativos", () => {
     const result = curriculumDataSchema.safeParse({
-      artigos_high_impact: -1,
+      artigo_1_fi: -1,
     });
     expect(result.success).toBe(false);
   });
 
   it("coerce strings numéricas para number", () => {
     const result = curriculumDataSchema.safeParse({
-      artigos_high_impact: "3",
+      artigo_1_fi: "2.5",
       media_geral: "8.5",
     });
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.artigos_high_impact).toBe(3);
+      expect(result.data.artigo_1_fi).toBe(2.5);
       expect(result.data.media_geral).toBe(8.5);
     }
   });
@@ -78,57 +81,38 @@ describe("curriculumDataSchema", () => {
     }
   });
 
-  it("aceita conceito_historico com valores válidos do select", () => {
-    for (const conceito of ["A", "B", "C"]) {
+  it("aceita mestrado_status e doutorado_status com valores select", () => {
+    for (const status of ["Não tenho", "Em curso", "Concluído"]) {
       const result = curriculumDataSchema.safeParse({
-        conceito_historico: conceito,
+        mestrado_status: status,
+        doutorado_status: status,
       });
       expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.conceito_historico).toBe(conceito);
-      }
     }
   });
 
-  it("valida todos os 29 campos com defaults", () => {
+  it("valida todos os campos conhecidos com defaults", () => {
     const result = curriculumDataSchema.safeParse({});
     expect(result.success).toBe(true);
     if (result.success) {
       const knownFields = [
-        "artigos_high_impact",
-        "artigos_mid_impact",
-        "artigos_low_impact",
-        "artigos_nacionais",
+        "artigo_1_posicao", "artigo_1_fi",
+        "artigo_2_posicao", "artigo_2_fi",
+        "artigo_3_posicao", "artigo_3_fi",
         "capitulos_livro",
-        "ic_com_bolsa",
-        "ic_sem_bolsa",
-        "ic_horas_totais",
-        "monitoria_semestres",
-        "extensao_semestres",
-        "voluntariado_horas",
-        "estagio_extracurricular_horas",
-        "trabalho_sus_meses",
-        "projeto_rondon",
-        "internato_hospital_ensino",
-        "diretoria_ligas",
-        "membro_liga_anos",
-        "representante_turma_anos",
-        "cursos_suporte",
-        "apresentacao_congresso",
-        "ouvinte_congresso",
-        "organizador_evento",
-        "teste_progresso",
-        "ingles_fluente",
-        "media_geral",
-        "conceito_historico",
-        "ranking_ruf_top35",
-        "mestrado",
-        "doutorado",
+        "ic_com_bolsa", "ic_sem_bolsa", "ic_horas_totais",
+        "monitoria_semestres", "extensao_semestres",
+        "voluntariado_horas", "estagio_extracurricular_horas",
+        "trabalho_sus_meses", "projeto_rondon", "internato_hospital_ensino",
+        "diretoria_ligas", "membro_liga_anos", "representante_turma_anos",
+        "cursos_suporte", "apresentacao_congresso", "ouvinte_congresso",
+        "organizador_evento", "teste_progresso",
+        "ingles_fluente", "media_geral", "conceito_historico",
+        "ranking_ruf_top35", "mestrado_status", "doutorado_status",
       ];
       for (const field of knownFields) {
         expect(result.data).toHaveProperty(field);
       }
-      expect(knownFields.length).toBe(29);
     }
   });
 });

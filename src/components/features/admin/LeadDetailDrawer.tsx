@@ -26,10 +26,12 @@ function formatDate(iso: string) {
 }
 
 const CURRICULUM_CATEGORIES: Record<string, string> = {
-  artigos_high_impact: "Publicações",
-  artigos_mid_impact: "Publicações",
-  artigos_low_impact: "Publicações",
-  artigos_nacionais: "Publicações",
+  artigo_1_posicao: "Publicações",
+  artigo_1_fi: "Publicações",
+  artigo_2_posicao: "Publicações",
+  artigo_2_fi: "Publicações",
+  artigo_3_posicao: "Publicações",
+  artigo_3_fi: "Publicações",
   capitulos_livro: "Publicações",
   ic_com_bolsa: "Acadêmico",
   ic_sem_bolsa: "Acadêmico",
@@ -53,8 +55,8 @@ const CURRICULUM_CATEGORIES: Record<string, string> = {
   media_geral: "Perfil",
   conceito_historico: "Perfil",
   ranking_ruf_top35: "Perfil",
-  mestrado: "Perfil",
-  doutorado: "Perfil",
+  mestrado_status: "Perfil",
+  doutorado_status: "Perfil",
 };
 
 function formatFieldLabel(key: string): string {

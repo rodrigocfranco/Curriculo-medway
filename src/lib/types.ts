@@ -1,9 +1,11 @@
 export interface UserProfile {
   // Publicações
-  artigos_high_impact: number | null;
-  artigos_mid_impact: number | null;
-  artigos_low_impact: number | null;
-  artigos_nacionais: number | null;
+  artigo_1_posicao: string;
+  artigo_1_fi: number | null;
+  artigo_2_posicao: string;
+  artigo_2_fi: number | null;
+  artigo_3_posicao: string;
+  artigo_3_fi: number | null;
   capitulos_livro: number | null;
 
   // Acadêmico
@@ -35,8 +37,8 @@ export interface UserProfile {
   media_geral: number | null;
   conceito_historico: 'A' | 'B' | 'C' | null;
   ranking_ruf_top35: boolean;
-  mestrado: boolean;
-  doutorado: boolean;
+  mestrado_status: string;
+  doutorado_status: string;
 }
 
 export interface DetailItem {
@@ -54,10 +56,12 @@ export interface InstitutionScore {
 }
 
 export const defaultProfile: UserProfile = {
-  artigos_high_impact: null,
-  artigos_mid_impact: null,
-  artigos_low_impact: null,
-  artigos_nacionais: null,
+  artigo_1_posicao: "",
+  artigo_1_fi: null,
+  artigo_2_posicao: "",
+  artigo_2_fi: null,
+  artigo_3_posicao: "",
+  artigo_3_fi: null,
   capitulos_livro: null,
   ic_com_bolsa: null,
   ic_sem_bolsa: null,
@@ -81,6 +85,6 @@ export const defaultProfile: UserProfile = {
   media_geral: null,
   conceito_historico: null,
   ranking_ruf_top35: false,
-  mestrado: false,
-  doutorado: false,
+  mestrado_status: "Não tenho",
+  doutorado_status: "Não tenho",
 };

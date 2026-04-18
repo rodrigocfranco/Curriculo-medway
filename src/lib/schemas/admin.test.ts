@@ -69,7 +69,7 @@ const validRule = {
   institution_id: "550e8400-e29b-41d4-a716-446655440000",
   specialty_id: null,
   category: "Publicações",
-  field_key: "artigos_high_impact",
+  field_key: "artigo_1_posicao",
   weight: 5,
   max_points: 10,
   description: "Pontuação para artigos de alto impacto",
@@ -200,7 +200,7 @@ describe("impactPreviewRequestSchema", () => {
       specialty_id: null,
       weight: 5,
       max_points: 10,
-      field_key: "artigos_high_impact",
+      field_key: "artigo_1_posicao",
     });
     expect(result.success).toBe(true);
   });
@@ -211,7 +211,7 @@ describe("impactPreviewRequestSchema", () => {
       specialty_id: "660e8400-e29b-41d4-a716-446655440000",
       weight: 5,
       max_points: 10,
-      field_key: "artigos_high_impact",
+      field_key: "artigo_1_posicao",
     });
     expect(result.success).toBe(true);
   });
@@ -221,7 +221,7 @@ describe("impactPreviewRequestSchema", () => {
       specialty_id: null,
       weight: 5,
       max_points: 10,
-      field_key: "artigos_high_impact",
+      field_key: "artigo_1_posicao",
     });
     expect(result.success).toBe(false);
   });

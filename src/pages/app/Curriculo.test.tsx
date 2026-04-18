@@ -13,8 +13,8 @@ const mockFieldsByCategory = {
   Publicações: [
     {
       id: "1",
-      field_key: "artigos_high_impact",
-      label: "Artigos alto impacto",
+      field_key: "artigo_1_fi",
+      label: "Artigo 1º autor (FI)",
       field_type: "number",
       category: "Publicações",
       display_order: 10,
@@ -116,6 +116,6 @@ describe("Curriculo page", () => {
 
   it("renderiza campo numérico na seção expandida", () => {
     renderWithProviders();
-    expect(screen.getAllByText("Artigos alto impacto").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Artigo 1º autor (FI)").length).toBeGreaterThanOrEqual(1);
   });
 });

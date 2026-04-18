@@ -13,8 +13,8 @@ import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
 const mockFields: CurriculumFieldRow[] = [
   {
     id: "1",
-    field_key: "artigos_high_impact",
-    label: "Artigos alto impacto",
+    field_key: "artigo_1_fi",
+    label: "Artigo 1º autor (FI)",
     field_type: "number",
     category: "Publicações",
     display_order: 1,
@@ -80,7 +80,7 @@ describe("CurriculoFormSection", () => {
 
   it("renderiza campo numérico com label e input", () => {
     render(<Wrapper fields={mockFields.slice(0, 1)} onBlur={() => {}} />);
-    expect(screen.getByText("Artigos alto impacto")).toBeInTheDocument();
+    expect(screen.getByText("Artigo 1º autor (FI)")).toBeInTheDocument();
     expect(screen.getByRole("spinbutton")).toBeInTheDocument();
   });
 
@@ -112,7 +112,7 @@ describe("CurriculoFormSection", () => {
       <Wrapper
         fields={mockFields.slice(0, 1)}
         onBlur={() => {}}
-        defaultValues={{ artigos_high_impact: 3 }}
+        defaultValues={{ artigo_1_fi: 3 }}
       />,
     );
     expect(screen.getByText("(1/1 preenchidos)")).toBeInTheDocument();
