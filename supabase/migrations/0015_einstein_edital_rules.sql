@@ -4,6 +4,24 @@
 -- + Novo operador: publication_matrix no evaluate_formula
 
 -- =============================================================================
+-- 0. Garantir que institutions existam (seeds não rodam no CI)
+-- =============================================================================
+
+INSERT INTO public.institutions (name, short_name, state) VALUES
+  ('UNICAMP',  'UNICAMP',       'SP'),
+  ('USP-SP',   'USP-SP',        'SP'),
+  ('PSU-MG',   'PSU-MG',        'MG'),
+  ('FMABC',    'FMABC',         'SP'),
+  ('EINSTEIN', 'Einstein',      'SP'),
+  ('SCMSP',    'Santa Casa SP', 'SP'),
+  ('SES-PE',   'SES-PE',        'PE'),
+  ('SES-DF',   'SES-DF',        'DF'),
+  ('SCM-BH',   'Santa Casa BH', 'MG'),
+  ('USP-RP',   'USP-RP',        'SP'),
+  ('UFPA',     'UFPA',          'PA')
+ON CONFLICT (name) DO NOTHING;
+
+-- =============================================================================
 -- 1. Novos curriculum_fields: pós-graduação como select (substitui booleans)
 -- =============================================================================
 
