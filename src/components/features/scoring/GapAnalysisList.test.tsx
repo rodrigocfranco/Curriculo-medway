@@ -53,24 +53,22 @@ describe("GapAnalysisList", () => {
     expect(screen.getByText("Nenhuma categoria de pontuação disponível.")).toBeInTheDocument();
   });
 
-  it("mostra regras expandidas por padrão quando delta > 0", () => {
+  it("mostra regras colapsadas por padrão com botão Detalhes", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    // Publicações (delta 5) deve estar expandida, mostrando itens parseados
-    expect(screen.getByText("Autor principal indexado")).toBeInTheDocument();
-    expect(screen.getByText("10 pts")).toBeInTheDocument();
-    expect(screen.getByText("Coautor")).toBeInTheDocument();
-    // "5 pts" aparece em Publicações e Monitoria
-    expect(screen.getAllByText("5 pts").length).toBeGreaterThanOrEqual(1);
+    // Todas as regras começam colapsadas
+    const detailButtons = screen.getAllByText("Detalhes");
+    expect(detailButtons.length).toBeGreaterThan(0);
   });
 
-  it("mostra 'Como pontuar' ao invés de 'Saiba +'", () => {
+  it("expande regra ao clicar Detalhes e mostra itens parseados", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    // Campos com delta > 0 mostram "Ocultar" (já aberto)
+    const detailButtons = screen.getAllByText("Detalhes");
+    fireEvent.click(detailButtons[0]);
+
+    // Após expandir, mostra "Ocultar"
     expect(screen.getAllByText("Ocultar").length).toBeGreaterThan(0);
-    // Campos com delta = 0 mostram "Como pontuar" (fechado)
-    expect(screen.getAllByText("Como pontuar").length).toBeGreaterThan(0);
   });
 
   it("agrupa em 'Outros' quando category não está presente", () => {

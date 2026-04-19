@@ -14,6 +14,86 @@ interface GapAnalysisListProps {
   curriculumData?: Record<string, unknown>;
 }
 
+/** Paleta de cores por categoria */
+interface CategoryPalette {
+  headerBg: string;
+  headerBorder: string;
+  badge: string;
+  badgeText: string;
+  progress: string;
+  accent: string;
+  snapshotBorder: string;
+  snapshotBg: string;
+}
+
+const CATEGORY_PALETTES: Record<string, CategoryPalette> = {
+  Perfil: {
+    headerBg: "bg-violet-50/60",
+    headerBorder: "border-b-violet-200/50",
+    badge: "bg-violet-100",
+    badgeText: "text-violet-700",
+    progress: "[&>div]:bg-violet-500",
+    accent: "text-violet-600",
+    snapshotBorder: "border-l-violet-400",
+    snapshotBg: "bg-violet-50/40",
+  },
+  Acadêmico: {
+    headerBg: "bg-blue-50/60",
+    headerBorder: "border-b-blue-200/50",
+    badge: "bg-blue-100",
+    badgeText: "text-blue-700",
+    progress: "[&>div]:bg-blue-500",
+    accent: "text-blue-600",
+    snapshotBorder: "border-l-blue-400",
+    snapshotBg: "bg-blue-50/40",
+  },
+  Publicações: {
+    headerBg: "bg-amber-50/60",
+    headerBorder: "border-b-amber-200/50",
+    badge: "bg-amber-100",
+    badgeText: "text-amber-700",
+    progress: "[&>div]:bg-amber-500",
+    accent: "text-amber-600",
+    snapshotBorder: "border-l-amber-400",
+    snapshotBg: "bg-amber-50/40",
+  },
+  "Liderança/Eventos": {
+    headerBg: "bg-teal-50/60",
+    headerBorder: "border-b-teal-200/50",
+    badge: "bg-teal-100",
+    badgeText: "text-teal-700",
+    progress: "[&>div]:bg-teal-500",
+    accent: "text-teal-600",
+    snapshotBorder: "border-l-teal-400",
+    snapshotBg: "bg-teal-50/40",
+  },
+  "Prática/Social": {
+    headerBg: "bg-rose-50/60",
+    headerBorder: "border-b-rose-200/50",
+    badge: "bg-rose-100",
+    badgeText: "text-rose-700",
+    progress: "[&>div]:bg-rose-500",
+    accent: "text-rose-600",
+    snapshotBorder: "border-l-rose-400",
+    snapshotBg: "bg-rose-50/40",
+  },
+};
+
+const DEFAULT_PALETTE: CategoryPalette = {
+  headerBg: "bg-slate-50/60",
+  headerBorder: "border-b-slate-200/50",
+  badge: "bg-slate-100",
+  badgeText: "text-slate-700",
+  progress: "[&>div]:bg-slate-500",
+  accent: "text-slate-600",
+  snapshotBorder: "border-l-slate-400",
+  snapshotBg: "bg-slate-50/40",
+};
+
+function getPalette(category: string): CategoryPalette {
+  return CATEGORY_PALETTES[category] ?? DEFAULT_PALETTE;
+}
+
 interface BreakdownEntry {
   key: string;
   label: string;
@@ -186,9 +266,11 @@ function isValueFilled(value: unknown): boolean {
 function CurriculumSnapshot({
   fieldKey,
   curriculumData,
+  palette,
 }: {
   fieldKey: string;
   curriculumData: Record<string, unknown>;
+  palette: CategoryPalette;
 }) {
   const relatedKeys = FIELD_RELATED_KEYS[fieldKey] ?? [fieldKey];
   const items = relatedKeys
@@ -202,8 +284,8 @@ function CurriculumSnapshot({
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-3 rounded-lg border-l-4 border-l-accent/40 bg-accent/5 px-3 py-2.5">
-      <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-accent/70">
+    <div className={`mb-3 rounded-lg border-l-4 ${palette.snapshotBorder} ${palette.snapshotBg} px-3 py-2.5`}>
+      <p className={`mb-2 text-[10px] font-bold uppercase tracking-widest ${palette.accent} opacity-70`}>
         Seu currículo
       </p>
       <div className="space-y-1.5">
@@ -226,12 +308,14 @@ function CurriculumSnapshot({
 function RuleItem({
   entry,
   curriculumData,
+  palette,
 }: {
   entry: BreakdownEntry;
   curriculumData?: Record<string, unknown>;
+  palette: CategoryPalette;
 }) {
   const hasGap = entry.delta > 0;
-  const [open, setOpen] = useState(hasGap);
+  const [open, setOpen] = useState(false);
   const ruleItems = parseRuleItems(entry.description);
   const hasStructuredItems = ruleItems.length > 0 && ruleItems.some((r) => r.pts);
 
@@ -243,7 +327,7 @@ function RuleItem({
           <span className="text-sm font-medium">{entry.label}</span>
           <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${
             entry.score > 0
-              ? "bg-emerald-50 text-emerald-700"
+              ? `${palette.badge} ${palette.badgeText}`
               : "bg-muted text-muted-foreground"
           }`}>
             {entry.score}/{entry.max}
@@ -251,12 +335,12 @@ function RuleItem({
         </div>
         <Progress
           value={entry.percentage}
-          className="mt-2 h-1.5 bg-primary/10 [&>div]:bg-accent"
+          className={`mt-2 h-1.5 bg-primary/10 ${palette.progress}`}
           aria-hidden
         />
         <div className="mt-1.5 flex items-center justify-between gap-2">
           {hasGap ? (
-            <span className="text-xs font-medium text-accent">+{entry.delta} possíveis</span>
+            <span className={`text-xs font-medium ${palette.accent}`}>+{entry.delta} possíveis</span>
           ) : (
             <span className="text-xs font-medium text-emerald-600">✓ Máximo atingido</span>
           )}
@@ -275,7 +359,7 @@ function RuleItem({
         <div className="space-y-2 pb-3">
           {/* Dados do currículo do aluno */}
           {curriculumData && (
-            <CurriculumSnapshot fieldKey={entry.key} curriculumData={curriculumData} />
+            <CurriculumSnapshot fieldKey={entry.key} curriculumData={curriculumData} palette={palette} />
           )}
 
           {/* Regras de pontuação */}
@@ -317,29 +401,26 @@ function CategoryCard({
 }) {
   const percentage =
     group.totalMax > 0 ? (group.totalScore / group.totalMax) * 100 : 0;
+  const palette = getPalette(group.category);
 
   return (
     <li>
       <Card className="overflow-hidden">
-        {/* Header da categoria — fundo sutil */}
-        <div className="border-b bg-muted/20 px-5 py-4">
+        {/* Header da categoria — cor por categoria */}
+        <div className={`border-b ${palette.headerBorder} ${palette.headerBg} px-5 py-4`}>
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-base font-bold">{group.category}</h3>
-            <span className={`rounded-full px-3 py-1 text-sm font-bold tabular-nums ${
-              group.totalScore > 0
-                ? "bg-emerald-50 text-emerald-700"
-                : "bg-muted text-muted-foreground"
-            }`}>
+            <span className={`rounded-full px-3 py-1 text-sm font-bold tabular-nums ${palette.badge} ${palette.badgeText}`}>
               {group.totalScore}/{group.totalMax}
             </span>
           </div>
           <Progress
             value={percentage}
-            className="mt-3 h-2.5 bg-primary/10 [&>div]:bg-accent"
+            className={`mt-3 h-2.5 bg-primary/10 ${palette.progress}`}
             aria-hidden
           />
           {group.totalDelta > 0 && (
-            <p className="mt-2 text-xs font-semibold text-accent">
+            <p className={`mt-2 text-xs font-semibold ${palette.accent}`}>
               +{group.totalDelta} pontos possíveis
             </p>
           )}
@@ -354,7 +435,7 @@ function CategoryCard({
         <div className="space-y-3 p-4">
           {group.entries.map((entry) => (
             <div key={entry.key} className="rounded-lg border bg-background p-4">
-              <RuleItem entry={entry} curriculumData={curriculumData} />
+              <RuleItem entry={entry} curriculumData={curriculumData} palette={palette} />
             </div>
           ))}
         </div>
@@ -375,7 +456,7 @@ export function GapAnalysisList({ breakdown, curriculumData }: GapAnalysisListPr
   }
 
   return (
-    <ul role="list" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <ul role="list" className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {groups.map((group) => (
         <CategoryCard key={group.category} group={group} curriculumData={curriculumData} />
       ))}
