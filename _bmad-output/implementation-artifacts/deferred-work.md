@@ -1,5 +1,13 @@
 # Deferred Work
 
+## Deferred from: story 6-1-landing-completa-hero-como-funciona-preview (2026-04-19)
+
+- **Contagem "11 instituições" hardcoded na landing** — Seção "Como funciona" e microcopy do hero mencionam "11 instituições" como valor fixo. SSG não tem acesso ao DB em build-time para contagem dinâmica. Revisitar quando houver API pública de contagem ou quando o número mudar.
+
+## Deferred from: code review of story 6-1-landing-completa-hero-como-funciona-preview (2026-04-19)
+
+- **AuthProvider acoplado ao SSG build** — `supabase.ts` faz throw em module-scope se `VITE_SUPABASE_URL` ou `VITE_SUPABASE_ANON_KEY` estão ausentes. O `AuthProvider` importa `supabase` e envolve a landing page. Pré-existente, não introduzido pela Story 6.1. Revisitar quando o SSG for desacoplado do AuthProvider.
+
 ## Resolved by Story 1.11 — CI/CD completo (2026-04-15)
 
 Os itens abaixo, previamente deferidos de Stories 1.1 / 1.4 / 1.5 / 1.6 / 1.7 / 1.8, foram fechados na Story 1.11 e **removidos** das seções correspondentes abaixo:

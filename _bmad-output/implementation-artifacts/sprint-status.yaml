@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-14
-last_updated: 2026-04-19 (Story 2.4 done — code review patches applied, ScoreHero dead code removido)
+last_updated: 2026-04-19 (Story 6.1 done — code review passed, 3 decisions accepted as-is)
 project: curriculo-medway
 project_key: NOKEY
 tracking_system: file-system
@@ -85,7 +85,7 @@ development_status:
   epic-5-retrospective: optional
 
   # Epic 6 — Consolidado em 2026-04-16 (6 → 2 stories)
-  epic-6: backlog
-  6-1-landing-completa-hero-como-funciona-preview: backlog
+  epic-6: in-progress
+  6-1-landing-completa-hero-como-funciona-preview: done
   6-2-social-proof-faq-footer: backlog
   epic-6-retrospective: optional

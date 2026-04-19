@@ -33,4 +33,13 @@ describe.skipIf(shouldSkipSSG)("SSG output", () => {
   it("contém og:image", () => {
     expect(html).toMatch(/property="og:image"/);
   });
+  it("contém seção como-funciona", () => {
+    expect(html).toMatch(/id="como-funciona"/);
+  });
+  it("contém seção preview", () => {
+    expect(html).toMatch(/id="preview"/);
+  });
+  it("contém microcopy persuasiva", () => {
+    expect(html).toMatch(/Em 10 minutos/);
+  });
 });
