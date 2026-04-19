@@ -442,6 +442,7 @@ export type Database = {
       }
       is_admin: { Args: { uid: string }; Returns: boolean }
       refresh_benchmarks: { Args: never; Returns: undefined }
+      safe_numeric: { Args: { val: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never
