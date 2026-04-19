@@ -350,10 +350,12 @@ function CategoryCard({
           )}
         </div>
 
-        {/* Regras individuais */}
-        <div className="divide-y px-5">
+        {/* Regras individuais — cada uma como bloco distinto */}
+        <div className="space-y-3 p-4">
           {group.entries.map((entry) => (
-            <RuleItem key={entry.key} entry={entry} curriculumData={curriculumData} />
+            <div key={entry.key} className="rounded-lg border bg-background p-4">
+              <RuleItem entry={entry} curriculumData={curriculumData} />
+            </div>
           ))}
         </div>
       </Card>
@@ -373,7 +375,7 @@ export function GapAnalysisList({ breakdown, curriculumData }: GapAnalysisListPr
   }
 
   return (
-    <ul role="list" className="space-y-3">
+    <ul role="list" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {groups.map((group) => (
         <CategoryCard key={group.category} group={group} curriculumData={curriculumData} />
       ))}
