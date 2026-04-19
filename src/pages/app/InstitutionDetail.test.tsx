@@ -116,15 +116,13 @@ describe("InstitutionDetail", () => {
     expect(screen.getByText("SP")).toBeInTheDocument();
 
     // Edital link
-    const editalLink = screen.getByText("Ver edital original");
+    const editalLink = screen.getByText("Edital");
     expect(editalLink.closest("a")).toHaveAttribute("target", "_blank");
     expect(editalLink.closest("a")).toHaveAttribute("rel", "noopener noreferrer");
 
-    // ScoreHero — nota 6,8 (68/100)
+    // Nota inline — 6,8 (68/100)
     expect(screen.getByText("6,8")).toBeInTheDocument();
-    expect(screen.getByText("68 / 100 pontos")).toBeInTheDocument();
-    // nota 6.8 → "Bom caminho"
-    expect(screen.getByText("Bom caminho — veja onde pode crescer")).toBeInTheDocument();
+    expect(screen.getByText("68 / 100 pts")).toBeInTheDocument();
 
     // GapAnalysis — categorias agrupadas
     expect(screen.getAllByText("Publicações").length).toBeGreaterThanOrEqual(1);
@@ -182,7 +180,7 @@ describe("InstitutionDetail", () => {
 
     renderWithRouter();
 
-    const link = screen.getByText("Ver edital original").closest("a");
+    const link = screen.getByText("Edital").closest("a");
     expect(link).toHaveAttribute("href", "https://unicamp.br/edital.pdf");
     expect(link).toHaveAttribute("target", "_blank");
   });
@@ -198,7 +196,7 @@ describe("InstitutionDetail", () => {
 
     renderWithRouter();
 
-    expect(screen.queryByText("Ver edital original")).not.toBeInTheDocument();
+    expect(screen.queryByText("Edital")).not.toBeInTheDocument();
   });
 
   it("renderiza acessibilidade: sr-only 'abre em nova aba'", () => {

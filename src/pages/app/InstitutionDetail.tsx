@@ -8,8 +8,8 @@ import {
   useEditalUrl,
   scoringKeys,
 } from "@/lib/queries/scoring";
+import { formatGrade } from "@/lib/schemas/scoring";
 import { useCurriculum } from "@/lib/queries/curriculum";
-import { ScoreHero } from "@/components/features/scoring/ScoreHero";
 import { GapAnalysisList } from "@/components/features/scoring/GapAnalysisList";
 import { DisclaimerBanner } from "@/components/features/scoring/DisclaimerBanner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -116,45 +116,39 @@ const InstitutionDetail = () => {
       {/* Data state */}
       {!isLoading && !isError && institution && (
         <>
-          {/* Header */}
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold">{displayName}</h1>
-              {institution.state && (
-                <span className="text-sm text-muted-foreground">
-                  {institution.state}
+          {/* Header compacto: nome + nota + pontos + edital em uma seção */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <h1 className="text-2xl font-bold">{displayName}</h1>
+            {institution.state && (
+              <span className="text-sm text-muted-foreground">{institution.state}</span>
+            )}
+            {score && (
+              <>
+                <span className="text-3xl font-bold tabular-nums">
+                  {formatGrade(score.score, score.max_score)}
                 </span>
-              )}
-            </div>
+                <span className="text-sm text-muted-foreground">
+                  {score.score} / {score.max_score} pts
+                </span>
+              </>
+            )}
             {editalUrl && (
               <a
                 href={editalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-[44px] items-center gap-1 text-sm text-accent hover:underline"
+                className="inline-flex items-center gap-1 text-sm text-accent hover:underline"
               >
-                <ExternalLink className="h-4 w-4" />
-                Ver edital original
+                <ExternalLink className="h-3.5 w-3.5" />
+                Edital
                 <span className="sr-only">(abre em nova aba)</span>
               </a>
             )}
           </div>
 
-          {/* ScoreHero */}
-          {score && (
-            <ScoreHero
-              score={score.score}
-              maxScore={score.max_score}
-              institutionName={displayName}
-            />
-          )}
-
           {/* GapAnalysisList */}
           {score && (
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold">Detalhamento por categoria</h2>
-              <GapAnalysisList breakdown={score.breakdown} curriculumData={curriculumData} />
-            </div>
+            <GapAnalysisList breakdown={score.breakdown} curriculumData={curriculumData} />
           )}
 
           {/* DisclaimerBanner */}
