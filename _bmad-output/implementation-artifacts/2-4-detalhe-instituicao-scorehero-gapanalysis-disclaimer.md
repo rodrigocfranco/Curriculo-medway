@@ -1,6 +1,6 @@
 # Story 2.4: Detalhe da instituição — ScoreHero + GapAnalysis + DisclaimerBanner
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -299,10 +299,20 @@ Claude Opus 4.6 (1M context)
 
 ### File List
 
-- `src/components/features/scoring/ScoreHero.tsx` [NOVO]
-- `src/components/features/scoring/ScoreHero.test.tsx` [NOVO]
+- `src/components/features/scoring/ScoreHero.tsx` [REMOVIDO — dead code, substituído por badge inline]
+- `src/components/features/scoring/ScoreHero.test.tsx` [REMOVIDO — dead code]
 - `src/components/features/scoring/GapAnalysisList.tsx` [NOVO]
 - `src/components/features/scoring/GapAnalysisList.test.tsx` [NOVO]
 - `src/pages/app/InstitutionDetail.tsx` [REESCRITO]
 - `src/pages/app/InstitutionDetail.test.tsx` [NOVO]
 - `src/lib/queries/scoring.ts` [MODIFICADO — useInstitutionScore + useEditalUrl]
+
+### Review Findings
+
+- [x] [Review][Decision] **Desvios deliberados do spec + ScoreHero dead code** — Aceito como evolução de design. ScoreHero dead code removido (ScoreHero.tsx + ScoreHero.test.tsx deletados).
+- [x] [Review][Patch] **Label inconsistente "pts" vs "pontos"** — Resolvido pela remoção do ScoreHero dead code. Apenas "pts" permanece (InstitutionDetail header badge).
+- [x] [Review][Patch] **`formatCurriculumValue` arrays sempre exibem "artigo(s)"** — Corrigido para "N item/itens" genérico. [GapAnalysisList.tsx:145]
+- [x] [Review][Defer] **`breakdown` sem null guard defensivo** [GapAnalysisList.tsx:330] — `Object.entries(breakdown)` crasharia se breakdown fosse null. Improvável (RPC sempre popula), mas defensivamente frágil. — deferred, data integrity guard
+- [x] [Review][Defer] **`handleRetry` invalidação parcial quando userId é null** [InstitutionDetail.tsx:54-63] — scores não invalidados se userId null no momento do click. — deferred, edge case session
+- [x] [Review][Defer] **Signed URL TTL vs staleTime assimétrico** [scoring.ts:249-251] — staleTime 30min < URL TTL 1h, re-fetch desnecessário. Inverso seria perigoso. — deferred, otimização
+- [x] [Review][Defer] **`parseRuleItems` renderização mista** [GapAnalysisList.tsx:121-131] — Descrições com mix de itens com/sem pontuação resultam em lista visualmente assimétrica. — deferred, depende do formato das descrições

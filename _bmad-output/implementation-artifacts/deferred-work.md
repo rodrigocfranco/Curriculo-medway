@@ -242,6 +242,13 @@ Os itens abaixo, previamente deferidos de Stories 1.1 / 1.4 / 1.5 / 1.6 / 1.7 / 
 - **W1 — Concurrent revert sem idempotência** — Dois admins revertendo a mesma entrada simultaneamente: UPDATE reverts geram 2 audit entries redundantes; DELETE reverts colidem na PK. Baixa probabilidade no MVP (equipe admin pequena, <500 registros).
 - **W2 — `useAuditLog` carrega tabela inteira sem server-side limit** — Query faz `select(*)` sem `.limit()` ou `.range()`. Volume <500 no MVP é aceitável; implementar paginação server-side quando volume crescer.
 
+## Deferred from: code review of story 2-4-detalhe-instituicao-scorehero-gapanalysis-disclaimer (2026-04-19)
+
+- **W1 — `breakdown` sem null guard defensivo** — `Object.entries(breakdown)` em `GapAnalysisList.tsx` crasharia se breakdown viesse null do JSONB. Improvável (RPC `calculate_scores` sempre popula), mas defensivamente frágil. [GapAnalysisList.tsx:330]
+- **W2 — `handleRetry` invalidação parcial quando userId é null** — Em `InstitutionDetail.tsx`, scores não são invalidados se userId for null no momento do click (ex: sessão expirou entre render e click). Institutions sempre invalidados. [InstitutionDetail.tsx:54-63]
+- **W3 — Signed URL TTL vs staleTime assimétrico** — `useEditalUrl` cria signed URL com TTL 1h mas `staleTime` de 30min. React Query re-fetcha antes de expirar (seguro), mas gera chamada desnecessária. Inverso seria perigoso. [scoring.ts:249-251]
+- **W4 — `parseRuleItems` renderização mista estruturada/texto** — Descrições com mix de itens com/sem pontuação `(Xpts)` resultam em lista com layout assimétrico no "Como pontuar". Depende de padronização das descrições nas scoring_rules. [GapAnalysisList.tsx:121-131]
+
 ## Deferred from: code review of story-2.3 (2026-04-17)
 
 - **W1 — InstitutionDetail sem loading/404:** Placeholder da Story 2.4, sem skeleton/loading state e sem tratamento de ID inválido. Será implementado completo na Story 2.4 (ScoreHero + GapAnalysis).

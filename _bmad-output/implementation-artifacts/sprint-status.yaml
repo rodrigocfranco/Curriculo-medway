@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-14
-last_updated: 2026-04-18 (Story 3.3 done — code review patches applied)
+last_updated: 2026-04-19 (Story 2.4 done — code review patches applied, ScoreHero dead code removido)
 project: curriculo-medway
 project_key: NOKEY
 tracking_system: file-system
@@ -62,7 +62,7 @@ development_status:
   2-1-formulario-curriculo-completo-autosave: done
   2-2-motor-calculo-db-function-trigger-queries: done
   2-3-dashboard-scorecard-narrativebanner-specialtyselector: done
-  2-4-detalhe-instituicao-scorehero-gapanalysis-disclaimer: review
+  2-4-detalhe-instituicao-scorehero-gapanalysis-disclaimer: done
   epic-2-retrospective: optional
 
   # Epic 3 — Consolidado em 2026-04-16 (6 → 3 stories)

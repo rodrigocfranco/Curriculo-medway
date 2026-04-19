@@ -141,8 +141,7 @@ function formatCurriculumValue(value: unknown): string {
   }
   if (Array.isArray(value)) {
     if (value.length === 0) return "Nenhum";
-    // Publicações array
-    return `${value.length} artigo${value.length > 1 ? "s" : ""}`;
+    return `${value.length} item${value.length > 1 ? "ns" : ""}`;
   }
   return String(value);
 }
