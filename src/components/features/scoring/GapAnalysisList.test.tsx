@@ -53,22 +53,27 @@ describe("GapAnalysisList", () => {
     expect(screen.getByText("Nenhuma categoria de pontuação disponível.")).toBeInTheDocument();
   });
 
-  it("mostra regras colapsadas por padrão com botão Detalhes", () => {
+  it("mostra regras colapsadas por padrão", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    // Todas as regras começam colapsadas
-    const detailButtons = screen.getAllByText("Detalhes");
-    expect(detailButtons.length).toBeGreaterThan(0);
+    // Labels das regras visíveis
+    expect(screen.getByText("Publicações científicas")).toBeInTheDocument();
+    expect(screen.getByText("Iniciação Científica")).toBeInTheDocument();
+    expect(screen.getByText("Monitoria acadêmica")).toBeInTheDocument();
+
+    // Chevrons de expandir visíveis
+    const chevrons = document.querySelectorAll("[data-state]");
+    expect(chevrons.length).toBeGreaterThan(0);
   });
 
-  it("expande regra ao clicar Detalhes e mostra itens parseados", () => {
+  it("expande regra ao clicar no header", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    const detailButtons = screen.getAllByText("Detalhes");
-    fireEvent.click(detailButtons[0]);
+    // Clicar no label da primeira regra para expandir
+    fireEvent.click(screen.getByText("Publicações científicas"));
 
-    // Após expandir, mostra "Ocultar"
-    expect(screen.getAllByText("Ocultar").length).toBeGreaterThan(0);
+    // Após expandir, conteúdo "Como pontuar" aparece
+    expect(screen.getByText("Como pontuar")).toBeInTheDocument();
   });
 
   it("agrupa em 'Outros' quando category não está presente", () => {

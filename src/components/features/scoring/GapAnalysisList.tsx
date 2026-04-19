@@ -321,42 +321,34 @@ function RuleItem({
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      {/* Header da regra */}
-      <div className="py-3">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium">{entry.label}</span>
-          <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${
-            entry.score > 0
-              ? `${palette.badge} ${palette.badgeText}`
-              : "bg-muted text-muted-foreground"
-          }`}>
-            {entry.score}/{entry.max}
-          </span>
+      {/* Header da regra — compacto, sem barra */}
+      <CollapsibleTrigger className="flex w-full items-center gap-2 text-left">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-medium leading-snug">{entry.label}</span>
+            <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold tabular-nums ${
+              entry.score > 0
+                ? `${palette.badge} ${palette.badgeText}`
+                : "bg-muted text-muted-foreground"
+            }`}>
+              {entry.score}/{entry.max}
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs">
+            {hasGap ? (
+              <span className={`font-medium ${palette.accent}`}>+{entry.delta} possíveis</span>
+            ) : (
+              <span className="font-medium text-emerald-600">✓ Máximo atingido</span>
+            )}
+          </p>
         </div>
-        <Progress
-          value={entry.percentage}
-          className={`mt-2 h-1.5 bg-primary/10 ${palette.progress}`}
-          aria-hidden
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
         />
-        <div className="mt-1.5 flex items-center justify-between gap-2">
-          {hasGap ? (
-            <span className={`text-xs font-medium ${palette.accent}`}>+{entry.delta} possíveis</span>
-          ) : (
-            <span className="text-xs font-medium text-emerald-600">✓ Máximo atingido</span>
-          )}
-          {entry.description && (
-            <CollapsibleTrigger className="inline-flex min-h-[44px] items-center gap-1 rounded-md px-2 text-xs font-medium text-accent hover:bg-accent/10">
-              {open ? "Ocultar" : "Detalhes"}
-              <ChevronDown
-                className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`}
-              />
-            </CollapsibleTrigger>
-          )}
-        </div>
-      </div>
+      </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className="space-y-2 pb-3">
+        <div className="mt-3 space-y-2">
           {/* Dados do currículo do aluno */}
           {curriculumData && (
             <CurriculumSnapshot fieldKey={entry.key} curriculumData={curriculumData} palette={palette} />
@@ -364,16 +356,16 @@ function RuleItem({
 
           {/* Regras de pontuação */}
           {hasStructuredItems ? (
-            <div className="rounded-lg bg-muted/30 px-3 py-2.5">
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
+            <div className="rounded-lg bg-muted/30 px-3 py-2">
+              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
                 Como pontuar
               </p>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 {ruleItems.map((item, i) => (
                   <div key={i} className="flex items-center justify-between gap-2 text-xs">
                     <span className="text-muted-foreground">{item.text}</span>
                     {item.pts && (
-                      <span className="shrink-0 font-semibold tabular-nums text-accent">
+                      <span className={`shrink-0 font-semibold tabular-nums ${palette.accent}`}>
                         {item.pts} pts
                       </span>
                     )}
@@ -382,7 +374,7 @@ function RuleItem({
               </div>
             </div>
           ) : (
-            <div className="rounded-lg bg-muted/30 px-3 py-2.5">
+            <div className="rounded-lg bg-muted/30 px-3 py-2">
               <p className="text-xs text-muted-foreground">{entry.description}</p>
             </div>
           )}
@@ -432,9 +424,9 @@ function CategoryCard({
         </div>
 
         {/* Regras individuais — cada uma como bloco distinto */}
-        <div className="space-y-3 p-4">
+        <div className="space-y-2 p-3">
           {group.entries.map((entry) => (
-            <div key={entry.key} className="rounded-lg border bg-background p-4">
+            <div key={entry.key} className="rounded-lg border bg-background px-3 py-2">
               <RuleItem entry={entry} curriculumData={curriculumData} palette={palette} />
             </div>
           ))}

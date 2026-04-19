@@ -21,23 +21,28 @@ export function ScoreHero({ score, maxScore, institutionName }: ScoreHeroProps) 
 
   return (
     <div
-      className="space-y-3"
+      className="flex items-center gap-6 rounded-xl bg-muted/30 px-6 py-4"
       aria-label={`Nota ${gradeFormatted} em ${institutionName}, ${score} de ${maxScore} pontos`}
       role="region"
     >
-      <div>
-        <p className="text-[96px] font-bold leading-none tabular-nums">
-          {gradeFormatted}
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {score} / {maxScore} pontos
-        </p>
+      {/* Nota grande */}
+      <p className="text-5xl font-bold tabular-nums sm:text-6xl">
+        {gradeFormatted}
+      </p>
+
+      {/* Info + barra */}
+      <div className="min-w-0 flex-1 space-y-2">
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            {score} / {maxScore} pontos
+          </span>
+        </div>
+        <Progress
+          value={percentage}
+          className="h-2 bg-primary/10 [&>div]:bg-accent"
+        />
+        <p className="text-xs text-muted-foreground">{microcopy}</p>
       </div>
-      <Progress
-        value={percentage}
-        className="h-3 bg-primary/20 [&>div]:bg-accent"
-      />
-      <p className="text-sm text-muted-foreground">{microcopy}</p>
     </div>
   );
 }
