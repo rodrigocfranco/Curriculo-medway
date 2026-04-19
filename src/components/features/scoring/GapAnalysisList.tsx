@@ -122,7 +122,7 @@ function parseRuleItems(description: string): { text: string; pts: string }[] {
   if (!description) return [];
   return description.split("|").map((part) => {
     const trimmed = part.trim();
-    const match = trimmed.match(/^(.+?)\s*\((\d+[\.,]?\d*)\s*pts?\)$/i);
+    const match = trimmed.match(/^(.+?)\s*\((\d+[.,]?\d*)\s*pts?\)$/i);
     if (match) {
       return { text: match[1].trim(), pts: match[2] };
     }

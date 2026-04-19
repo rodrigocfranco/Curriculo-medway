@@ -450,7 +450,7 @@ INSERT INTO public.medical_schools (name, abbreviation, state) VALUES
   ('Faculdade de Medicina de São José do Rio Preto', 'FAMERP', 'SP'),
   ('Faculdade de Medicina do ABC', 'FMABC', 'SP'),
   ('Faculdade de Medicina FACERES - São José do Rio Preto', 'FACERES', 'SP'),
-  ('Faculdade Israelita de Ciências da Saúde Albert Einstein', 'FICSAE', 'SP'),
+  ('Faculdade Israelita de Ciências da Saúde Albert Einstein', 'Einstein', 'SP'),
   ('Faculdade Municipal Prof. Franco Montoro - Mogi Guaçu', 'FMPFM', 'SP'),
   ('Faculdade Santa Marcelina', 'FASM', 'SP'),
   ('Faculdade São Leopoldo Mandic - Araras', 'FSLM-Araras', 'SP'),
