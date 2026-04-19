@@ -116,21 +116,23 @@ const InstitutionDetail = () => {
       {/* Data state */}
       {!isLoading && !isError && institution && (
         <>
-          {/* Header compacto: nome + nota + pontos + edital em uma seção */}
+          {/* Header compacto: nome + badge nota + pontos + edital */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <h1 className="text-2xl font-bold">{displayName}</h1>
             {institution.state && (
-              <span className="text-sm text-muted-foreground">{institution.state}</span>
+              <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+                {institution.state}
+              </span>
             )}
             {score && (
-              <>
-                <span className="text-3xl font-bold tabular-nums">
+              <div className="flex items-center gap-3 rounded-full bg-accent/10 py-1.5 pl-4 pr-5">
+                <span className="text-2xl font-bold tabular-nums text-accent">
                   {formatGrade(score.score, score.max_score)}
                 </span>
                 <span className="text-sm text-muted-foreground">
                   {score.score} / {score.max_score} pts
                 </span>
-              </>
+              </div>
             )}
             {editalUrl && (
               <a
