@@ -26,32 +26,47 @@ function formatDate(iso: string) {
 }
 
 const CURRICULUM_CATEGORIES: Record<string, string> = {
+  // Publicações
   publicacoes: "Publicações",
   capitulos_livro: "Publicações",
+  // Acadêmico
   ic_com_bolsa: "Acadêmico",
   ic_sem_bolsa: "Acadêmico",
   ic_horas_totais: "Acadêmico",
   monitoria_semestres: "Acadêmico",
   extensao_semestres: "Acadêmico",
+  premios_academicos: "Acadêmico",
+  cursinhos_preparatorios: "Acadêmico",
+  // Prática/Social
   voluntariado_horas: "Prática/Social",
   estagio_extracurricular_horas: "Prática/Social",
   trabalho_sus_meses: "Prática/Social",
   projeto_rondon: "Prática/Social",
   internato_hospital_ensino: "Prática/Social",
+  // Liderança/Eventos
   diretoria_ligas: "Liderança/Eventos",
   membro_liga_anos: "Liderança/Eventos",
   representante_turma_anos: "Liderança/Eventos",
   cursos_suporte: "Liderança/Eventos",
+  cursos_temas_medicos: "Liderança/Eventos",
   apresentacao_congresso: "Liderança/Eventos",
   ouvinte_congresso: "Liderança/Eventos",
   organizador_evento: "Liderança/Eventos",
   teste_progresso: "Liderança/Eventos",
+  colegiado_institucional_semestres: "Liderança/Eventos",
+  centro_academico_semestres: "Liderança/Eventos",
+  atletica_semestres: "Liderança/Eventos",
+  equipe_esportiva_semestres: "Liderança/Eventos",
+  // Perfil
   ingles_fluente: "Perfil",
   media_geral: "Perfil",
-  conceito_historico: "Perfil",
   ranking_ruf_top35: "Perfil",
   mestrado_status: "Perfil",
   doutorado_status: "Perfil",
+  nivel_assistencial: "Perfil",
+  residencia_medica_concluida: "Perfil",
+  outro_curso_universitario: "Perfil",
+  prova_proficiencia_medicina: "Perfil",
 };
 
 function formatFieldLabel(key: string): string {
@@ -71,6 +86,8 @@ function isFieldFilled(value: unknown): boolean {
   if (value === null || value === undefined || value === "") return false;
   if (typeof value === "number") return value > 0;
   if (typeof value === "boolean") return value;
+  if (typeof value === "string") return value !== "Não tenho" && value !== "Não";
+  if (Array.isArray(value)) return value.length > 0;
   return true;
 }
 
