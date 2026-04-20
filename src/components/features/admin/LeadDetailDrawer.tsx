@@ -49,7 +49,7 @@ const CURRICULUM_CATEGORIES: Record<string, string> = {
   representante_turma_anos: "Liderança/Eventos",
   cursos_suporte: "Liderança/Eventos",
   cursos_temas_medicos: "Liderança/Eventos",
-  apresentacao_congresso: "Liderança/Eventos",
+  apresentacoes: "Liderança/Eventos",
   ouvinte_congresso: "Liderança/Eventos",
   organizador_evento: "Liderança/Eventos",
   teste_progresso: "Liderança/Eventos",

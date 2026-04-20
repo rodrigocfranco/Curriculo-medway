@@ -74,7 +74,13 @@ INSERT INTO user_curriculum (user_id, data) VALUES
   "representante_turma_anos": 2,
   "cursos_suporte": 3,
   "cursos_temas_medicos": 4,
-  "apresentacao_congresso": 5,
+  "apresentacoes": [
+    {"tipo": "Apresentação oral", "nivel": "Congresso de Sociedade Médica (nacional/internacional)"},
+    {"tipo": "Poster", "nivel": "Congresso de Sociedade Médica (nacional/internacional)"},
+    {"tipo": "Apresentação oral", "nivel": "Congresso acadêmico local/regional"},
+    {"tipo": "Poster", "nivel": "Congresso acadêmico local/regional"},
+    {"tipo": "Apresentação oral", "nivel": "Congresso de Sociedade Médica (nacional/internacional)"}
+  ],
   "ouvinte_congresso": 8,
   "organizador_evento": 2,
   "teste_progresso": 3,
@@ -113,7 +119,10 @@ INSERT INTO user_curriculum (user_id, data) VALUES
   "diretoria_ligas": 0,
   "membro_liga_anos": 2,
   "cursos_suporte": 1,
-  "apresentacao_congresso": 2,
+  "apresentacoes": [
+    {"tipo": "Apresentação oral", "nivel": "Congresso de Sociedade Médica (nacional/internacional)"},
+    {"tipo": "Poster", "nivel": "Congresso acadêmico local/regional"}
+  ],
   "ouvinte_congresso": 4,
   "ingles_fluente": "Intermediário",
   "media_geral": 7.5,

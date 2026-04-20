@@ -22,8 +22,9 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
-import type { CurriculumData, Article } from "@/lib/schemas/curriculum";
+import type { CurriculumData, Article, Apresentacao } from "@/lib/schemas/curriculum";
 import { ArticleListField } from "./ArticleListField";
+import { EventListField } from "./EventListField";
 
 interface CurriculoFormSectionProps {
   category: string;
@@ -47,7 +48,7 @@ const PLACEHOLDERS: Record<string, string> = {
   membro_liga_anos: "Ex: 2 (anos)",
   representante_turma_anos: "Ex: 1 (anos)",
   cursos_suporte: "Ex: 2 (ACLS/ATLS/PALS)",
-  apresentacao_congresso: "Ex: 3",
+  apresentacoes: "Adicione seus trabalhos apresentados",
   ouvinte_congresso: "Ex: 5",
   organizador_evento: "Ex: 1",
   teste_progresso: "Ex: 4",
@@ -69,7 +70,7 @@ function isFieldFilled(value: unknown, fieldType: string): boolean {
   if (fieldType === "number") return typeof value === "number" && value > 0;
   if (fieldType === "select" || fieldType === "text")
     return typeof value === "string" && value !== "" && value !== "Não tenho";
-  if (fieldType === "article_list")
+  if (fieldType === "article_list" || fieldType === "event_list")
     return Array.isArray(value) && value.length > 0;
   return false;
 }
@@ -167,6 +168,26 @@ export function CurriculoFormSection({
                           value={formField.value as Article[]}
                           onChange={(articles) => {
                             formField.onChange(articles);
+                          }}
+                          onBlur={onBlur}
+                          options={opts}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }
+
+                if (field.field_type === "event_list") {
+                  const opts = (field.options ?? {}) as { tipo: string[]; nivel: string[] };
+                  return (
+                    <FormItem>
+                      <FormLabel>{field.label}</FormLabel>
+                      <FormControl>
+                        <EventListField
+                          value={formField.value as Apresentacao[]}
+                          onChange={(items) => {
+                            formField.onChange(items);
                           }}
                           onBlur={onBlur}
                           options={opts}

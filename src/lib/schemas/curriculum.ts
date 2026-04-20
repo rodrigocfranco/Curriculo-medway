@@ -49,13 +49,23 @@ const praticaSocialFields = {
 };
 
 // Liderança/Eventos (12)
+const apresentacaoSchema = z.object({
+  tipo: z.string(),
+  nivel: z.string().default(""),
+});
+
+export type Apresentacao = z.infer<typeof apresentacaoSchema>;
+
 const liderancaEventosFields = {
   diretoria_ligas: z.coerce.number().min(0).default(0),
   membro_liga_anos: z.coerce.number().min(0).default(0),
   representante_turma_anos: z.coerce.number().min(0).default(0),
   cursos_suporte: z.coerce.number().min(0).default(0),
   cursos_temas_medicos: z.coerce.number().min(0).default(0),
-  apresentacao_congresso: z.coerce.number().min(0).default(0),
+  apresentacoes: z.preprocess(
+    (val) => (Array.isArray(val) ? val : []),
+    z.array(apresentacaoSchema).default([]),
+  ),
   ouvinte_congresso: z.coerce.number().min(0).default(0),
   organizador_evento: z.coerce.number().min(0).default(0),
   teste_progresso: z.coerce.number().min(0).default(0),
@@ -70,6 +80,7 @@ const perfilFields = {
   ingles_fluente: z.string().default("Não tenho"),
   media_geral: z.coerce.number().min(0).default(0),
   ranking_ruf_top35: z.string().default("Demais faculdades"),
+  faculdade_pos_grad_capes: z.string().default("Não possui"),
   mestrado_status: z.string().default("Não tenho"),
   doutorado_status: z.string().default("Não tenho"),
   nivel_assistencial: z.string().default(""),

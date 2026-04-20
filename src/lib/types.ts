@@ -25,7 +25,7 @@ export interface UserProfile {
   representante_turma_anos: number | null;
   cursos_suporte: number | null;
   cursos_temas_medicos: number | null;
-  apresentacao_congresso: number | null;
+  apresentacoes: Array<{ tipo: string; nivel: string }>;
   ouvinte_congresso: number | null;
   organizador_evento: number | null;
   teste_progresso: number | null;
@@ -38,6 +38,7 @@ export interface UserProfile {
   ingles_fluente: string;
   media_geral: number | null;
   ranking_ruf_top35: string;
+  faculdade_pos_grad_capes: string;
   mestrado_status: string;
   doutorado_status: string;
   nivel_assistencial: string;
@@ -80,7 +81,7 @@ export const defaultProfile: UserProfile = {
   representante_turma_anos: null,
   cursos_suporte: null,
   cursos_temas_medicos: null,
-  apresentacao_congresso: null,
+  apresentacoes: [],
   ouvinte_congresso: null,
   organizador_evento: null,
   teste_progresso: null,
@@ -91,6 +92,7 @@ export const defaultProfile: UserProfile = {
   ingles_fluente: "Não tenho",
   media_geral: null,
   ranking_ruf_top35: "Demais faculdades",
+  faculdade_pos_grad_capes: "Não possui",
   mestrado_status: "Não tenho",
   doutorado_status: "Não tenho",
   nivel_assistencial: "",
