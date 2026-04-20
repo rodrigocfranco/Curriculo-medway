@@ -71,7 +71,6 @@ describe("CurriculumSummary", () => {
       </MemoryRouter>,
     );
     expect(screen.getByText("Pesquisa e Publicações")).toBeInTheDocument();
-    expect(screen.getByText("Editar")).toBeInTheDocument();
   });
 
   it("exibe '—' para campos numéricos vazios (zero)", () => {

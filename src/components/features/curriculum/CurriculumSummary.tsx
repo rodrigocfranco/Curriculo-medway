@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { Pencil } from "lucide-react";
 import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
 import type { CurriculumData } from "@/lib/schemas/curriculum";
 
@@ -7,16 +5,6 @@ interface CurriculumSummaryProps {
   fieldsByCategory: Record<string, CurriculumFieldRow[]>;
   data: CurriculumData;
   categoryOrder: string[];
-}
-
-function categoryToValue(category: string): string {
-  return category
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
 }
 
 function formatValue(
@@ -49,16 +37,7 @@ export function CurriculumSummary({
         .filter((cat) => fieldsByCategory[cat])
         .map((category) => (
           <div key={category} className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold">{category}</h3>
-              <Link
-                to={`/app/curriculo?seção=${categoryToValue(category)}`}
-                className="flex items-center gap-1 text-sm text-teal-600 hover:text-teal-700"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-                Editar
-              </Link>
-            </div>
+            <h3 className="text-base font-semibold">{category}</h3>
             <div className="divide-y rounded-md border">
               {fieldsByCategory[category].map((field) => {
                 const value = data[field.field_key as keyof CurriculumData];
