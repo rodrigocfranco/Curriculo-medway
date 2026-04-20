@@ -1,42 +1,42 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { CurriculumSummary } from "./CurriculumSummary";
 import { curriculumDataSchema } from "@/lib/schemas/curriculum";
 import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
 
 const mockFields: Record<string, CurriculumFieldRow[]> = {
-  Publicações: [
+  "Pesquisa e Publicações": [
     {
       id: "1",
       field_key: "artigo_1_fi",
       label: "Artigo 1º autor (FI)",
       field_type: "number",
-      category: "Publicações",
+      category: "Pesquisa e Publicações",
       display_order: 10,
       options: null,
       created_at: "",
     },
   ],
-  "Prática/Social": [
+  "Representação Estudantil e Voluntariado": [
     {
       id: "2",
       field_key: "projeto_rondon",
       label: "Projeto Rondon",
       field_type: "boolean",
-      category: "Prática/Social",
+      category: "Representação Estudantil e Voluntariado",
       display_order: 40,
       options: null,
       created_at: "",
     },
   ],
-  Perfil: [
+  "Qualificações": [
     {
       id: "3",
       field_key: "conceito_historico",
       label: "Conceito histórico",
       field_type: "select",
-      category: "Perfil",
+      category: "Qualificações",
       display_order: 30,
       options: ["A", "B", "C"],
       created_at: "",
@@ -52,7 +52,7 @@ describe("CurriculumSummary", () => {
         <CurriculumSummary
           fieldsByCategory={mockFields}
           data={data}
-          categoryOrder={["Publicações", "Prática/Social", "Perfil"]}
+          categoryOrder={["Pesquisa e Publicações", "Representação Estudantil e Voluntariado", "Qualificações"]}
         />
       </MemoryRouter>,
     );
@@ -66,11 +66,11 @@ describe("CurriculumSummary", () => {
         <CurriculumSummary
           fieldsByCategory={mockFields}
           data={data}
-          categoryOrder={["Publicações"]}
+          categoryOrder={["Pesquisa e Publicações"]}
         />
       </MemoryRouter>,
     );
-    expect(screen.getByText("Publicações")).toBeInTheDocument();
+    expect(screen.getByText("Pesquisa e Publicações")).toBeInTheDocument();
     expect(screen.getByText("Editar")).toBeInTheDocument();
   });
 
@@ -81,7 +81,7 @@ describe("CurriculumSummary", () => {
         <CurriculumSummary
           fieldsByCategory={mockFields}
           data={data}
-          categoryOrder={["Publicações"]}
+          categoryOrder={["Pesquisa e Publicações"]}
         />
       </MemoryRouter>,
     );
@@ -95,7 +95,7 @@ describe("CurriculumSummary", () => {
         <CurriculumSummary
           fieldsByCategory={mockFields}
           data={data}
-          categoryOrder={["Publicações"]}
+          categoryOrder={["Pesquisa e Publicações"]}
         />
       </MemoryRouter>,
     );
@@ -109,7 +109,7 @@ describe("CurriculumSummary", () => {
         <CurriculumSummary
           fieldsByCategory={mockFields}
           data={data}
-          categoryOrder={["Prática/Social"]}
+          categoryOrder={["Representação Estudantil e Voluntariado"]}
         />
       </MemoryRouter>,
     );
@@ -123,7 +123,7 @@ describe("CurriculumSummary", () => {
         <CurriculumSummary
           fieldsByCategory={mockFields}
           data={data}
-          categoryOrder={["Prática/Social"]}
+          categoryOrder={["Representação Estudantil e Voluntariado"]}
         />
       </MemoryRouter>,
     );
@@ -137,7 +137,7 @@ describe("CurriculumSummary", () => {
         <CurriculumSummary
           fieldsByCategory={mockFields}
           data={data}
-          categoryOrder={["Perfil"]}
+          categoryOrder={["Qualificações"]}
         />
       </MemoryRouter>,
     );

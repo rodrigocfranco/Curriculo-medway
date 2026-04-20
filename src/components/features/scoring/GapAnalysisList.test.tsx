@@ -4,9 +4,9 @@ import { GapAnalysisList } from "./GapAnalysisList";
 import type { ScoreBreakdown } from "@/lib/schemas/scoring";
 
 const mockBreakdown: ScoreBreakdown = {
-  publicacoes: { score: 10, max: 15, description: "Autor principal indexado (10pts) | Coautor (5pts)", category: "Publicações", label: "Publicações científicas" },
-  ic: { score: 20, max: 20, description: "Bolsa Oficial (20pts) | Voluntária (10pts)", category: "Pesquisa", label: "Iniciação Científica" },
-  monitoria: { score: 2, max: 5, description: "Monitoria acadêmica registrada (5pts)", category: "Pesquisa", label: "Monitoria acadêmica" },
+  publicacoes: { score: 10, max: 15, description: "Autor principal indexado (10pts) | Coautor (5pts)", category: "Pesquisa e Publicações", label: "Publicações científicas" },
+  ic: { score: 20, max: 20, description: "Bolsa Oficial (20pts) | Voluntária (10pts)", category: "Pesquisa e Publicações", label: "Iniciação Científica" },
+  monitoria: { score: 2, max: 5, description: "Monitoria acadêmica registrada (5pts)", category: "Atividades Acadêmicas", label: "Monitoria acadêmica" },
 };
 
 describe("GapAnalysisList", () => {
@@ -15,18 +15,19 @@ describe("GapAnalysisList", () => {
 
     // Verificar que categorias aparecem na ordem certa (maior delta primeiro)
     const headings = screen.getAllByRole("heading", { level: 3 });
-    expect(headings[0]).toHaveTextContent("Publicações");
-    expect(headings[1]).toHaveTextContent("Pesquisa");
+    // Maior delta primeiro: Pesquisa e Publicações (delta 5) > Atividades Acadêmicas (delta 3)
+    expect(headings[0]).toHaveTextContent("Pesquisa e Publicações");
+    expect(headings[1]).toHaveTextContent("Atividades Acadêmicas");
   });
 
   it("exibe totais por categoria", () => {
     render(<GapAnalysisList breakdown={mockBreakdown} />);
 
-    // Publicações: 10/15 (aparece no badge da categoria e do item)
-    expect(screen.getAllByText("10/15").length).toBeGreaterThanOrEqual(1);
+    // Pesquisa e Publicações: pub 10/15 + ic 20/20 = 30/35
+    expect(screen.getAllByText("30/35").length).toBeGreaterThanOrEqual(1);
 
-    // Pesquisa: 22/25
-    expect(screen.getAllByText("22/25").length).toBeGreaterThanOrEqual(1);
+    // Atividades Acadêmicas: monitoria 2/5
+    expect(screen.getAllByText("2/5").length).toBeGreaterThanOrEqual(1);
 
     // "+5 pontos possíveis" aparece no total da categoria
     expect(screen.getAllByText(/possíveis/).length).toBeGreaterThanOrEqual(1);

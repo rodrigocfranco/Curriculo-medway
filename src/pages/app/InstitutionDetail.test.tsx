@@ -54,9 +54,9 @@ const mockScore = {
   score: 68,
   max_score: 100,
   breakdown: {
-    publicacoes: { score: 10, max: 15, description: "Autor principal: 10 pts | Coautor: 5 pts", category: "Publicações", label: "Publicações científicas" },
-    ic: { score: 20, max: 20, description: "Bolsa Oficial: 20 pts", category: "Pesquisa", label: "Iniciação Científica" },
-    monitoria: { score: 2, max: 5, description: "Monitoria registrada", category: "Pesquisa", label: "Monitoria acadêmica" },
+    publicacoes: { score: 10, max: 15, description: "Autor principal: 10 pts | Coautor: 5 pts", category: "Pesquisa e Publicações", label: "Publicações científicas" },
+    ic: { score: 20, max: 20, description: "Bolsa Oficial: 20 pts", category: "Pesquisa e Publicações", label: "Iniciação Científica" },
+    monitoria: { score: 2, max: 5, description: "Monitoria registrada", category: "Atividades Acadêmicas", label: "Monitoria acadêmica" },
   },
   stale: false,
   calculated_at: "2026-01-01T00:00:00Z",
@@ -125,8 +125,8 @@ describe("InstitutionDetail", () => {
     expect(screen.getByText("68 / 100 pts")).toBeInTheDocument();
 
     // GapAnalysis — categorias agrupadas
-    expect(screen.getAllByText("Publicações").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Pesquisa").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Pesquisa e Publicações").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Atividades Acadêmicas").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("10/15").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("✓ Máximo atingido")).toBeInTheDocument();
 

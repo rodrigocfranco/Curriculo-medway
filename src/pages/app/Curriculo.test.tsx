@@ -10,26 +10,24 @@ vi.mock("@/contexts/useAuth", () => ({
 }));
 
 const mockFieldsByCategory = {
-  Publicações: [
+  "Pesquisa e Publicações": [
     {
       id: "1",
       field_key: "artigo_1_fi",
       label: "Artigo 1º autor (FI)",
       field_type: "number",
-      category: "Publicações",
+      category: "Pesquisa e Publicações",
       display_order: 10,
       options: null,
       created_at: "",
     },
-  ],
-  Acadêmico: [
     {
       id: "2",
       field_key: "ic_com_bolsa",
       label: "IC com bolsa (anos)",
       field_type: "number",
-      category: "Acadêmico",
-      display_order: 10,
+      category: "Pesquisa e Publicações",
+      display_order: 20,
       options: null,
       created_at: "",
     },
@@ -103,8 +101,7 @@ describe("Curriculo page", () => {
 
   it("renderiza seções do accordion", () => {
     renderWithProviders();
-    expect(screen.getAllByText("Publicações").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Acadêmico").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Pesquisa e Publicações/).length).toBeGreaterThanOrEqual(1);
   });
 
   it("renderiza CTA 'Ver meus resultados'", () => {

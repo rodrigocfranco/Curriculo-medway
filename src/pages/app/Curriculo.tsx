@@ -23,13 +23,14 @@ import { AutosaveIndicator } from "@/components/features/curriculum/AutosaveIndi
 import { CurriculoFormSection } from "@/components/features/curriculum/CurriculoFormSection";
 import { CurriculumSummary } from "@/components/features/curriculum/CurriculumSummary";
 
-// Category display order (matches seed display_order)
+// Category display order
 const CATEGORY_ORDER = [
-  "Publicações",
-  "Acadêmico",
-  "Prática/Social",
-  "Liderança/Eventos",
-  "Perfil",
+  "Formação",
+  "Pesquisa e Publicações",
+  "Atividades Acadêmicas",
+  "Congressos e Formação Complementar",
+  "Representação Estudantil e Voluntariado",
+  "Qualificações",
 ];
 
 function categoryToValue(category: string): string {

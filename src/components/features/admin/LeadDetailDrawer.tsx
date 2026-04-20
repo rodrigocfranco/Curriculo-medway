@@ -26,47 +26,49 @@ function formatDate(iso: string) {
 }
 
 const CURRICULUM_CATEGORIES: Record<string, string> = {
-  // Publicações
-  publicacoes: "Publicações",
-  capitulos_livro: "Publicações",
-  // Acadêmico
-  ic_com_bolsa: "Acadêmico",
-  ic_sem_bolsa: "Acadêmico",
-  ic_horas_totais: "Acadêmico",
-  monitoria_semestres: "Acadêmico",
-  extensao_semestres: "Acadêmico",
-  premios_academicos: "Acadêmico",
-  cursinhos_preparatorios: "Acadêmico",
-  // Prática/Social
-  voluntariado_horas: "Prática/Social",
-  estagio_extracurricular_horas: "Prática/Social",
-  trabalho_sus_meses: "Prática/Social",
-  projeto_rondon: "Prática/Social",
-  internato_hospital_ensino: "Prática/Social",
-  // Liderança/Eventos
-  diretoria_ligas: "Liderança/Eventos",
-  membro_liga_anos: "Liderança/Eventos",
-  representante_turma_anos: "Liderança/Eventos",
-  cursos_suporte: "Liderança/Eventos",
-  cursos_temas_medicos: "Liderança/Eventos",
-  apresentacoes: "Liderança/Eventos",
-  ouvinte_congresso: "Liderança/Eventos",
-  organizador_evento: "Liderança/Eventos",
-  teste_progresso: "Liderança/Eventos",
-  colegiado_institucional_semestres: "Liderança/Eventos",
-  centro_academico_semestres: "Liderança/Eventos",
-  atletica_semestres: "Liderança/Eventos",
-  equipe_esportiva_semestres: "Liderança/Eventos",
-  // Perfil
-  ingles_fluente: "Perfil",
-  media_geral: "Perfil",
-  ranking_ruf_top35: "Perfil",
-  mestrado_status: "Perfil",
-  doutorado_status: "Perfil",
-  nivel_assistencial: "Perfil",
-  residencia_medica_concluida: "Perfil",
-  outro_curso_universitario: "Perfil",
-  prova_proficiencia_medicina: "Perfil",
+  // Formação
+  ranking_ruf_top35: "Formação",
+  faculdade_pos_grad_capes: "Formação",
+  internato_hospital_ensino: "Formação",
+  nivel_assistencial: "Formação",
+  media_geral: "Formação",
+  // Pesquisa e Publicações
+  publicacoes: "Pesquisa e Publicações",
+  capitulos_livro: "Pesquisa e Publicações",
+  ic_com_bolsa: "Pesquisa e Publicações",
+  ic_sem_bolsa: "Pesquisa e Publicações",
+  ic_horas_totais: "Pesquisa e Publicações",
+  // Atividades Acadêmicas
+  monitoria_semestres: "Atividades Acadêmicas",
+  extensao_semestres: "Atividades Acadêmicas",
+  diretoria_ligas: "Atividades Acadêmicas",
+  membro_liga_anos: "Atividades Acadêmicas",
+  premios_academicos: "Atividades Acadêmicas",
+  cursinhos_preparatorios: "Atividades Acadêmicas",
+  // Congressos e Formação Complementar
+  apresentacoes: "Congressos e Formação Complementar",
+  ouvinte_congresso: "Congressos e Formação Complementar",
+  organizador_evento: "Congressos e Formação Complementar",
+  cursos_temas_medicos: "Congressos e Formação Complementar",
+  cursos_suporte: "Congressos e Formação Complementar",
+  teste_progresso: "Congressos e Formação Complementar",
+  // Representação Estudantil e Voluntariado
+  voluntariado_horas: "Representação Estudantil e Voluntariado",
+  estagio_extracurricular_horas: "Representação Estudantil e Voluntariado",
+  trabalho_sus_meses: "Representação Estudantil e Voluntariado",
+  projeto_rondon: "Representação Estudantil e Voluntariado",
+  representante_turma_anos: "Representação Estudantil e Voluntariado",
+  colegiado_institucional_semestres: "Representação Estudantil e Voluntariado",
+  centro_academico_semestres: "Representação Estudantil e Voluntariado",
+  atletica_semestres: "Representação Estudantil e Voluntariado",
+  equipe_esportiva_semestres: "Representação Estudantil e Voluntariado",
+  // Qualificações
+  ingles_fluente: "Qualificações",
+  mestrado_status: "Qualificações",
+  doutorado_status: "Qualificações",
+  residencia_medica_concluida: "Qualificações",
+  outro_curso_universitario: "Qualificações",
+  prova_proficiencia_medicina: "Qualificações",
 };
 
 function formatFieldLabel(key: string): string {

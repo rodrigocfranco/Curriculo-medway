@@ -1,47 +1,49 @@
 export interface UserProfile {
-  // Publicações
+  // Formação
+  ranking_ruf_top35: string;
+  faculdade_pos_grad_capes: string;
+  internato_hospital_ensino: string;
+  nivel_assistencial: string;
+  media_geral: number | null;
+
+  // Pesquisa e Publicações
   publicacoes: Array<{ posicao: string; veiculo: string; fi: number }>;
   capitulos_livro: number | null;
-
-  // Acadêmico
   ic_com_bolsa: number | null;
   ic_sem_bolsa: number | null;
   ic_horas_totais: number | null;
+
+  // Atividades Acadêmicas
   monitoria_semestres: number | null;
   extensao_semestres: number | null;
+  diretoria_ligas: number | null;
+  membro_liga_anos: number | null;
   premios_academicos: number | null;
   cursinhos_preparatorios: number | null;
 
-  // Prática / Social
+  // Congressos e Formação Complementar
+  apresentacoes: Array<{ tipo: string; nivel: string }>;
+  ouvinte_congresso: number | null;
+  organizador_evento: number | null;
+  cursos_temas_medicos: number | null;
+  cursos_suporte: number | null;
+  teste_progresso: number | null;
+
+  // Representação Estudantil e Voluntariado
   voluntariado_horas: number | null;
   estagio_extracurricular_horas: number | null;
   trabalho_sus_meses: number | null;
   projeto_rondon: boolean;
-  internato_hospital_ensino: string;
-
-  // Liderança / Eventos
-  diretoria_ligas: number | null;
-  membro_liga_anos: number | null;
   representante_turma_anos: number | null;
-  cursos_suporte: number | null;
-  cursos_temas_medicos: number | null;
-  apresentacoes: Array<{ tipo: string; nivel: string }>;
-  ouvinte_congresso: number | null;
-  organizador_evento: number | null;
-  teste_progresso: number | null;
   colegiado_institucional_semestres: number | null;
   centro_academico_semestres: number | null;
   atletica_semestres: number | null;
   equipe_esportiva_semestres: number | null;
 
-  // Perfil
+  // Qualificações
   ingles_fluente: string;
-  media_geral: number | null;
-  ranking_ruf_top35: string;
-  faculdade_pos_grad_capes: string;
   mestrado_status: string;
   doutorado_status: string;
-  nivel_assistencial: string;
   residencia_medica_concluida: boolean;
   outro_curso_universitario: boolean;
   prova_proficiencia_medicina: boolean;

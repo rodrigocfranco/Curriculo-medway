@@ -68,7 +68,7 @@ describe("institutionFormSchema", () => {
 const validRule = {
   institution_id: "550e8400-e29b-41d4-a716-446655440000",
   specialty_id: null,
-  category: "Publicações",
+  category: "Pesquisa e Publicações",
   field_key: "artigo_1_posicao",
   weight: 5,
   max_points: 10,

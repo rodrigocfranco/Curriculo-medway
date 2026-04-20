@@ -27,7 +27,7 @@ interface CategoryPalette {
 }
 
 const CATEGORY_PALETTES: Record<string, CategoryPalette> = {
-  Perfil: {
+  "Formação": {
     headerBg: "bg-violet-50/60",
     headerBorder: "border-b-violet-200/50",
     badge: "bg-violet-100",
@@ -37,17 +37,7 @@ const CATEGORY_PALETTES: Record<string, CategoryPalette> = {
     snapshotBorder: "border-l-violet-400",
     snapshotBg: "bg-violet-50/40",
   },
-  Acadêmico: {
-    headerBg: "bg-blue-50/60",
-    headerBorder: "border-b-blue-200/50",
-    badge: "bg-blue-100",
-    badgeText: "text-blue-700",
-    progress: "[&>div]:bg-blue-500",
-    accent: "text-blue-600",
-    snapshotBorder: "border-l-blue-400",
-    snapshotBg: "bg-blue-50/40",
-  },
-  Publicações: {
+  "Pesquisa e Publicações": {
     headerBg: "bg-amber-50/60",
     headerBorder: "border-b-amber-200/50",
     badge: "bg-amber-100",
@@ -57,7 +47,17 @@ const CATEGORY_PALETTES: Record<string, CategoryPalette> = {
     snapshotBorder: "border-l-amber-400",
     snapshotBg: "bg-amber-50/40",
   },
-  "Liderança/Eventos": {
+  "Atividades Acadêmicas": {
+    headerBg: "bg-blue-50/60",
+    headerBorder: "border-b-blue-200/50",
+    badge: "bg-blue-100",
+    badgeText: "text-blue-700",
+    progress: "[&>div]:bg-blue-500",
+    accent: "text-blue-600",
+    snapshotBorder: "border-l-blue-400",
+    snapshotBg: "bg-blue-50/40",
+  },
+  "Congressos e Formação Complementar": {
     headerBg: "bg-teal-50/60",
     headerBorder: "border-b-teal-200/50",
     badge: "bg-teal-100",
@@ -67,7 +67,7 @@ const CATEGORY_PALETTES: Record<string, CategoryPalette> = {
     snapshotBorder: "border-l-teal-400",
     snapshotBg: "bg-teal-50/40",
   },
-  "Prática/Social": {
+  "Representação Estudantil e Voluntariado": {
     headerBg: "bg-rose-50/60",
     headerBorder: "border-b-rose-200/50",
     badge: "bg-rose-100",
@@ -76,6 +76,16 @@ const CATEGORY_PALETTES: Record<string, CategoryPalette> = {
     accent: "text-rose-600",
     snapshotBorder: "border-l-rose-400",
     snapshotBg: "bg-rose-50/40",
+  },
+  "Qualificações": {
+    headerBg: "bg-indigo-50/60",
+    headerBorder: "border-b-indigo-200/50",
+    badge: "bg-indigo-100",
+    badgeText: "text-indigo-700",
+    progress: "[&>div]:bg-indigo-500",
+    accent: "text-indigo-600",
+    snapshotBorder: "border-l-indigo-400",
+    snapshotBg: "bg-indigo-50/40",
   },
 };
 

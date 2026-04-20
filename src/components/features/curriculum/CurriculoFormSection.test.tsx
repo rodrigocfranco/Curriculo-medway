@@ -16,7 +16,7 @@ const mockFields: CurriculumFieldRow[] = [
     field_key: "artigo_1_fi",
     label: "Artigo 1º autor (FI)",
     field_type: "number",
-    category: "Publicações",
+    category: "Pesquisa e Publicações",
     display_order: 1,
     options: null,
     created_at: "",
@@ -26,7 +26,7 @@ const mockFields: CurriculumFieldRow[] = [
     field_key: "projeto_rondon",
     label: "Projeto Rondon",
     field_type: "boolean",
-    category: "Prática/Social",
+    category: "Representação Estudantil e Voluntariado",
     display_order: 1,
     options: null,
     created_at: "",
@@ -36,7 +36,7 @@ const mockFields: CurriculumFieldRow[] = [
     field_key: "conceito_historico",
     label: "Conceito histórico",
     field_type: "select",
-    category: "Perfil",
+    category: "Qualificações",
     display_order: 1,
     options: ["A", "B", "C"],
     created_at: "",
@@ -59,9 +59,9 @@ function Wrapper({
 
   return (
     <FormProvider {...form}>
-      <Accordion type="single" collapsible defaultValue="publicacoes">
+      <Accordion type="single" collapsible defaultValue="pesquisa-e-publicacoes">
         <CurriculoFormSection
-          category="Publicações"
+          category="Pesquisa e Publicações"
           fields={fields}
           form={form}
           onBlur={onBlur}
@@ -74,7 +74,7 @@ function Wrapper({
 describe("CurriculoFormSection", () => {
   it("renderiza título da categoria com contador", () => {
     render(<Wrapper fields={mockFields.slice(0, 1)} onBlur={() => {}} />);
-    expect(screen.getByText("Publicações")).toBeInTheDocument();
+    expect(screen.getByText("Pesquisa e Publicações")).toBeInTheDocument();
     expect(screen.getByText("(0/1 preenchidos)")).toBeInTheDocument();
   });
 
