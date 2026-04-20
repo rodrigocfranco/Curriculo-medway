@@ -22,9 +22,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
-import type { CurriculumData, Article, Apresentacao } from "@/lib/schemas/curriculum";
+import type { CurriculumData, Article, Apresentacao, IcProjeto } from "@/lib/schemas/curriculum";
 import { ArticleListField } from "./ArticleListField";
 import { EventListField } from "./EventListField";
+import { IcProjectListField } from "./IcProjectListField";
 
 interface CurriculoFormSectionProps {
   category: string;
@@ -36,8 +37,7 @@ interface CurriculoFormSectionProps {
 const PLACEHOLDERS: Record<string, string> = {
   capitulos_livro: "Ex: 1",
   monitoria_horas_totais: "Ex: 192 (horas)",
-  ic_com_bolsa: "Ex: 2 (anos)",
-  ic_sem_bolsa: "Ex: 1 (anos)",
+  ic_projetos: "Adicione seus projetos de IC",
   ic_horas_totais: "Ex: 120 (horas)",
   monitoria_semestres: "Ex: 2 (semestres)",
   extensao_semestres: "Ex: 1 (semestres)",
@@ -179,6 +179,26 @@ export function CurriculoFormSection({
                 }
 
                 if (field.field_type === "event_list") {
+                  if (field.field_key === "ic_projetos") {
+                    const opts = (field.options ?? {}) as { tipo: string[] };
+                    return (
+                      <FormItem>
+                        <FormLabel>{field.label}</FormLabel>
+                        <FormControl>
+                          <IcProjectListField
+                            value={formField.value as IcProjeto[]}
+                            onChange={(items) => {
+                              formField.onChange(items);
+                            }}
+                            onBlur={onBlur}
+                            options={opts}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }
+
                   const opts = (field.options ?? {}) as { tipo: string[]; nivel: string[] };
                   return (
                     <FormItem>

@@ -160,7 +160,7 @@ function formatCurriculumValue(value: unknown): string {
 const FIELD_RELATED_KEYS: Record<string, string[]> = {
   mestrado_status: ["mestrado_status", "doutorado_status"],
   doutorado_status: ["mestrado_status", "doutorado_status"],
-  ic_com_bolsa: ["ic_com_bolsa", "ic_sem_bolsa"],
+  ic_projetos: ["ic_projetos"],
   publicacoes: ["publicacoes"],
   internato_hospital_ensino: ["internato_hospital_ensino"],
   media_geral: ["media_geral"],
@@ -200,8 +200,7 @@ const FIELD_RELATED_KEYS: Record<string, string[]> = {
 const FIELD_LABELS: Record<string, string> = {
   mestrado_status: "Mestrado",
   doutorado_status: "Doutorado",
-  ic_com_bolsa: "IC com bolsa",
-  ic_sem_bolsa: "IC sem bolsa",
+  ic_projetos: "Projetos de IC",
   ic_horas_totais: "Horas de IC",
   publicacoes: "Publicações",
   internato_hospital_ensino: "Hospital de ensino",

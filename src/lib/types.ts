@@ -9,8 +9,7 @@ export interface UserProfile {
   // Pesquisa e Publicações
   publicacoes: Array<{ posicao: string; veiculo: string; fi: number }>;
   capitulos_livro: number | null;
-  ic_com_bolsa: number | null;
-  ic_sem_bolsa: number | null;
+  ic_projetos: Array<{ tipo: string; semestres: number }>;
   ic_horas_totais: number | null;
 
   // Atividades Acadêmicas
@@ -66,8 +65,7 @@ export interface InstitutionScore {
 export const defaultProfile: UserProfile = {
   publicacoes: [],
   capitulos_livro: null,
-  ic_com_bolsa: null,
-  ic_sem_bolsa: null,
+  ic_projetos: [],
   ic_horas_totais: null,
   monitoria_semestres: null,
   extensao_semestres: null,

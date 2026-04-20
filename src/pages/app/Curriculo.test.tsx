@@ -23,8 +23,8 @@ const mockFieldsByCategory = {
     },
     {
       id: "2",
-      field_key: "ic_com_bolsa",
-      label: "IC com bolsa (anos)",
+      field_key: "ic_projetos",
+      label: "Projetos de IC",
       field_type: "number",
       category: "Pesquisa e Publicações",
       display_order: 20,

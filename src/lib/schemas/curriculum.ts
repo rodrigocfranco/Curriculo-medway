@@ -22,12 +22,25 @@ export type Article = z.infer<typeof articleSchema>;
 // Campos por categoria
 // ---------------------------------------------------------------------------
 
-// Pesquisa e Publicações (5)
+// ---------------------------------------------------------------------------
+// Lista dinâmica — projetos de IC com tipo + semestres
+// ---------------------------------------------------------------------------
+
+const icProjetoSchema = z.object({
+  tipo: z.string(),
+  semestres: z.coerce.number().min(0).default(0),
+});
+
+export type IcProjeto = z.infer<typeof icProjetoSchema>;
+
+// Pesquisa e Publicações (4)
 const pesquisaPublicacoesFields = {
   publicacoes: z.array(articleSchema).default([]),
   capitulos_livro: z.coerce.number().min(0).default(0),
-  ic_com_bolsa: z.coerce.number().min(0).default(0),
-  ic_sem_bolsa: z.coerce.number().min(0).default(0),
+  ic_projetos: z.preprocess(
+    (val) => (Array.isArray(val) ? val : []),
+    z.array(icProjetoSchema).default([]),
+  ),
   ic_horas_totais: z.coerce.number().min(0).default(0),
 };
 

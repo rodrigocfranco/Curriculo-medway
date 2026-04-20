@@ -35,8 +35,7 @@ const CURRICULUM_CATEGORIES: Record<string, string> = {
   // Pesquisa e Publicações
   publicacoes: "Pesquisa e Publicações",
   capitulos_livro: "Pesquisa e Publicações",
-  ic_com_bolsa: "Pesquisa e Publicações",
-  ic_sem_bolsa: "Pesquisa e Publicações",
+  ic_projetos: "Pesquisa e Publicações",
   ic_horas_totais: "Pesquisa e Publicações",
   // Atividades Acadêmicas
   monitoria_semestres: "Atividades Acadêmicas",

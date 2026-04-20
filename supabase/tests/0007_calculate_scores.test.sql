@@ -58,7 +58,7 @@ select ok(
 -- =============================================================================
 
 update public.user_curriculum set data = '{
-  "ic_com_bolsa": 2, "ic_sem_bolsa": 1,
+  "ic_projetos": [{"tipo":"Com bolsa","semestres":4},{"tipo":"Com bolsa","semestres":2},{"tipo":"Sem bolsa","semestres":2}],
   "artigos_high_impact": 3, "artigos_mid_impact": 1, "artigos_nacionais": 2,
   "artigos_low_impact": 1,
   "apresentacoes": [{"tipo":"Apresentação oral","nivel":"Congresso de Sociedade Médica (nacional/internacional)"},{"tipo":"Poster","nivel":"Congresso de Sociedade Médica (nacional/internacional)"},{"tipo":"Apresentação oral","nivel":"Congresso acadêmico local/regional"},{"tipo":"Poster","nivel":"Congresso acadêmico local/regional"}],

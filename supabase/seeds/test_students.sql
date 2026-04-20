@@ -57,8 +57,11 @@ INSERT INTO user_curriculum (user_id, data) VALUES
     {"posicao": "1º Autor / Último autor", "veiculo": "Periódico nacional", "fi": 0}
   ],
   "capitulos_livro": 1,
-  "ic_com_bolsa": 2,
-  "ic_sem_bolsa": 1,
+  "ic_projetos": [
+    {"tipo": "Com bolsa", "semestres": 4},
+    {"tipo": "Com bolsa", "semestres": 2},
+    {"tipo": "Sem bolsa", "semestres": 2}
+  ],
   "ic_horas_totais": 450,
   "monitoria_semestres": 4,
   "extensao_semestres": 3,
@@ -107,8 +110,7 @@ INSERT INTO user_curriculum (user_id, data) VALUES
     {"posicao": "Coautor", "veiculo": "Anais congresso nacional", "fi": 0}
   ],
   "capitulos_livro": 0,
-  "ic_com_bolsa": 1,
-  "ic_sem_bolsa": 0,
+  "ic_projetos": [{"tipo": "Com bolsa", "semestres": 2}],
   "ic_horas_totais": 200,
   "monitoria_semestres": 2,
   "extensao_semestres": 1,
@@ -136,7 +138,7 @@ ON CONFLICT (user_id) DO UPDATE SET data = EXCLUDED.data;
 INSERT INTO user_curriculum (user_id, data) VALUES
 ('aaaaaaaa-0003-4000-a000-000000000003', '{
   "publicacoes": [],
-  "ic_com_bolsa": 0,
+  "ic_projetos": [],
   "monitoria_semestres": 1,
   "internato_hospital_ensino": "Não",
   "ingles_fluente": "Não tenho",
@@ -159,7 +161,7 @@ INSERT INTO user_curriculum (user_id, data) VALUES
     {"posicao": "Coautor", "veiculo": "Anais congresso internacional", "fi": 0}
   ],
   "capitulos_livro": 2,
-  "ic_com_bolsa": 0,
+  "ic_projetos": [],
   "monitoria_semestres": 0,
   "internato_hospital_ensino": "Não",
   "ingles_fluente": "Avançado",

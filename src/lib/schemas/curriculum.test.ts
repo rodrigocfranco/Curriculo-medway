@@ -13,8 +13,9 @@ describe("curriculumDataSchema", () => {
       artigos_low_impact: 0,
       artigos_nacionais: 3,
       capitulos_livro: 1,
-      ic_com_bolsa: 2,
-      ic_sem_bolsa: 0,
+      ic_projetos: [
+        { tipo: "Com bolsa", semestres: 4 },
+      ],
       ic_horas_totais: 120,
       monitoria_semestres: 2,
       extensao_semestres: 1,
@@ -119,7 +120,7 @@ describe("curriculumDataSchema", () => {
     if (result.success) {
       const knownFields = [
         "publicacoes", "capitulos_livro",
-        "ic_com_bolsa", "ic_sem_bolsa", "ic_horas_totais",
+        "ic_projetos", "ic_horas_totais",
         "monitoria_semestres", "extensao_semestres",
         "premios_academicos", "cursinhos_preparatorios",
         "voluntariado_horas", "estagio_extracurricular_horas",
