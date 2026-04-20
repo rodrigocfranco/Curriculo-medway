@@ -58,6 +58,7 @@ const atividadesAcademicasFields = {
 const apresentacaoSchema = z.object({
   tipo: z.string(),
   nivel: z.string().default(""),
+  abrangencia: z.string().default(""),
 });
 
 export type Apresentacao = z.infer<typeof apresentacaoSchema>;
@@ -87,10 +88,17 @@ const representacaoVoluntariadoFields = {
   equipe_esportiva_semestres: z.coerce.number().min(0).default(0),
 };
 
-// Formação (5)
+// Representação — campo adicional
+const representacaoExtra = {
+  comissao_avaliacao_semestres: z.coerce.number().min(0).default(0),
+};
+
+// Formação (7)
 const formacaoFields = {
   ranking_ruf_top35: z.string().default("Demais faculdades"),
-  faculdade_pos_grad_capes: z.string().default("Não possui"),
+  faculdade_tem_doutorado: z.boolean().default(false),
+  faculdade_tem_mestrado: z.boolean().default(false),
+  faculdade_programas_capes: z.coerce.number().min(0).default(0),
   internato_hospital_ensino: z.string().default("Não"),
   nivel_assistencial: z.string().default(""),
   media_geral: z.coerce.number().min(0).default(0),
@@ -113,6 +121,7 @@ export const curriculumDataSchema = z
     ...atividadesAcademicasFields,
     ...congressosFormacaoFields,
     ...representacaoVoluntariadoFields,
+    ...representacaoExtra,
     ...qualificacoesFields,
   })
   .catchall(z.unknown());

@@ -1,7 +1,9 @@
 export interface UserProfile {
   // Formação
   ranking_ruf_top35: string;
-  faculdade_pos_grad_capes: string;
+  faculdade_tem_doutorado: boolean;
+  faculdade_tem_mestrado: boolean;
+  faculdade_programas_capes: number | null;
   internato_hospital_ensino: string;
   nivel_assistencial: string;
   media_geral: number | null;
@@ -21,7 +23,7 @@ export interface UserProfile {
   cursinhos_preparatorios: number | null;
 
   // Congressos e Formação Complementar
-  apresentacoes: Array<{ tipo: string; nivel: string }>;
+  apresentacoes: Array<{ tipo: string; nivel: string; abrangencia: string }>;
   ouvinte_congresso: number | null;
   organizador_evento: number | null;
   cursos_temas_medicos: number | null;
@@ -38,6 +40,7 @@ export interface UserProfile {
   centro_academico_semestres: number | null;
   atletica_semestres: number | null;
   equipe_esportiva_semestres: number | null;
+  comissao_avaliacao_semestres: number | null;
 
   // Qualificações
   ingles_fluente: string;
@@ -89,10 +92,13 @@ export const defaultProfile: UserProfile = {
   centro_academico_semestres: null,
   atletica_semestres: null,
   equipe_esportiva_semestres: null,
+  comissao_avaliacao_semestres: null,
   ingles_fluente: "Não tenho",
   media_geral: null,
   ranking_ruf_top35: "Demais faculdades",
-  faculdade_pos_grad_capes: "Não possui",
+  faculdade_tem_doutorado: false,
+  faculdade_tem_mestrado: false,
+  faculdade_programas_capes: null,
   mestrado_status: "Não tenho",
   doutorado_status: "Não tenho",
   nivel_assistencial: "",

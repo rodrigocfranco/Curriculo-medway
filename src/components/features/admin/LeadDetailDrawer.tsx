@@ -28,7 +28,9 @@ function formatDate(iso: string) {
 const CURRICULUM_CATEGORIES: Record<string, string> = {
   // Formação
   ranking_ruf_top35: "Formação",
-  faculdade_pos_grad_capes: "Formação",
+  faculdade_tem_doutorado: "Formação",
+  faculdade_tem_mestrado: "Formação",
+  faculdade_programas_capes: "Formação",
   internato_hospital_ensino: "Formação",
   nivel_assistencial: "Formação",
   media_geral: "Formação",
@@ -61,6 +63,7 @@ const CURRICULUM_CATEGORIES: Record<string, string> = {
   centro_academico_semestres: "Representação Estudantil e Voluntariado",
   atletica_semestres: "Representação Estudantil e Voluntariado",
   equipe_esportiva_semestres: "Representação Estudantil e Voluntariado",
+  comissao_avaliacao_semestres: "Representação Estudantil e Voluntariado",
   // Qualificações
   ingles_fluente: "Qualificações",
   mestrado_status: "Qualificações",

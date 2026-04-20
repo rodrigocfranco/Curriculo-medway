@@ -14,7 +14,7 @@ interface EventListFieldProps {
   value: Apresentacao[];
   onChange: (items: Apresentacao[]) => void;
   onBlur: () => void;
-  options: { tipo: string[]; nivel: string[] };
+  options: { tipo: string[]; nivel: string[]; abrangencia?: string[] };
 }
 
 export function EventListField({
@@ -26,9 +26,10 @@ export function EventListField({
   const items = value ?? [];
   const tipoOptions = options?.tipo ?? [];
   const nivelOptions = options?.nivel ?? [];
+  const abrangenciaOptions = options?.abrangencia ?? [];
 
   const addItem = () => {
-    onChange([...items, { tipo: "", nivel: "" }]);
+    onChange([...items, { tipo: "", nivel: "", abrangencia: "" }]);
   };
 
   const removeItem = (index: number) => {
@@ -69,10 +70,10 @@ export function EventListField({
             </Button>
           </div>
 
-          <div className="mt-2 grid grid-cols-2 gap-3">
+          <div className="mt-2 grid grid-cols-3 gap-3">
             <div>
               <label className="mb-1 block text-xs text-muted-foreground">
-                Tipo de apresentação
+                Tipo
               </label>
               <Select
                 value={item.tipo}
@@ -91,7 +92,7 @@ export function EventListField({
 
             <div>
               <label className="mb-1 block text-xs text-muted-foreground">
-                Nível do evento
+                Nível
               </label>
               <Select
                 value={item.nivel}
@@ -107,6 +108,27 @@ export function EventListField({
                 </SelectContent>
               </Select>
             </div>
+
+            {abrangenciaOptions.length > 0 && (
+              <div>
+                <label className="mb-1 block text-xs text-muted-foreground">
+                  Abrangência
+                </label>
+                <Select
+                  value={item.abrangencia}
+                  onValueChange={(val) => { updateItem(index, "abrangencia", val); onBlur(); }}
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {abrangenciaOptions.map((opt) => (
+                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         </Card>
       ))}
