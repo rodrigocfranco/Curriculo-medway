@@ -1,5 +1,13 @@
 # Deferred Work
 
+## Deferred from: code review of story 6-2-social-proof-faq-footer (2026-04-19)
+
+- **Sem skip-to-content link na landing page (WCAG 2.4.1)** — Landing page agora tem 7 seções; keyboard users não têm como pular navegação/hero e ir direto ao conteúdo principal. Pre-existing concern para toda a landing, não introduzido pela Story 6.2.
+
+## Deferred from: story 6-2-social-proof-faq-footer (2026-04-19)
+
+- **Coletar depoimentos reais de alunos pós-lançamento** — SocialProofSection usa dados mock hardcoded (3 depoimentos fictícios). Componente aceita prop `testimonials?: Testimonial[]` para facilitar troca futura por dados dinâmicos. Substituir mock data quando houver depoimentos reais coletados.
+
 ## Deferred from: story 6-1-landing-completa-hero-como-funciona-preview (2026-04-19)
 
 - **Contagem "11 instituições" hardcoded na landing** — Seção "Como funciona" e microcopy do hero mencionam "11 instituições" como valor fixo. SSG não tem acesso ao DB em build-time para contagem dinâmica. Revisitar quando houver API pública de contagem ou quando o número mudar.

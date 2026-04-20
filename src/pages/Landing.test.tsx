@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import Landing from "./Landing";
@@ -91,6 +91,85 @@ describe("Landing", () => {
       expect(screen.getByText("Salvamento automático")).toBeInTheDocument();
       expect(screen.getByText("Plataforma em evolução")).toBeInTheDocument();
       expect(screen.getByText("Gratuito e sem compromisso")).toBeInTheDocument();
+    });
+  });
+
+  describe("Social Proof", () => {
+    it("renders section title", () => {
+      renderLanding();
+      expect(
+        screen.getByRole("heading", {
+          level: 2,
+          name: "O que dizem nossos alunos",
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("renders at least 1 testimonial with name and quote", () => {
+      renderLanding();
+      expect(screen.getByText("Ana Beatriz")).toBeInTheDocument();
+      expect(
+        screen.getByText(/Finalmente consegui entender/),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("FAQ", () => {
+    it("renders section title", () => {
+      renderLanding();
+      expect(
+        screen.getByRole("heading", {
+          level: 2,
+          name: "Perguntas frequentes",
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("accordion opens on click and shows answer", async () => {
+      renderLanding();
+      const trigger = screen.getByText("É gratuito?");
+      fireEvent.click(trigger);
+      await waitFor(() => {
+        expect(screen.getByText(/100% gratuito/)).toBeVisible();
+      });
+    });
+  });
+
+  describe("CTA Banner", () => {
+    it("renders headline and CTA link to /signup", () => {
+      renderLanding();
+      expect(
+        screen.getByRole("heading", {
+          level: 2,
+          name: "Pronto para descobrir seu score?",
+        }),
+      ).toBeInTheDocument();
+      const cta = screen.getByRole("link", { name: "Começar agora" });
+      expect(cta).toHaveAttribute("href", "/signup");
+    });
+  });
+
+  describe("Footer", () => {
+    it("renders links for termos and privacidade", () => {
+      renderLanding();
+      const termos = screen.getByRole("link", { name: "Termos de Uso" });
+      expect(termos).toHaveAttribute("href", "/termos");
+      const privacidade = screen.getByRole("link", {
+        name: "Política de Privacidade",
+      });
+      expect(privacidade).toHaveAttribute("href", "/privacidade");
+    });
+
+    it("renders current year", () => {
+      renderLanding();
+      const year = new Date().getFullYear();
+      expect(screen.getByText(`© ${year} Medway`)).toBeInTheDocument();
+    });
+
+    it("has semantic footer element", () => {
+      renderLanding();
+      const footer = screen.getByRole("contentinfo");
+      expect(footer).toBeInTheDocument();
     });
   });
 });

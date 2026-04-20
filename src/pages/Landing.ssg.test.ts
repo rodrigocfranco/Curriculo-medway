@@ -42,4 +42,16 @@ describe.skipIf(shouldSkipSSG)("SSG output", () => {
   it("contém microcopy persuasiva", () => {
     expect(html).toMatch(/Em 10 minutos/);
   });
+  it("contém seção social-proof", () => {
+    expect(html).toMatch(/id="social-proof"/);
+  });
+  it("contém seção faq", () => {
+    expect(html).toMatch(/id="faq"/);
+  });
+  it("contém elemento footer", () => {
+    expect(html).toMatch(/<footer/);
+  });
+  it("contém headline do CTA banner", () => {
+    expect(html).toMatch(/Pronto para descobrir seu score/);
+  });
 });

@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-14
-last_updated: 2026-04-19 (Story 6.1 done — code review passed, 3 decisions accepted as-is)
+last_updated: 2026-04-20 (Story 6.2 done)
 project: curriculo-medway
 project_key: NOKEY
 tracking_system: file-system
@@ -87,5 +87,5 @@ development_status:
   # Epic 6 — Consolidado em 2026-04-16 (6 → 2 stories)
   epic-6: in-progress
   6-1-landing-completa-hero-como-funciona-preview: done
-  6-2-social-proof-faq-footer: backlog
+  6-2-social-proof-faq-footer: done
   epic-6-retrospective: optional
