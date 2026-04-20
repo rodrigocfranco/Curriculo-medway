@@ -84,7 +84,7 @@ INSERT INTO user_curriculum (user_id, data) VALUES
   "equipe_esportiva_semestres": 0,
   "ingles_fluente": "Avançado",
   "media_geral": 8.7,
-  "ranking_ruf_top35": true,
+  "ranking_ruf_top35": "1ª-35ª posição",
   "mestrado_status": "Concluído",
   "doutorado_status": "Em curso",
   "nivel_assistencial": "Primário, secundário e terciário",
@@ -117,7 +117,7 @@ INSERT INTO user_curriculum (user_id, data) VALUES
   "ouvinte_congresso": 4,
   "ingles_fluente": "Intermediário",
   "media_geral": 7.5,
-  "ranking_ruf_top35": false,
+  "ranking_ruf_top35": "Demais faculdades",
   "mestrado_status": "Não tenho",
   "doutorado_status": "Não tenho"
 }'::jsonb)

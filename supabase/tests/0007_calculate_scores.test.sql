@@ -64,7 +64,7 @@ update public.user_curriculum set data = '{
   "apresentacao_congresso": 4, "voluntariado_horas": 100, "diretoria_ligas": 1,
   "membro_liga_anos": 2, "monitoria_semestres": 3, "cursos_suporte": 2,
   "ingles_fluente": true, "internato_hospital_ensino": true, "mestrado": true,
-  "doutorado": false, "extensao_semestres": 2, "ranking_ruf_top35": true,
+  "doutorado": false, "extensao_semestres": 2, "ranking_ruf_top35": "1ª-35ª posição",
   "media_geral": 85, "projeto_rondon": true, "representante_turma_anos": 1,
   "estagio_extracurricular_horas": 200, "trabalho_sus_meses": 12,
   "ic_horas_totais": 300, "ouvinte_congresso": 5, "teste_progresso": 4,

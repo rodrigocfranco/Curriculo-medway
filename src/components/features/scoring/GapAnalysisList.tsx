@@ -209,7 +209,7 @@ const FIELD_LABELS: Record<string, string> = {
   centro_academico_semestres: "Centro acadêmico",
   atletica_semestres: "Atlética",
   equipe_esportiva_semestres: "Equipe esportiva",
-  ranking_ruf_top35: "Faculdade Top 35 RUF",
+  ranking_ruf_top35: "Faixa RUF da faculdade",
   nivel_assistencial: "Nível assistencial",
   capitulos_livro: "Capítulos de livro",
   projeto_rondon: "Projeto Rondon",

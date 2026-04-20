@@ -34,7 +34,7 @@ describe("curriculumDataSchema", () => {
       ingles_fluente: "Avançado",
       media_geral: 8.5,
       conceito_historico: "A",
-      ranking_ruf_top35: true,
+      ranking_ruf_top35: "1ª-35ª posição",
       mestrado_status: "Concluído",
       doutorado_status: "Em curso",
       nivel_assistencial: "Primário, secundário e terciário",

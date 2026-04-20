@@ -37,7 +37,7 @@ export interface UserProfile {
   // Perfil
   ingles_fluente: string;
   media_geral: number | null;
-  ranking_ruf_top35: boolean;
+  ranking_ruf_top35: string;
   mestrado_status: string;
   doutorado_status: string;
   nivel_assistencial: string;
@@ -90,7 +90,7 @@ export const defaultProfile: UserProfile = {
   equipe_esportiva_semestres: null,
   ingles_fluente: "Não tenho",
   media_geral: null,
-  ranking_ruf_top35: false,
+  ranking_ruf_top35: "Demais faculdades",
   mestrado_status: "Não tenho",
   doutorado_status: "Não tenho",
   nivel_assistencial: "",

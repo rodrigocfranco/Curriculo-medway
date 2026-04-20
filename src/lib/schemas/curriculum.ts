@@ -69,7 +69,7 @@ const liderancaEventosFields = {
 const perfilFields = {
   ingles_fluente: z.string().default("Não tenho"),
   media_geral: z.coerce.number().min(0).default(0),
-  ranking_ruf_top35: z.boolean().default(false),
+  ranking_ruf_top35: z.string().default("Demais faculdades"),
   mestrado_status: z.string().default("Não tenho"),
   doutorado_status: z.string().default("Não tenho"),
   nivel_assistencial: z.string().default(""),
