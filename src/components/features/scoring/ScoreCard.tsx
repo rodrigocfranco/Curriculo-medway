@@ -14,20 +14,20 @@ interface ScoreCardProps {
   onEmptyClick?: () => void;
 }
 
-function getTopGap(breakdown: ScoreBreakdown): { category: string; delta: number } | null {
-  let topCategory: string | null = null;
+function getTopGap(breakdown: ScoreBreakdown): { label: string; delta: number } | null {
+  let topLabel: string | null = null;
   let maxDelta = 0;
 
   for (const [key, item] of Object.entries(breakdown)) {
     const delta = item.max - item.score;
     if (delta > maxDelta) {
       maxDelta = delta;
-      topCategory = item.description || key;
+      topLabel = item.label || item.category || key;
     }
   }
 
-  if (!topCategory || maxDelta === 0) return null;
-  return { category: topCategory, delta: maxDelta };
+  if (!topLabel || maxDelta === 0) return null;
+  return { label: topLabel, delta: maxDelta };
 }
 
 function isPartialScore(score: UserScore): boolean {
@@ -66,12 +66,12 @@ export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCa
 
   const ariaLabel = empty
     ? `${displayName}, sem score, botão preencher currículo`
-    : `${displayName}, nota ${gradeFormatted}${gap ? `, mais ${gap.delta} possíveis em ${gap.category}` : ""}, botão ver detalhes`;
+    : `${displayName}, nota ${gradeFormatted}${gap ? `, mais ${gap.delta} possíveis em ${gap.label}` : ""}, botão ver detalhes`;
 
   if (empty) {
     return (
       <Card
-        className="group flex min-h-[180px] cursor-pointer flex-col justify-between p-5 transition-shadow hover:border-accent/50 hover:shadow-md"
+        className="group flex min-h-[140px] cursor-pointer flex-col justify-between p-5 transition-shadow hover:border-accent/50 hover:shadow-md"
         role="button"
         tabIndex={0}
         aria-label={ariaLabel}
@@ -96,7 +96,7 @@ export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCa
 
   return (
     <Card
-      className="group flex min-h-[180px] cursor-pointer flex-col justify-between p-5 transition-shadow hover:border-accent/50 hover:shadow-md"
+      className="group flex min-h-[140px] cursor-pointer flex-col justify-between p-5 transition-shadow hover:border-accent/50 hover:shadow-md"
       role="button"
       tabIndex={0}
       aria-label={ariaLabel}
@@ -126,7 +126,7 @@ export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCa
         />
         {gap && (
           <p className="text-xs text-muted-foreground">
-            +{gap.delta} em {gap.category}
+            +{gap.delta} em {gap.label}
           </p>
         )}
       </div>
