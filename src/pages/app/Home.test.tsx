@@ -124,7 +124,7 @@ describe("AppHome (Dashboard)", () => {
 
     renderHome();
 
-    expect(screen.getByText(/Sua posição em/)).toBeInTheDocument();
+    expect(screen.getByText(/Sua nota em/)).toBeInTheDocument();
     // 11 skeletons + 1 narrative skeleton = check for multiple skeletons
     const skeletons = document.querySelectorAll(".animate-pulse");
     expect(skeletons.length).toBeGreaterThanOrEqual(11);
@@ -136,7 +136,7 @@ describe("AppHome (Dashboard)", () => {
 
     renderHome();
 
-    expect(screen.getByText("Sua posição em 2 instituições")).toBeInTheDocument();
+    expect(screen.getByText("Sua nota em 2 instituições")).toBeInTheDocument();
     expect(screen.getByText("UNICAMP")).toBeInTheDocument();
     expect(screen.getByText("USP-SP")).toBeInTheDocument();
     // Notas: 68/100 = 6,8 e 45/100 = 4,5

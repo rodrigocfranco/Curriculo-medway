@@ -36,27 +36,22 @@ const mockScore: UserScore = {
 };
 
 describe("ScoreCard", () => {
-  it("renderiza estado completo com score, barra e gap", () => {
-    const onClick = vi.fn();
+  it("renderiza instituição e nota", () => {
     render(
-      <ScoreCard institution={mockInstitution} score={mockScore} onClick={onClick} />,
+      <ScoreCard institution={mockInstitution} score={mockScore} onClick={vi.fn()} />,
     );
 
     expect(screen.getByText("UNICAMP")).toBeInTheDocument();
-    // 68/100 = nota 6,8
     expect(screen.getByText("6,8")).toBeInTheDocument();
-    // Top gap: Formação has delta 15 (max 25 - score 10)
-    expect(screen.getByText(/\+15 em Formação/)).toBeInTheDocument();
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
-  it("renderiza estado parcial com badge Parcial", () => {
+  it("renderiza badge Parcial quando menos de 50% preenchido", () => {
     const partialScore: UserScore = {
       ...mockScore,
       score: 12,
       breakdown: {
         publicacoes: { score: 10, max: 15, description: "Publicações", label: "Publicações" },
-        ic: { score: 2, max: 20, description: "Iniciação Científica", label: "IC" },
+        ic: { score: 2, max: 20, description: "IC", label: "IC" },
         monitoria: { score: 0, max: 5, description: "Monitoria", label: "Monitoria" },
         ligas: { score: 0, max: 5, description: "Ligas", label: "Ligas" },
         voluntariado: { score: 0, max: 5, description: "Voluntariado", label: "Voluntariado" },
@@ -74,22 +69,22 @@ describe("ScoreCard", () => {
     expect(screen.getByText("Parcial")).toBeInTheDocument();
   });
 
-  it("renderiza estado vazio com CTA 'Comece a preencher'", () => {
+  it("renderiza estado vazio com botão Preencher", () => {
     render(
       <ScoreCard institution={mockInstitution} score={null} onClick={vi.fn()} />,
     );
 
-    expect(screen.getByText("Comece a preencher")).toBeInTheDocument();
-    expect(screen.getByText("Sem dados ainda")).toBeInTheDocument();
+    expect(screen.getByText("UNICAMP")).toBeInTheDocument();
+    expect(screen.getByText("Preencher")).toBeInTheDocument();
   });
 
-  it("renderiza nota 0,0 quando score é 0 mas breakdown tem dados (currículo preenchido)", () => {
+  it("renderiza nota 0,0 quando score é 0 mas breakdown tem dados", () => {
     const zeroScore: UserScore = {
       ...mockScore,
       score: 0,
       breakdown: {
         publicacoes: { score: 0, max: 15, description: "Publicações" },
-        ic: { score: 0, max: 20, description: "Iniciação Científica" },
+        ic: { score: 0, max: 20, description: "IC" },
       },
     };
 
@@ -97,7 +92,6 @@ describe("ScoreCard", () => {
       <ScoreCard institution={mockInstitution} score={zeroScore} onClick={vi.fn()} />,
     );
 
-    // Score 0 com breakdown = aluno preencheu, nota é legitimamente 0
     expect(screen.getByText("0,0")).toBeInTheDocument();
   });
 
@@ -121,25 +115,15 @@ describe("ScoreCard", () => {
     expect(onClick).toHaveBeenCalledOnce();
   });
 
-  it("tem aria-label completo para score preenchido", () => {
+  it("tem aria-label com nota", () => {
     render(
       <ScoreCard institution={mockInstitution} score={mockScore} onClick={vi.fn()} />,
     );
 
     expect(screen.getByRole("button")).toHaveAttribute(
       "aria-label",
-      "UNICAMP, nota 6,8, mais 15 possíveis em Formação, botão ver detalhes",
+      "UNICAMP, nota 6,8, ver detalhes",
     );
-  });
-
-  it("tem aria-label correto para estado vazio", () => {
-    render(
-      <ScoreCard institution={mockInstitution} score={null} onClick={vi.fn()} />,
-    );
-
-    expect(
-      screen.getByRole("button", { name: /sem score, botão preencher currículo/ }),
-    ).toBeInTheDocument();
   });
 
   it("chama onEmptyClick ao clicar no card vazio", () => {

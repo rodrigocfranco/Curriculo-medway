@@ -23,7 +23,7 @@ function DashboardSkeleton({ count }: { count: number }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
       {Array.from({ length: count }).map((_, i) => (
-        <Skeleton key={i} className="h-[180px] rounded-lg" />
+        <Skeleton key={i} className="h-[56px] rounded-lg" />
       ))}
     </div>
   );
@@ -118,7 +118,7 @@ const AppHome = () => {
       {/* Subheader */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-bold">
-          Sua posição em {isLoading ? "…" : stateFilter === "Brasil" ? totalCount : filteredCount} instituições
+          Sua nota em {isLoading ? "…" : stateFilter === "Brasil" ? totalCount : filteredCount} instituições
           {stateFilter !== "Brasil" && !isLoading && (
             <span className="ml-1 text-base font-normal text-muted-foreground">
               ({stateFilter})

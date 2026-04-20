@@ -1,10 +1,8 @@
-import { useMemo } from "react";
 import { ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { UserScore, Institution, ScoreBreakdown } from "@/lib/schemas/scoring";
+import type { UserScore, Institution } from "@/lib/schemas/scoring";
 import { formatGrade } from "@/lib/schemas/scoring";
 
 interface ScoreCardProps {
@@ -12,22 +10,6 @@ interface ScoreCardProps {
   score: UserScore | null;
   onClick: () => void;
   onEmptyClick?: () => void;
-}
-
-function getTopGap(breakdown: ScoreBreakdown): { label: string; delta: number } | null {
-  let topLabel: string | null = null;
-  let maxDelta = 0;
-
-  for (const [key, item] of Object.entries(breakdown)) {
-    const delta = item.max - item.score;
-    if (delta > maxDelta) {
-      maxDelta = delta;
-      topLabel = item.label || item.category || key;
-    }
-  }
-
-  if (!topLabel || maxDelta === 0) return null;
-  return { label: topLabel, delta: maxDelta };
 }
 
 function isPartialScore(score: UserScore): boolean {
@@ -39,21 +21,11 @@ function isPartialScore(score: UserScore): boolean {
 
 function isEmptyScore(score: UserScore | null): boolean {
   if (!score) return true;
-  // Score existe mas breakdown vazio = nunca foi calculado de verdade
   const entries = Object.values(score.breakdown);
   return entries.length === 0;
 }
 
 export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCardProps) {
-  const percentage = score && score.max_score > 0
-    ? (score.score / score.max_score) * 100
-    : 0;
-
-  const gap = useMemo(
-    () => (score ? getTopGap(score.breakdown) : null),
-    [score],
-  );
-
   const empty = isEmptyScore(score);
   const partial = !empty && score !== null && isPartialScore(score);
 
@@ -64,17 +36,13 @@ export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCa
 
   const emptyHandler = onEmptyClick ?? onClick;
 
-  const ariaLabel = empty
-    ? `${displayName}, sem score, botão preencher currículo`
-    : `${displayName}, nota ${gradeFormatted}${gap ? `, mais ${gap.delta} possíveis em ${gap.label}` : ""}, botão ver detalhes`;
-
   if (empty) {
     return (
       <Card
-        className="group flex min-h-[140px] cursor-pointer flex-col justify-between p-5 transition-shadow hover:border-accent/50 hover:shadow-md"
+        className="group flex cursor-pointer items-center justify-between px-5 py-4 transition-shadow hover:border-accent/50 hover:shadow-md"
         role="button"
         tabIndex={0}
-        aria-label={ariaLabel}
+        aria-label={`${displayName}, sem score, preencher currículo`}
         onClick={emptyHandler}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -83,23 +51,20 @@ export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCa
           }
         }}
       >
-        <h3 className="text-base font-semibold">{displayName}</h3>
-        <div className="flex flex-col items-center gap-2 py-4">
-          <p className="text-sm text-muted-foreground">Sem dados ainda</p>
-          <Button variant="link" className="h-auto p-0 text-accent" tabIndex={-1}>
-            Comece a preencher
-          </Button>
-        </div>
+        <h3 className="text-sm font-semibold">{displayName}</h3>
+        <Button variant="link" className="h-auto p-0 text-xs text-accent" tabIndex={-1}>
+          Preencher
+        </Button>
       </Card>
     );
   }
 
   return (
     <Card
-      className="group flex min-h-[140px] cursor-pointer flex-col justify-between p-5 transition-shadow hover:border-accent/50 hover:shadow-md"
+      className="group flex cursor-pointer items-center justify-between px-5 py-4 transition-shadow hover:border-accent/50 hover:shadow-md"
       role="button"
       tabIndex={0}
-      aria-label={ariaLabel}
+      aria-label={`${displayName}, nota ${gradeFormatted}, ver detalhes`}
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -108,27 +73,13 @@ export function ScoreCard({ institution, score, onClick, onEmptyClick }: ScoreCa
         }
       }}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold">{displayName}</h3>
-            {partial && <Badge variant="secondary">Parcial</Badge>}
-          </div>
-          <p className="mt-1 text-5xl font-bold tabular-nums">{gradeFormatted}</p>
-        </div>
-        <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
+      <div className="flex items-center gap-3">
+        <h3 className="text-sm font-semibold">{displayName}</h3>
+        {partial && <Badge variant="secondary" className="text-[10px]">Parcial</Badge>}
       </div>
-
-      <div className="mt-3 space-y-2">
-        <Progress
-          value={percentage}
-          className="h-2 bg-primary/20 [&>div]:bg-accent"
-        />
-        {gap && (
-          <p className="text-xs text-muted-foreground">
-            +{gap.delta} em {gap.label}
-          </p>
-        )}
+      <div className="flex items-center gap-2">
+        <span className="text-2xl font-bold tabular-nums">{gradeFormatted}</span>
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
       </div>
     </Card>
   );
