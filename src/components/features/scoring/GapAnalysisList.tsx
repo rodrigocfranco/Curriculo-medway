@@ -152,7 +152,7 @@ function parseRuleItems(description: string): ParsedRule {
       }
     }
 
-    const match = segment.match(/^(.+?)\s*\((\d+[.,]?\d*)\s*pts?\)$/i);
+    const match = segment.match(/^(.+?)\s*\((\d+[.,]?\d*)\s*pts?\)/i);
     if (match) {
       items.push({ text: match[1].trim(), pts: match[2] });
     } else if (segment.length > 0) {
