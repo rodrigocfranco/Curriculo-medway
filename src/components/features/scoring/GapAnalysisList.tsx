@@ -130,14 +130,32 @@ function formatKey(key: string): string {
 
 function parseRuleItems(description: string): { text: string; pts: string }[] {
   if (!description) return [];
-  return description.split("|").map((part) => {
-    const trimmed = part.trim();
-    const match = trimmed.match(/^(.+?)\s*\((\d+[.,]?\d*)\s*pts?\)$/i);
-    if (match) {
-      return { text: match[1].trim(), pts: match[2] };
+  const parts = description.split("|").map((part) => part.trim());
+  const items: { text: string; pts: string }[] = [];
+
+  for (let i = 0; i < parts.length; i++) {
+    let segment = parts[i];
+
+    // Primeiro segmento pode ter "Descrição longa: Critério (Xpts)"
+    // Separar pelo último ":" para isolar só o critério
+    if (i === 0 && segment.includes(":")) {
+      const colonIdx = segment.lastIndexOf(":");
+      const afterColon = segment.slice(colonIdx + 1).trim();
+      // Só separar se a parte após ":" contém pontuação
+      if (/\(\d/.test(afterColon)) {
+        segment = afterColon;
+      }
     }
-    return { text: trimmed, pts: "" };
-  }).filter((item) => item.text.length > 0);
+
+    const match = segment.match(/^(.+?)\s*\((\d+[.,]?\d*)\s*pts?\)$/i);
+    if (match) {
+      items.push({ text: match[1].trim(), pts: match[2] });
+    } else if (segment.length > 0) {
+      items.push({ text: segment, pts: "" });
+    }
+  }
+
+  return items;
 }
 
 /** Formata o valor do currículo para exibição humana */
