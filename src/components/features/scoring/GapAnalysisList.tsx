@@ -135,38 +135,56 @@ interface ParsedRule {
 
 function parseRuleItems(description: string): ParsedRule {
   if (!description) return { intro: "", items: [] };
-  const parts = description.split("|").map((part) => part.trim());
-  const items: { text: string; pts: string }[] = [];
-  let intro = "";
 
-  for (let i = 0; i < parts.length; i++) {
-    let segment = parts[i];
+  // Se tem "|", é formato multi-critério
+  if (description.includes("|")) {
+    const parts = description.split("|").map((part) => part.trim());
+    const items: { text: string; pts: string }[] = [];
+    let intro = "";
 
-    // Primeiro segmento pode ter "Descrição longa: Critério (Xpts)"
-    if (i === 0 && segment.includes(":")) {
-      const colonIdx = segment.lastIndexOf(":");
-      const afterColon = segment.slice(colonIdx + 1).trim();
-      if (/\(\d/.test(afterColon)) {
-        intro = segment.slice(0, colonIdx).trim();
-        segment = afterColon;
+    for (let i = 0; i < parts.length; i++) {
+      let segment = parts[i];
+
+      // Primeiro segmento pode ter "Descrição longa: Critério (Xpts)"
+      if (i === 0 && segment.includes(":")) {
+        const colonIdx = segment.lastIndexOf(":");
+        const afterColon = segment.slice(colonIdx + 1).trim();
+        if (/\(\d/.test(afterColon)) {
+          intro = segment.slice(0, colonIdx).trim();
+          segment = afterColon;
+        }
+      }
+
+      const match = segment.match(/^(.+?)\s*\((\d+[.,]?\d*)\s*pts?\)/i);
+      if (match) {
+        items.push({ text: match[1].trim(), pts: match[2] });
+      } else if (segment.length > 0) {
+        items.push({ text: segment, pts: "" });
       }
     }
 
-    const match = segment.match(/^(.+?)\s*\((\d+[.,]?\d*)\s*pts?\)/i);
-    if (match) {
-      items.push({ text: match[1].trim(), pts: match[2] });
-    } else if (segment.length > 0) {
-      items.push({ text: segment, pts: "" });
+    if (items.some((r) => r.pts)) return { intro, items };
+  }
+
+  // Formato critério único: "Descrição: X ponto." ou "Descrição: X pontos."
+  // Extrair intro (antes do último ":") e valor (número + ponto/pontos)
+  if (description.includes(":")) {
+    const colonIdx = description.lastIndexOf(":");
+    const beforeColon = description.slice(0, colonIdx).trim();
+    const afterColon = description.slice(colonIdx + 1).trim();
+
+    // Extrair "X ponto" ou "X pontos" do texto após ":"
+    const ptsMatch = afterColon.match(/(\d+[.,]?\d*)\s*pontos?/i);
+    if (ptsMatch) {
+      return {
+        intro: beforeColon,
+        items: [{ text: afterColon.replace(/\.\s*$/, ""), pts: ptsMatch[1] }],
+      };
     }
   }
 
-  // Se não encontrou intro via ":", usar a description inteira como intro quando não há items estruturados
-  if (!intro && items.length > 0 && !items.some((r) => r.pts)) {
-    intro = description;
-    return { intro, items: [] };
-  }
-
-  return { intro, items };
+  // Fallback: descrição como texto simples
+  return { intro: description, items: [] };
 }
 
 /** Formata o valor do currículo para exibição humana */
