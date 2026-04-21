@@ -128,21 +128,26 @@ function formatKey(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function parseRuleItems(description: string): { text: string; pts: string }[] {
-  if (!description) return [];
+interface ParsedRule {
+  intro: string;
+  items: { text: string; pts: string }[];
+}
+
+function parseRuleItems(description: string): ParsedRule {
+  if (!description) return { intro: "", items: [] };
   const parts = description.split("|").map((part) => part.trim());
   const items: { text: string; pts: string }[] = [];
+  let intro = "";
 
   for (let i = 0; i < parts.length; i++) {
     let segment = parts[i];
 
     // Primeiro segmento pode ter "Descrição longa: Critério (Xpts)"
-    // Separar pelo último ":" para isolar só o critério
     if (i === 0 && segment.includes(":")) {
       const colonIdx = segment.lastIndexOf(":");
       const afterColon = segment.slice(colonIdx + 1).trim();
-      // Só separar se a parte após ":" contém pontuação
       if (/\(\d/.test(afterColon)) {
+        intro = segment.slice(0, colonIdx).trim();
         segment = afterColon;
       }
     }
@@ -155,7 +160,13 @@ function parseRuleItems(description: string): { text: string; pts: string }[] {
     }
   }
 
-  return items;
+  // Se não encontrou intro via ":", usar a description inteira como intro quando não há items estruturados
+  if (!intro && items.length > 0 && !items.some((r) => r.pts)) {
+    intro = description;
+    return { intro, items: [] };
+  }
+
+  return { intro, items };
 }
 
 /** Formata o valor do currículo para exibição humana */
@@ -349,8 +360,8 @@ function RuleItem({
 }) {
   const hasGap = entry.delta > 0;
   const [open, setOpen] = useState(false);
-  const ruleItems = parseRuleItems(entry.description);
-  const hasStructuredItems = ruleItems.length > 0 && ruleItems.some((r) => r.pts);
+  const parsed = parseRuleItems(entry.description);
+  const hasStructuredItems = parsed.items.length > 0 && parsed.items.some((r) => r.pts);
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
@@ -393,8 +404,11 @@ function RuleItem({
               <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
                 Como pontuar
               </p>
+              {parsed.intro && (
+                <p className="mb-2 text-xs text-muted-foreground">{parsed.intro}</p>
+              )}
               <div className="space-y-1">
-                {ruleItems.map((item, i) => (
+                {parsed.items.map((item, i) => (
                   <div key={i} className="flex items-center justify-between gap-2 text-xs">
                     <span className="text-muted-foreground">{item.text}</span>
                     {item.pts && (
