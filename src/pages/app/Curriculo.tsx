@@ -175,8 +175,8 @@ const Curriculo = () => {
     return CATEGORY_ORDER.filter((cat) => fieldsByCategory[cat]);
   }, [fieldsByCategory]);
 
-  // P5 + P8: default to Publicações, or to section from query param
-  const defaultAccordionValue = sectionParam || categoryToValue(CATEGORY_ORDER[0]);
+  // P5 + P8: nenhuma seção aberta por padrão, exceto se vier via query param
+  const defaultAccordionValue = sectionParam || undefined;
 
   return (
     <div className="mx-auto max-w-7xl">
