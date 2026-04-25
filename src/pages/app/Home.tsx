@@ -8,14 +8,17 @@ import { useAuth } from "@/contexts/useAuth";
 import {
   useScores,
   useInstitutions,
+  useEditalUrl,
   scoringKeys,
 } from "@/lib/queries/scoring";
-import { toGrade } from "@/lib/schemas/scoring";
+import { useCurriculum } from "@/lib/queries/curriculum";
 import { ScoreCard } from "@/components/features/scoring/ScoreCard";
 import { NarrativeBanner } from "@/components/features/scoring/NarrativeBanner";
 import { DisclaimerBanner } from "@/components/features/scoring/DisclaimerBanner";
 import { SpecialtySelector } from "@/components/features/scoring/SpecialtySelector";
-import type { Institution, UserScore } from "@/lib/schemas/scoring";
+import { Podium, type PodiumEntry } from "@/components/features/scoring/Podium";
+import { InstitutionDetailView } from "@/components/features/scoring/InstitutionDetailView";
+import type { Institution } from "@/lib/schemas/scoring";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -75,14 +78,12 @@ const AppHome = () => {
     [institutions],
   );
 
-  // Estados únicos das instituições
   const availableStates = useMemo(() => {
     if (!institutions) return [];
     const states = new Set(institutions.map((i) => i.state).filter(Boolean) as string[]);
     return Array.from(states).sort();
   }, [institutions]);
 
-  // Scores filtrados por estado e ordenados por nota (maior primeiro)
   const filteredScores = useMemo(() => {
     if (!scores) return [];
     let filtered = scores;
@@ -99,6 +100,23 @@ const AppHome = () => {
     });
   }, [scores, stateFilter, instMap]);
 
+  const podiumEntries: PodiumEntry[] = useMemo(() => {
+    return filteredScores
+      .slice(0, 3)
+      .map((score) => {
+        const inst = instMap.get(score.institution_id);
+        return inst ? { institution: inst, score } : null;
+      })
+      .filter((entry): entry is PodiumEntry => entry !== null);
+  }, [filteredScores, instMap]);
+
+  const otherScores = useMemo(() => filteredScores.slice(3), [filteredScores]);
+
+  const top1Entry = podiumEntries[0] ?? null;
+  const topEditalUrl = useEditalUrl(top1Entry?.institution ?? null);
+  const { data: curriculumRow } = useCurriculum(userId);
+  const curriculumData = (curriculumRow?.data ?? {}) as Record<string, unknown>;
+
   const handleRetry = () => {
     if (userId) {
       queryClient.invalidateQueries({
@@ -112,9 +130,11 @@ const AppHome = () => {
 
   const filteredCount = filteredScores.length;
   const totalCount = scores?.length ?? institutions?.length ?? 0;
+  const noResultsForState =
+    !isLoading && !isError && filteredScores.length === 0 && stateFilter !== "Brasil";
 
   return (
-    <div className="dashboard-enter space-y-6">
+    <div className="dashboard-enter space-y-8">
       {/* Subheader */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-bold">
@@ -169,26 +189,71 @@ const AppHome = () => {
       {!isLoading && !isError && scores && institutions && (
         <>
           <NarrativeBanner scores={scores} institutions={institutions} />
-          {filteredScores.length === 0 && stateFilter !== "Brasil" ? (
+
+          {noResultsForState ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
               Nenhuma instituição em {stateFilter}.
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
-              {filteredScores.map((score) => {
-                const inst = instMap.get(score.institution_id);
-                if (!inst) return null;
-                return (
-                  <ScoreCard
-                    key={score.institution_id}
-                    institution={inst}
-                    score={score}
-                    onClick={() => navigate(`/app/instituicoes/${inst.id}`)}
-                    onEmptyClick={() => navigate("/app/curriculo")}
+            <>
+              {/* Divisão 1: Pódio top 3 */}
+              <section aria-labelledby="podium-heading" className="space-y-4">
+                <h2 id="podium-heading" className="sr-only">
+                  Top 3 instituições
+                </h2>
+                <Podium
+                  entries={podiumEntries}
+                  onCardClick={(id) => navigate(`/app/instituicoes/${id}`)}
+                  onEmptyClick={() => navigate("/app/curriculo")}
+                />
+              </section>
+
+              {/* Divisão 2: Outras instituições (4º+) */}
+              {otherScores.length > 0 && (
+                <section aria-labelledby="others-heading" className="space-y-4">
+                  <h2 id="others-heading" className="text-lg font-semibold">
+                    Outras instituições
+                  </h2>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
+                    {otherScores.map((score) => {
+                      const inst = instMap.get(score.institution_id);
+                      if (!inst) return null;
+                      return (
+                        <ScoreCard
+                          key={score.institution_id}
+                          institution={inst}
+                          score={score}
+                          onClick={() => navigate(`/app/instituicoes/${inst.id}`)}
+                          onEmptyClick={() => navigate("/app/curriculo")}
+                        />
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
+              {/* Divisão 3: Detalhe top 1 */}
+              {top1Entry && (
+                <section aria-labelledby="top1-heading" className="space-y-4">
+                  <div>
+                    <h2 id="top1-heading" className="text-lg font-semibold">
+                      Veja no detalhe sua nota na top 1
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Para ver no detalhe outras instituições, basta clicar no
+                      card delas.
+                    </p>
+                  </div>
+                  <InstitutionDetailView
+                    institution={top1Entry.institution}
+                    score={top1Entry.score}
+                    editalUrl={topEditalUrl}
+                    curriculumData={curriculumData}
+                    showDisclaimer={false}
                   />
-                );
-              })}
-            </div>
+                </section>
+              )}
+            </>
           )}
         </>
       )}

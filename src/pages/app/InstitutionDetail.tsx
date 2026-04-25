@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ExternalLink, RefreshCw } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/useAuth";
@@ -8,10 +8,8 @@ import {
   useEditalUrl,
   scoringKeys,
 } from "@/lib/queries/scoring";
-import { formatGrade } from "@/lib/schemas/scoring";
 import { useCurriculum } from "@/lib/queries/curriculum";
-import { GapAnalysisList } from "@/components/features/scoring/GapAnalysisList";
-import { DisclaimerBanner } from "@/components/features/scoring/DisclaimerBanner";
+import { InstitutionDetailView } from "@/components/features/scoring/InstitutionDetailView";
 import { useQueryClient } from "@tanstack/react-query";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -47,9 +45,6 @@ const InstitutionDetail = () => {
   const editalUrl = useEditalUrl(institution);
   const { data: curriculumRow } = useCurriculum(userId);
   const curriculumData = (curriculumRow?.data ?? {}) as Record<string, unknown>;
-
-  const displayName =
-    institution?.short_name || institution?.name || "Instituição";
 
   const handleRetry = () => {
     if (userId) {
@@ -115,47 +110,12 @@ const InstitutionDetail = () => {
 
       {/* Data state */}
       {!isLoading && !isError && institution && (
-        <>
-          {/* Header compacto: nome + badge nota + pontos + edital */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <h1 className="text-2xl font-bold">{displayName}</h1>
-            {institution.state && (
-              <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
-                {institution.state}
-              </span>
-            )}
-            {score && (
-              <div className="flex items-center gap-3 rounded-full bg-accent/10 py-1.5 pl-4 pr-5">
-                <span className="text-2xl font-bold tabular-nums text-accent">
-                  {formatGrade(score.score, score.max_score)}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {score.score} / {score.max_score} pts
-                </span>
-              </div>
-            )}
-            {editalUrl && (
-              <a
-                href={editalUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-accent hover:underline"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                Edital
-                <span className="sr-only">(abre em nova aba)</span>
-              </a>
-            )}
-          </div>
-
-          {/* GapAnalysisList */}
-          {score && (
-            <GapAnalysisList breakdown={score.breakdown} curriculumData={curriculumData} />
-          )}
-
-          {/* DisclaimerBanner */}
-          <DisclaimerBanner variant="full" />
-        </>
+        <InstitutionDetailView
+          institution={institution}
+          score={score}
+          editalUrl={editalUrl}
+          curriculumData={curriculumData}
+        />
       )}
     </div>
   );
