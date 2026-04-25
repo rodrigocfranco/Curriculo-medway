@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LoginForm } from "@/components/features/auth/LoginForm";
 import { useAuth } from "@/contexts/useAuth";
+import { resolvePostLoginRoute } from "@/lib/post-login-redirect";
 
 const Login = () => {
   const { user, profile, loading, signOut } = useAuth();
@@ -14,9 +15,14 @@ const Login = () => {
       void signOut();
       return;
     }
-    const role: "admin" | "student" = profile.role === "admin" ? "admin" : "student";
-    const target = role === "admin" ? "/admin" : "/app";
-    navigate(target, { replace: true });
+    let cancelled = false;
+    void (async () => {
+      const target = await resolvePostLoginRoute(user.id, profile.role);
+      if (!cancelled) navigate(target, { replace: true });
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [loading, user, profile, navigate, signOut]);
 
   return (

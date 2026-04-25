@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { loginFormSchema, type LoginFormValues } from "@/lib/schemas/login";
 import { useLogin } from "@/lib/queries/auth";
+import { resolvePostLoginRoute } from "@/lib/post-login-redirect";
 
 const warningMessageClass = "text-warning";
 
@@ -52,7 +53,8 @@ export function LoginForm() {
           form.setFocus("password");
           return;
         }
-        navigate(prof.role === "admin" ? "/admin" : "/app", { replace: true });
+        const target = await resolvePostLoginRoute(user.id, prof.role);
+        navigate(target, { replace: true });
       },
       onError: (err) => {
         toast.error(err.message);

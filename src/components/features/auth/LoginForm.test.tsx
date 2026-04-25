@@ -12,6 +12,8 @@ const selectMock = vi.fn(() => ({ eq: eqMock }));
 const fromMock = vi.fn<(...args: unknown[]) => { select: typeof selectMock }>(
   () => ({ select: selectMock }),
 );
+const resolvePostLoginRouteMock =
+  vi.fn<(...args: unknown[]) => Promise<string>>();
 
 vi.mock("@/lib/supabase", () => ({
   supabase: {
@@ -20,6 +22,11 @@ vi.mock("@/lib/supabase", () => ({
     },
     from: (...args: unknown[]) => fromMock(...args),
   },
+}));
+
+vi.mock("@/lib/post-login-redirect", () => ({
+  resolvePostLoginRoute: (...args: unknown[]) =>
+    resolvePostLoginRouteMock(...args),
 }));
 
 vi.mock("sonner", () => ({
@@ -56,6 +63,7 @@ beforeEach(() => {
   eqMock.mockClear();
   selectMock.mockClear();
   fromMock.mockClear();
+  resolvePostLoginRouteMock.mockReset();
 });
 
 describe("LoginForm — render (AC1)", () => {
@@ -91,7 +99,7 @@ describe("LoginForm — validação inline (AC1)", () => {
 });
 
 describe("LoginForm — submit (AC1)", () => {
-  it("sucesso student → navigate('/app')", async () => {
+  it("sucesso student com currículo preenchido → navigate('/app')", async () => {
     signInMock.mockResolvedValueOnce({
       data: {
         user: { id: "u1", email: "lucas@example.com" },
@@ -103,6 +111,7 @@ describe("LoginForm — submit (AC1)", () => {
       data: { role: "student" },
       error: null,
     });
+    resolvePostLoginRouteMock.mockResolvedValueOnce("/app");
 
     renderForm();
     fireEvent.change(screen.getByLabelText("Email"), {
@@ -120,7 +129,40 @@ describe("LoginForm — submit (AC1)", () => {
       });
     });
     await waitFor(() => {
+      expect(resolvePostLoginRouteMock).toHaveBeenCalledWith("u1", "student");
+    });
+    await waitFor(() => {
       expect(navigateMock).toHaveBeenCalledWith("/app", { replace: true });
+    });
+  });
+
+  it("sucesso student com currículo vazio → navigate('/app/curriculo')", async () => {
+    signInMock.mockResolvedValueOnce({
+      data: {
+        user: { id: "u3", email: "novo@example.com" },
+        session: { access_token: "tok", refresh_token: "ref" },
+      },
+      error: null,
+    });
+    singleMock.mockResolvedValueOnce({
+      data: { role: "student" },
+      error: null,
+    });
+    resolvePostLoginRouteMock.mockResolvedValueOnce("/app/curriculo");
+
+    renderForm();
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "novo@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Senha"), {
+      target: { value: "senhaForte1" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Entrar" }));
+
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith("/app/curriculo", {
+        replace: true,
+      });
     });
   });
 
@@ -136,6 +178,7 @@ describe("LoginForm — submit (AC1)", () => {
       data: { role: "admin" },
       error: null,
     });
+    resolvePostLoginRouteMock.mockResolvedValueOnce("/admin");
 
     renderForm();
     fireEvent.change(screen.getByLabelText("Email"), {
