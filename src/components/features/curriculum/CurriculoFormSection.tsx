@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import type { CurriculumFieldRow } from "@/lib/queries/curriculum";
 import type { CurriculumData, Article, Apresentacao, IcProjeto } from "@/lib/schemas/curriculum";
 import { ArticleListField } from "./ArticleListField";
@@ -33,6 +34,47 @@ interface CurriculoFormSectionProps {
   form: UseFormReturn<CurriculumData>;
   onBlur: () => void;
 }
+
+// Estilo por categoria: borda lateral + gradiente sutil no header,
+// usando paleta oficial Medway (Primary, Preventive, Clinic, Secondary, Surgery).
+// Classes literais (não interpoladas) para o JIT do Tailwind detectá-las.
+const CATEGORY_STYLES: Record<
+  string,
+  { border: string; gradient: string }
+> = {
+  Formação: {
+    border: "border-l-brand-primary",
+    gradient:
+      "from-brand-primary/10 hover:from-brand-primary/20 data-[state=open]:from-brand-primary/15",
+  },
+  "Pesquisa e Publicações": {
+    border: "border-l-brand-secondary",
+    gradient:
+      "from-brand-secondary/10 hover:from-brand-secondary/20 data-[state=open]:from-brand-secondary/15",
+  },
+  "Atividades Acadêmicas": {
+    border: "border-l-brand-clinic",
+    gradient:
+      "from-brand-clinic/10 hover:from-brand-clinic/20 data-[state=open]:from-brand-clinic/15",
+  },
+  "Congressos e Formação Complementar": {
+    border: "border-l-brand-neutral",
+    gradient:
+      "from-brand-neutral/10 hover:from-brand-neutral/20 data-[state=open]:from-brand-neutral/15",
+  },
+  "Representação Estudantil e Voluntariado": {
+    border: "border-l-brand-surgery-80",
+    gradient:
+      "from-brand-surgery-80/10 hover:from-brand-surgery-80/20 data-[state=open]:from-brand-surgery-80/15",
+  },
+  Qualificações: {
+    border: "border-l-brand-preventive-80",
+    gradient:
+      "from-brand-preventive-80/10 hover:from-brand-preventive-80/20 data-[state=open]:from-brand-preventive-80/15",
+  },
+};
+
+const DEFAULT_CATEGORY_STYLE = CATEGORY_STYLES["Formação"];
 
 const PLACEHOLDERS: Record<string, string> = {
   capitulos_livro: "Ex: 1",
@@ -87,17 +129,29 @@ export function CurriculoFormSection({
   ).length;
 
   const accordionValue = categoryToValue(category);
+  const styles = CATEGORY_STYLES[category] ?? DEFAULT_CATEGORY_STYLE;
 
   return (
-    <AccordionItem value={accordionValue}>
-      <AccordionTrigger className="text-base font-semibold">
+    <AccordionItem
+      value={accordionValue}
+      className={cn(
+        "overflow-hidden rounded-md border border-border border-l-4 bg-card",
+        styles.border,
+      )}
+    >
+      <AccordionTrigger
+        className={cn(
+          "bg-gradient-to-r to-transparent px-4 text-base font-semibold transition-colors hover:no-underline",
+          styles.gradient,
+        )}
+      >
         {category}{" "}
         <span className="ml-2 text-sm font-normal text-muted-foreground">
           ({filledCount}/{fields.length} preenchidos)
         </span>
       </AccordionTrigger>
       <AccordionContent>
-        <div className="space-y-4 px-1 pt-2">
+        <div className="space-y-4 px-4 pt-2">
           {fields.map((field) => (
             <FormField
               key={field.field_key}
