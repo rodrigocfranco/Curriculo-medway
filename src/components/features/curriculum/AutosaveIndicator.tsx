@@ -1,4 +1,4 @@
-import { Check, Loader2, WifiOff, AlertTriangle } from "lucide-react";
+import { Loader2, WifiOff, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AutosaveStatus } from "@/hooks/use-autosave";
 
@@ -9,23 +9,23 @@ interface AutosaveIndicatorProps {
   onRetry: () => void;
 }
 
-function formatTimeAgo(date: Date): string {
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 10) return "há poucos segundos";
-  if (seconds < 60) return `há ${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `há ${minutes} min`;
-  return `há ${Math.floor(minutes / 60)}h`;
-}
-
 export function AutosaveIndicator({
   status,
-  lastSavedAt,
   retryCount,
   onRetry,
 }: AutosaveIndicatorProps) {
-  // P6: during retries show "tentando novamente", after all retries show error + button
+  // Pisca-pisca eliminado: idle/saving/saved não renderizam.
+  // Sidebar de scores fornece feedback de progresso ("Atualizando…").
+  // Mantém apenas estados que pedem ação do usuário: erro e offline.
   const isRetrying = status === "saving" && retryCount > 0;
+
+  if (
+    status === "idle" ||
+    status === "saving" ||
+    status === "saved"
+  ) {
+    if (!isRetrying) return null;
+  }
 
   return (
     <div
@@ -33,31 +33,11 @@ export function AutosaveIndicator({
       aria-live="polite"
       aria-atomic="true"
     >
-      {status === "idle" && (
-        <span className="text-muted-foreground">Salvo</span>
-      )}
-
-      {status === "saving" && !isRetrying && (
-        <>
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
-          <span className="text-muted-foreground">Salvando...</span>
-        </>
-      )}
-
       {isRetrying && (
         <>
           <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-600" />
           <span className="text-amber-600">
             Erro ao salvar — tentando novamente...
-          </span>
-        </>
-      )}
-
-      {status === "saved" && (
-        <>
-          <Check className="h-3.5 w-3.5 text-teal-600" />
-          <span className="text-teal-600">
-            Salvo {lastSavedAt ? formatTimeAgo(lastSavedAt) : ""}
           </span>
         </>
       )}

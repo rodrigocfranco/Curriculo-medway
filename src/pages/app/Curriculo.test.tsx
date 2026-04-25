@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -59,6 +59,24 @@ vi.mock("@/hooks/use-autosave", () => ({
   getLocalDraft: () => null,
 }));
 
+vi.mock("@/lib/queries/scoring", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/lib/queries/scoring")
+  >("@/lib/queries/scoring");
+  return {
+    ...actual,
+    useScores: () => ({
+      data: [],
+      isLoading: false,
+      isFetching: false,
+    }),
+    useInstitutions: () => ({
+      data: [],
+      isLoading: false,
+    }),
+  };
+});
+
 import Curriculo from "./Curriculo";
 
 function renderWithProviders() {
@@ -94,9 +112,10 @@ describe("Curriculo page", () => {
     ).toBeInTheDocument();
   });
 
-  it("renderiza AutosaveIndicator com status idle", () => {
+  it("AutosaveIndicator silencioso no status idle (sem pisca-pisca)", () => {
     renderWithProviders();
-    expect(screen.getByText("Salvo")).toBeInTheDocument();
+    expect(screen.queryByText("Salvo")).not.toBeInTheDocument();
+    expect(screen.queryByText("Salvando...")).not.toBeInTheDocument();
   });
 
   it("renderiza seções do accordion", () => {
@@ -104,15 +123,22 @@ describe("Curriculo page", () => {
     expect(screen.getAllByText(/Pesquisa e Publicações/).length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renderiza CTA 'Ver meus resultados'", () => {
+  it("renderiza CTA 'Ver detalhamento por instituição'", () => {
     renderWithProviders();
     expect(
-      screen.getByRole("button", { name: /Ver meus resultados/ }),
+      screen.getByRole("button", { name: /Ver detalhamento por instituição/ }),
     ).toBeInTheDocument();
   });
 
   it("renderiza campo numérico na seção expandida", () => {
     renderWithProviders();
+    const trigger = screen.getByRole("button", { name: /Pesquisa e Publicações/ });
+    fireEvent.click(trigger);
     expect(screen.getAllByText("Artigo 1º autor (FI)").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renderiza sidebar de notas por instituição", () => {
+    renderWithProviders();
+    expect(screen.getByText("Sua nota nas instituições")).toBeInTheDocument();
   });
 });

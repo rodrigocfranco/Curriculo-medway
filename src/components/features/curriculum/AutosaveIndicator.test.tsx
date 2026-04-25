@@ -1,17 +1,22 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { AutosaveIndicator } from "./AutosaveIndicator";
 
 describe("AutosaveIndicator", () => {
-  it("exibe 'Salvo' no status idle", () => {
-    render(
-      <AutosaveIndicator status="idle" lastSavedAt={null} retryCount={0} onRetry={() => {}} />,
+  it("não renderiza nada no status idle", () => {
+    const { container } = render(
+      <AutosaveIndicator
+        status="idle"
+        lastSavedAt={null}
+        retryCount={0}
+        onRetry={() => {}}
+      />,
     );
-    expect(screen.getByText("Salvo")).toBeInTheDocument();
+    expect(container.firstChild).toBeNull();
   });
 
-  it("exibe 'Salvando...' no status saving sem retry", () => {
-    render(
+  it("não renderiza nada no status saving sem retry", () => {
+    const { container } = render(
       <AutosaveIndicator
         status="saving"
         lastSavedAt={null}
@@ -19,7 +24,19 @@ describe("AutosaveIndicator", () => {
         onRetry={() => {}}
       />,
     );
-    expect(screen.getByText("Salvando...")).toBeInTheDocument();
+    expect(container.firstChild).toBeNull();
+  });
+
+  it("não renderiza nada no status saved", () => {
+    const { container } = render(
+      <AutosaveIndicator
+        status="saved"
+        lastSavedAt={new Date()}
+        retryCount={0}
+        onRetry={() => {}}
+      />,
+    );
+    expect(container.firstChild).toBeNull();
   });
 
   it("exibe 'tentando novamente' durante retries", () => {
@@ -33,20 +50,6 @@ describe("AutosaveIndicator", () => {
     );
     expect(
       screen.getByText("Erro ao salvar — tentando novamente..."),
-    ).toBeInTheDocument();
-  });
-
-  it("exibe 'Salvo há poucos segundos' no status saved", () => {
-    render(
-      <AutosaveIndicator
-        status="saved"
-        lastSavedAt={new Date()}
-        retryCount={0}
-        onRetry={() => {}}
-      />,
-    );
-    expect(
-      screen.getByText(/Salvo há poucos segundos/),
     ).toBeInTheDocument();
   });
 
@@ -81,9 +84,14 @@ describe("AutosaveIndicator", () => {
     expect(screen.getByText("Sem conexão")).toBeInTheDocument();
   });
 
-  it("tem aria-live='polite' para acessibilidade", () => {
+  it("tem aria-live='polite' para acessibilidade quando renderiza", () => {
     const { container } = render(
-      <AutosaveIndicator status="idle" lastSavedAt={null} retryCount={0} onRetry={() => {}} />,
+      <AutosaveIndicator
+        status="error"
+        lastSavedAt={null}
+        retryCount={3}
+        onRetry={() => {}}
+      />,
     );
     const liveRegion = container.querySelector("[aria-live='polite']");
     expect(liveRegion).toBeInTheDocument();

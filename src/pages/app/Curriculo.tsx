@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Form } from "@/components/ui/form";
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import {
   useCurriculum,
   useUpdateCurriculum,
 } from "@/lib/queries/curriculum";
+import { scoringKeys } from "@/lib/queries/scoring";
 import {
   curriculumDataSchema,
   type CurriculumData,
@@ -21,7 +23,10 @@ import {
 import { useAutosave, getLocalDraft } from "@/hooks/use-autosave";
 import { AutosaveIndicator } from "@/components/features/curriculum/AutosaveIndicator";
 import { CurriculoFormSection } from "@/components/features/curriculum/CurriculoFormSection";
-import { CurriculumSummary } from "@/components/features/curriculum/CurriculumSummary";
+import { InstitutionScoresSidebar } from "@/components/features/curriculum/InstitutionScoresSidebar";
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Category display order
 const CATEGORY_ORDER = [
@@ -75,9 +80,13 @@ const Curriculo = () => {
   const [searchParams] = useSearchParams();
   const sectionParam = searchParams.get("seção") ?? searchParams.get("secao");
 
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const userId = user?.id ?? "";
   const storageKey = `curriculum-draft-${userId}`;
+  const queryClient = useQueryClient();
+  const rawSpecialty = profile?.specialty_interest;
+  const specialtyId =
+    rawSpecialty && UUID_RE.test(rawSpecialty) ? rawSpecialty : undefined;
 
   const {
     data: fieldsByCategory,
@@ -149,8 +158,13 @@ const Curriculo = () => {
     saveFn: async (data) => {
       if (!userId) return;
       await updateCurriculum.mutateAsync(data);
+      // Trigger DB marca user_scores.stale=true no upsert; invalida pra que
+      // useScores refaça e dispare calculate_scores RPC.
+      queryClient.invalidateQueries({
+        queryKey: scoringKeys.scores(userId, specialtyId),
+      });
     },
-    debounceMs: 500,
+    debounceMs: 300,
     storageKey: userId ? storageKey : undefined,
     onError: handleAutosaveError,
   });
@@ -237,18 +251,15 @@ const Curriculo = () => {
               )}
             </div>
 
-            {/* Resumo read-only (sidebar desktop / abaixo no mobile) */}
-            {!isLoading && fieldsByCategory && (
-              <div className="w-full lg:w-2/5">
-                <div className="lg:sticky lg:top-20">
-                  <CurriculumSummary
-                    fieldsByCategory={fieldsByCategory}
-                    data={watchedData as CurriculumData}
-                    categoryOrder={sortedCategories}
-                  />
-                </div>
+            {/* Notas por instituição em tempo real (sidebar desktop / abaixo no mobile) */}
+            <div className="w-full lg:w-2/5">
+              <div className="lg:sticky lg:top-20">
+                <InstitutionScoresSidebar
+                  userId={userId || null}
+                  specialtyId={specialtyId}
+                />
               </div>
-            )}
+            </div>
           </div>
 
           {/* CTA fixo no bottom */}
@@ -259,7 +270,7 @@ const Curriculo = () => {
                 className="w-full"
                 onClick={handleNavigateResults}
               >
-                Ver meus resultados
+                Ver detalhamento por instituição
               </Button>
             </div>
           </div>
