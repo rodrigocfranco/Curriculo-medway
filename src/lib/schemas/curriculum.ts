@@ -101,7 +101,11 @@ const formacaoFields = {
   faculdade_programas_capes: z.coerce.number().min(0).default(0),
   internato_hospital_ensino: z.string().default("Não"),
   nivel_assistencial: z.string().default(""),
-  media_geral: z.coerce.number().min(0).default(0),
+  media_geral: z.coerce
+    .number()
+    .min(0, "Mínimo 0")
+    .max(10, "Use a escala 0 a 10 (ex.: 8,5)")
+    .default(0),
 };
 
 // Qualificações (6)

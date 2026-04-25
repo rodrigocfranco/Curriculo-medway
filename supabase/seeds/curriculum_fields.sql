@@ -37,7 +37,7 @@ insert into public.curriculum_fields (category, field_key, label, field_type, op
   ('Liderança/Eventos','teste_progresso','Testes de progresso realizados','number',null,80),
   -- Perfil (6)
   ('Perfil','ingles_fluente','Inglês fluente (certificação oficial)','boolean',null,10),
-  ('Perfil','media_geral','Média geral no histórico (0-10 ou 0-100)','number',null,20),
+  ('Perfil','media_geral','Média geral no histórico (escala 0 a 10)','number',null,20),
   ('Perfil','conceito_historico','Conceito global do histórico','select','["A","B","C"]'::jsonb,30),
   ('Perfil','ranking_ruf_top35','Faculdade no Top 35 RUF','boolean',null,40),
   ('Perfil','mestrado','Mestrado concluído','boolean',null,50),

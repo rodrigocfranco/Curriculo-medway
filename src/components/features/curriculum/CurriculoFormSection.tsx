@@ -9,6 +9,7 @@ import {
   FormItem,
   FormLabel,
   FormControl,
+  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -94,7 +95,7 @@ const PLACEHOLDERS: Record<string, string> = {
   ouvinte_congresso: "Ex: 5",
   organizador_evento: "Ex: 1",
   teste_progresso: "Ex: 4",
-  media_geral: "Ex: 8.5 (escala 0-10)",
+  media_geral: "Ex: 8,5",
 };
 
 function categoryToValue(category: string): string {
@@ -292,6 +293,7 @@ export function CurriculoFormSection({
                 }
 
                 // Default: number
+                const isMediaGeral = field.field_key === "media_geral";
                 return (
                   <FormItem>
                     <FormLabel>{field.label}</FormLabel>
@@ -299,6 +301,9 @@ export function CurriculoFormSection({
                       <Input
                         type="number"
                         min={0}
+                        max={isMediaGeral ? 10 : undefined}
+                        step={isMediaGeral ? 0.1 : undefined}
+                        inputMode={isMediaGeral ? "decimal" : undefined}
                         {...formField}
                         value={formField.value as number}
                         onChange={(e) =>
@@ -312,6 +317,11 @@ export function CurriculoFormSection({
                         onBlur={onBlur}
                       />
                     </FormControl>
+                    {isMediaGeral && (
+                      <FormDescription>
+                        Use a escala 0 a 10 (com até 1 casa decimal). Ex.: 8,5.
+                      </FormDescription>
+                    )}
                     <FormMessage />
                   </FormItem>
                 );

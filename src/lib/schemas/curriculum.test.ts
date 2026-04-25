@@ -67,6 +67,16 @@ describe("curriculumDataSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("rejeita media_geral acima de 10 (escala única 0-10)", () => {
+    const result = curriculumDataSchema.safeParse({ media_geral: 80 });
+    expect(result.success).toBe(false);
+  });
+
+  it("aceita media_geral no extremo da escala (10)", () => {
+    const result = curriculumDataSchema.safeParse({ media_geral: 10 });
+    expect(result.success).toBe(true);
+  });
+
   it("coerce strings numéricas para number", () => {
     const result = curriculumDataSchema.safeParse({
       capitulos_livro: "3",
