@@ -22,7 +22,7 @@ interface DeltaEntry {
   positionDelta: number;
 }
 
-const DELTA_VISIBLE_MS = 10000;
+const DELTA_VISIBLE_MS = 5000;
 
 function buildAnchor(scores: UserScore[]): Map<string, AnchorEntry> {
   const map = new Map<string, AnchorEntry>();
@@ -89,7 +89,7 @@ export function InstitutionScoresSidebar({
     });
   }, [scores]);
 
-  // Âncora de comparação (snapshot estável). Só atualiza após 3s sem mudanças.
+  // Âncora de comparação (snapshot estável). Só atualiza após DELTA_VISIBLE_MS sem mudanças.
   const anchorRef = useRef<Map<string, AnchorEntry> | null>(null);
   const sortedScoresRef = useRef(sortedScores);
   sortedScoresRef.current = sortedScores;

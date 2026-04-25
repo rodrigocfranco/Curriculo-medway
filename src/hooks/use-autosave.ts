@@ -8,6 +8,10 @@ interface UseAutosaveOptions<T> {
   debounceMs?: number;
   storageKey?: string;
   onError?: (error: unknown) => void;
+  // Estado conhecido do servidor. Quando `data` é igual a `serverState`,
+  // o hook trata como hidratação (não salva) — evita upsert redundante quando
+  // o form é populado com dados recém-buscados do servidor.
+  serverState?: T;
 }
 
 interface UseAutosaveReturn {
@@ -27,6 +31,7 @@ export function useAutosave<T>({
   debounceMs = 500,
   storageKey,
   onError,
+  serverState,
 }: UseAutosaveOptions<T>): UseAutosaveReturn {
   const [status, setStatus] = useState<AutosaveStatus>("idle");
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
@@ -43,6 +48,12 @@ export function useAutosave<T>({
   const pendingSaveRef = useRef(false);
   // Track last known data snapshot to detect real changes
   const lastSerializedRef = useRef<string>(JSON.stringify(data));
+  // Snapshot serializado do estado do servidor (atualizado a cada render)
+  const serverSerializedRef = useRef<string | undefined>(
+    serverState !== undefined ? JSON.stringify(serverState) : undefined,
+  );
+  serverSerializedRef.current =
+    serverState !== undefined ? JSON.stringify(serverState) : undefined;
   // P3: resolve function for awaitable flush
   const flushResolveRef = useRef<(() => void) | null>(null);
 
@@ -197,6 +208,14 @@ export function useAutosave<T>({
   useEffect(() => {
     const serialized = JSON.stringify(data);
     if (serialized === lastSerializedRef.current) return;
+    // Hidratação do servidor: data === estado conhecido do servidor → não salva
+    if (
+      serverSerializedRef.current !== undefined &&
+      serialized === serverSerializedRef.current
+    ) {
+      lastSerializedRef.current = serialized;
+      return;
+    }
     scheduleSave();
   }, [data, scheduleSave]);
 

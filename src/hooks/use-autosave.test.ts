@@ -239,6 +239,53 @@ describe("useAutosave", () => {
     expect(result.current.status).toBe("saved");
   });
 
+  it("serverState: não salva quando data hidrata para o estado do servidor", async () => {
+    const saveFn = vi.fn().mockResolvedValue(undefined);
+    type Form = { a: number };
+    const { rerender } = renderHook(
+      ({ data, serverState }: { data: Form; serverState?: Form }) =>
+        useAutosave({ data, saveFn, debounceMs: 100, serverState }),
+      { initialProps: { data: { a: 0 }, serverState: undefined } },
+    );
+
+    // Servidor responde com {a:1} e form é resetado para o mesmo valor
+    rerender({ data: { a: 1 }, serverState: { a: 1 } });
+
+    await act(async () => {
+      vi.advanceTimersByTime(100);
+    });
+
+    expect(saveFn).not.toHaveBeenCalled();
+
+    // Usuário edita: agora data difere de serverState — save deve ocorrer
+    rerender({ data: { a: 2 }, serverState: { a: 1 } });
+
+    await act(async () => {
+      vi.advanceTimersByTime(100);
+    });
+
+    expect(saveFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("serverState: salva quando data difere do servidor (caso localDraft mais novo)", async () => {
+    const saveFn = vi.fn().mockResolvedValue(undefined);
+    type Form = { a: number };
+    const { rerender } = renderHook(
+      ({ data, serverState }: { data: Form; serverState?: Form }) =>
+        useAutosave({ data, saveFn, debounceMs: 100, serverState }),
+      { initialProps: { data: { a: 0 }, serverState: undefined } },
+    );
+
+    // Server tem {a:1}, mas localDraft tem {a:5} — form hidrata com draft
+    rerender({ data: { a: 5 }, serverState: { a: 1 } });
+
+    await act(async () => {
+      vi.advanceTimersByTime(100);
+    });
+
+    expect(saveFn).toHaveBeenCalledTimes(1);
+  });
+
   it("offline: detecta status offline", () => {
     Object.defineProperty(navigator, "onLine", {
       value: false,

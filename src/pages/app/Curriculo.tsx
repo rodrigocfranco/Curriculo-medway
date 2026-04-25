@@ -103,6 +103,14 @@ const Curriculo = () => {
   // P4: only create mutation when userId is available
   const updateCurriculum = useUpdateCurriculum(userId);
 
+  // Estado conhecido do servidor (parsed pelo schema) — usado pelo autosave
+  // para evitar salvar a hidratação inicial.
+  const serverState = useMemo(() => {
+    const serverData =
+      (userCurriculum?.data as Partial<CurriculumData>) ?? {};
+    return curriculumDataSchema.parse(serverData);
+  }, [userCurriculum]);
+
   // Resolve default values: server data vs localStorage draft
   const defaultValues = useMemo(() => {
     const serverData =
@@ -155,6 +163,7 @@ const Curriculo = () => {
   const { status, lastSavedAt, retryCount, retry, flush } = useAutosave({
     // P4: only enable autosave when userId is available
     data: userId ? watchedData : ({} as CurriculumData),
+    serverState: userId && userCurriculum ? serverState : undefined,
     saveFn: async (data) => {
       if (!userId) return;
       await updateCurriculum.mutateAsync(data);
