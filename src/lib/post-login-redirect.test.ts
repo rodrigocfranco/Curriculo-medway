@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const maybeSingleMock = vi.fn();
-const eqMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
-const selectMock = vi.fn(() => ({ eq: eqMock }));
-const fromMock = vi.fn(() => ({ select: selectMock }));
+const eqMock = vi.fn((..._args: unknown[]) => ({ maybeSingle: maybeSingleMock }));
+const selectMock = vi.fn((..._args: unknown[]) => ({ eq: eqMock }));
+const fromMock = vi.fn((..._args: unknown[]) => ({ select: selectMock }));
 
 vi.mock("./supabase", () => ({
   supabase: {
